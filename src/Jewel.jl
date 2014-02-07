@@ -1,6 +1,18 @@
 module Jewel
 
+# export server
+
 using JSON
+
+# Utils
+
+macro dotimes(n, body)
+  quote
+    for i = 1:$(esc(n))
+      $(esc(body))
+    end
+  end
+end
 
 # -------------------
 # Basic Communication
@@ -8,6 +20,8 @@ using JSON
 
 function server(port, id)
   ltconnect(port, id)
+  # pipe_stdio()
+  println("Connected")
   while isopen(conn)
     try
       handle_next()
@@ -46,7 +60,7 @@ send(req, command, info) = send(req[1], command, info)
 # Command Handling
 # ----------------
 
-@defonce const cmd_handlers = Dict{String, Function}()
+const cmd_handlers = Dict{String, Function}()
 
 function handle_cmd(data)
   data == nothing && return
@@ -246,16 +260,17 @@ end
 # IO
 # --
 
-function pipe_stdio()
-  @async begin
-    orig_STDOUT = STDOUT
-    read_stdout, _ = redirect_stdout()
-    while true
-      s = readavailable(orig_STDOUT)
-      ltprint(s)
-    end
-  end
-end
+const orig_STDOUT = STDOUT
+
+# function pipe_stdio()
+#   @async begin
+#     read_stdout, _ = redirect_stdout()
+#     while true
+#       s = readavailable(read_stdout)
+#       ltprint(s)
+#     end
+#   end
+# end
 
 
 end # module
