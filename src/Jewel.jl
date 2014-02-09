@@ -20,13 +20,12 @@ end
 
 function server(port, id)
   ltconnect(port, id)
-  # pipe_stdio()
-  println("Connected")
+  println("connected")
   while isopen(conn)
     try
       handle_next()
     catch e
-      ltprint("Jewel Error: "sprint(show, e))
+      warn("Jewel: "sprint(show, e))
     end
   end
 end
@@ -140,7 +139,7 @@ handle("editor.eval.julia") do req, data
   val = nothing
   try
     code = parse(code)
-    val = eval(code)
+    val = Main.eval(code)
   catch e
     show_exception(req, sprint(showerror, e), lines)
     return
@@ -255,22 +254,5 @@ function display_result(req, val, bounds)
   mime == "text/html"  ? result(req, sprint(writemime, "text/html", val), bounds, html = true) :
   error("Cannot display $val.")
 end
-
-# --
-# IO
-# --
-
-const orig_STDOUT = STDOUT
-
-# function pipe_stdio()
-#   @async begin
-#     read_stdout, _ = redirect_stdout()
-#     while true
-#       s = readavailable(read_stdout)
-#       ltprint(s)
-#     end
-#   end
-# end
-
 
 end # module
