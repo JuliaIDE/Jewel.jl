@@ -5,7 +5,7 @@
 handle("editor.eval.julia") do req, data
   info = get_code(data)
   val = nothing
-  mod = @or get(Main, info[:module], nothing) Main
+  mod = get(Main, info[:module], Main)
 
   try
     if get(data, "all", false) || mod == Main
