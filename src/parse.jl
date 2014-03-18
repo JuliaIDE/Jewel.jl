@@ -47,16 +47,18 @@ function walk_forward(code::Vector{String}, line)
   return line
 end
 
-function get_code(data)
-  if cursor_start(data) != cursor_end(data)
-    s = data["code"]
-    start, stop = cursor_start(data), cursor_end(data)
-    i, j = index_of(s, start[1], start[2]), index_of(s, stop[1], stop[2]-1) # Selection is in front of cursor
-    return s[i:j], (start[1], stop[1])
-  else
-    c = data["code"] |> lines
-    l = cursor(data)[1]
-    i, j = walk_back(c, l), walk_forward(c, l)
-    return join(c[i:j], "\n"), (i, j)
-  end
+function get_code(s, start, stop)
+  i, j = index_of(s, start[1], start[2]), index_of(s, stop[1], stop[2]-1) # Selection is in front of cursor
+  s[i:j], (start[1], stop[1])
 end
+
+function get_code(s, line)
+  c = lines(s)
+  i, j = walk_back(c, line), walk_forward(c, line)
+  join(c[i:j], "\n"), (i, j)
+end
+
+get_code(data) =
+  cursor_start(data) == cursor_end(data) ?
+    get_code(data["code"], cursor(data)[1]) :
+    get_code(data["code"], cursor_start(data), cursor_end(data))
