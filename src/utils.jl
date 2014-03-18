@@ -1,15 +1,6 @@
-macro dotimes(n, body)
-  quote
-    for i = 1:$(esc(n))
-      $(esc(body))
-    end
-  end
-end
+Base.in(name, m::Module) = name in names(m)
 
-macro once_then(expr::Expr)
-  @assert expr.head == :while
-  esc(quote
-    $(expr.args[2]) # body of loop
-    $expr # loop
-  end)
-end
+Base.get(m::Module, name) = m.(name)
+
+Base.get(m::Module, name, default) =
+  name in m ? get(m, name) : default

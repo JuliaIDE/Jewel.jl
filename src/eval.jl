@@ -3,14 +3,21 @@
 # ----
 
 handle("editor.eval.julia") do req, data
-  data = get_code(data)
+  info = get_code(data)
   val = nothing
+  mod = @or get(Main, info[:module], nothing) Main
+
   try
-    code = parse("begin\n"*data[:code]*"\nend")
-    val = Main.eval(code)
+    if get(data, "all", false) || mod == Main
+      val = include_string(info[:code])
+    else
+      code = parse("begin\n"*info[:code]*"\nend")
+      val = eval(mod, code)
+    end
   catch e
-    show_exception(req, sprint(showerror, e), data[:lines])
+    show_exception(req, sprint(showerror, e), info[:lines])
     return
   end
-  display_result(req, val, data[:lines])
+
+  display_result(req, val, info[:lines])
 end

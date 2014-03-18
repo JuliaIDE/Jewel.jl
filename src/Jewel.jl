@@ -2,7 +2,7 @@ module Jewel
 
 # export server
 
-using JSON
+using JSON, Lazy
 
 include("utils.jl")
 
