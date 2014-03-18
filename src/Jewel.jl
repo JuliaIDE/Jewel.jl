@@ -54,8 +54,8 @@ send(req, command, info) = send(req[1], command, info)
 const cmd_handlers = Dict{String, Function}()
 
 function handle_cmd(data)
-  global last_data = data[3]
   data == nothing && return
+  global last_data = data[3]
   cmd = data[2]
   if haskey(cmd_handlers, cmd)
     cmd_handlers[cmd](data, data[3])
