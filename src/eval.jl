@@ -4,14 +4,13 @@
 
 handle("editor.eval.julia") do req, data
   data = get_code(data)
-  code, lines = data[:code], data[:lines]
   val = nothing
   try
-    code = parse(code)
+    code = parse("begin\n"*data[:code]*"\nend")
     val = Main.eval(code)
   catch e
-    show_exception(req, sprint(showerror, e), lines)
+    show_exception(req, sprint(showerror, e), data[:lines])
     return
   end
-  display_result(req, val, lines)
+  display_result(req, val, data[:lines])
 end
