@@ -4,15 +4,7 @@ module Jewel
 
 using JSON
 
-# Utils
-
-macro dotimes(n, body)
-  quote
-    for i = 1:$(esc(n))
-      $(esc(body))
-    end
-  end
-end
+include("utils.jl")
 
 # -------------------
 # Basic Communication
@@ -62,6 +54,7 @@ send(req, command, info) = send(req[1], command, info)
 const cmd_handlers = Dict{String, Function}()
 
 function handle_cmd(data)
+  global last_data = data[3]
   data == nothing && return
   cmd = data[2]
   if haskey(cmd_handlers, cmd)
@@ -147,95 +140,7 @@ handle("editor.eval.julia") do req, data
   display_result(req, val, lines)
 end
 
-# -------------
-# Code handling
-# -------------
-
-cursor(data) = data["start"]["line"], data["start"]["col"]
-cursor_start(data) = cursor(data)
-cursor_end(data) = data["end"]["line"], data["end"]["col"]
-
-function index_of(s, line, char)
-  lines = 1
-  chars = 0
-  for i = 1:endof(s)
-    isvalid(s, i) || continue
-    lines == line && char == chars+1 && return i
-    if s[i] == '\n'
-      lines += 1
-      chars =  0
-    else
-      chars += 1
-    end
-    # lines == line && chars == char && return i
-  end
-  error("$line:$char not found.")
-end
-
-function position_of(s, index)
-  @assert isvalid(s, index)
-  lines = 1
-  chars = 0
-  for i = 1:endof(s)
-    isvalid(s, i) || continue
-    i == index && return lines, chars+1
-    if s[i] == '\n'
-      lines += 1
-      chars =  0
-    else
-      chars += 1
-    end
-  end
-end
-
-line_at(s, index) = position_of(s, index)[1]
-
-cursor_index(data) = index_of(data["code"], cursor(data)...)
-
-const whitespace = (' ', '\n', '\t')
-
-function walk_back(s, i)
-  while i > 1
-    i_ = prevind(s, i)
-    !(s[i] in whitespace) && s[i_] == '\n' && break
-    i = i_
-  end
-  return i
-end
-
-function Base.nextind(s::String, i::Integer, n::Integer)
-  @dotimes n i = nextind(s, i)
-  return i
-end
-
-function walk_forward(s, i)
-  j = i
-  while (i_ = nextind(s, i)) <= endof(s)
-    if !(s[i] in whitespace)
-      j = i
-    elseif s[i] == '\n' && !(s[i_] in whitespace)
-      return beginswith(s[i_:end], "end") ? nextind(s, i, 3) : j
-    end
-    i = i_
-  end
-  return j
-end
-
-function get_code(data)
-  if cursor_start(data) != cursor_end(data)
-    s = data["code"]
-    start, stop = cursor_start(data), cursor_end(data)
-    i, j = index_of(s, start...), index_of(s, stop...)
-    return s[i:j], (start[1], stop[1])
-  else
-    # May not work well with comments yet.
-    s = data["code"]
-    c = cursor_index(data)
-    i, j = walk_back(s, c), walk_forward(s, c)
-    start, stop = line_at(s, i), line_at(s, j)
-    s[i:j], (start, stop)
-  end
-end
+include("parse.jl")
 
 # ------------
 # Display Code
