@@ -60,7 +60,13 @@ function get_code(s, line)
    :lines => (i, j)}
 end
 
-get_code(data) =
+function get_code(s::String)
+  {:code  => s,
+   :lines => (1, length(lines(s)))}
+end
+
+get_code(data::Dict) =
+  get(data, "all", false) ? get_code(data["code"]) :
   cursor_start(data) == cursor_end(data) ?
     get_code(data["code"], cursor(data)[1]) :
     get_code(data["code"], cursor_start(data), cursor_end(data))
