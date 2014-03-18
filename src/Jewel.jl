@@ -128,7 +128,8 @@ end
 # ----
 
 handle("editor.eval.julia") do req, data
-  code, lines = get_code(data)
+  data = get_code(data)
+  code, lines = data[:code], data[:lines]
   val = nothing
   try
     code = parse(code)
