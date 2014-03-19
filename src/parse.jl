@@ -29,7 +29,7 @@ isend(s) = ismatch(r"^end", s)
 isstart(s) = !(ismatch(r"^\s", s) || isblank(s) || isend(s))
 
 # Find to the start of this block.
-function walk_back(code::Vector{String}, line)
+function walk_back(code::Vector, line)
   while line > 1 && !isstart(code[line])
     line -= 1
   end
@@ -38,7 +38,7 @@ end
 
 # Scan to the start of the next block, find the end of
 # this one.
-function walk_forward(code::Vector{String}, line)
+function walk_forward(code::Vector, line)
   l = isstart(code[line]) ? line + 1 : line
   while l < length(code) && !isstart(code[l])
     l += 1
@@ -47,7 +47,7 @@ function walk_forward(code::Vector{String}, line)
   return line
 end
 
-function get_module_name(code::Vector{String}, line)
+function get_module_name(code::Vector, line)
   while line > 1
     line -= 1
     m = match(r"module (\w+)", code[line])
