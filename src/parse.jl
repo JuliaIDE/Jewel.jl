@@ -39,7 +39,7 @@ end
 # Scan to the start of the next block, find the end of
 # this one.
 function walk_forward(code::Vector{String}, line)
-  l = line+1
+  l = isstart(code[line]) ? line + 1 : line
   while l < length(code) && !isstart(code[l])
     l += 1
     !(isblank(code[l]) || isstart(code[l])) && (line = l)

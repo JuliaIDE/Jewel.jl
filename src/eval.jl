@@ -4,6 +4,7 @@
 
 handle("editor.eval.julia") do req, data
   info = get_code(data)
+  # println(info[:code])
   val = nothing
   mod = get(Main, info[:module], Main)
 
