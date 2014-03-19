@@ -10,7 +10,7 @@ handle("editor.eval.julia") do req, data
   mod = get(Main, info[:module], Main)
 
   path = get(data, "path", nothing)
-  path = path == nothing ? splitdir(path)[1] : homedir()
+  path = path == nothing ? homedir() : splitdir(path)[1]
 
   cd(path) do
     try
