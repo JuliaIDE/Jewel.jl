@@ -126,11 +126,13 @@ end
 include("parse.jl")
 include("eval.jl")
 
+include("completions.jl")
+
 # ------------
 # Display Code
 # ------------
 
-function best_mime(val) 
+function best_mime(val)
   for mime in ("text/html", "text/plain")
     mimewritable(mime, val) && return mime
   end

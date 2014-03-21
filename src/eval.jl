@@ -9,17 +9,14 @@ handle("editor.eval.julia") do req, data
   val = nothing
   mod = get(Main, info[:module], Main)
 
-  path = get(data, "path", nothing)
-  path = path == nothing ? homedir() : splitdir(path)[1]
+  task_local_storage()[:SOURCE_PATH] = get(data, "path", nothing)
 
   try
-    cd(path) do
-      if get(data, "all", false) || mod == Main
-        val = include_string(info[:code])
-      else
-        code = parse("begin\n"*info[:code]*"\nend")
-        val = eval(mod, code)
-      end
+    if get(data, "all", false) || mod == Main
+      val = include_string(info[:code])
+    else
+      code = parse("begin\n"*info[:code]*"\nend")
+      val = eval(mod, code)
     end
   catch e
     show_exception(req, sprint(showerror, e), info[:lines])
