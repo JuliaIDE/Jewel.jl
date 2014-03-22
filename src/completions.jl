@@ -16,4 +16,3 @@ accessible_names(mod = Main) =
 handle("editor.julia.hints") do req, data
   editor_command(req, "hints", {:hints => map(string, accessible_names())})
 end
-
