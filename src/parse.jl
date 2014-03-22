@@ -50,7 +50,7 @@ end
 function get_module_name(code::Vector, line)
   while line > 1
     line -= 1
-    m = match(r"module (\w+)", code[line])
+    m = match(r"^(?:#jewel )?module (\w+)", code[line])
     m == nothing || return symbol(m.captures[1])
   end
   return nothing
