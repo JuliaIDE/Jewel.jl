@@ -1,13 +1,25 @@
 #jewel module Jewel
 
+const builtins = ["begin", "function", "type", "immutable", "let", "macro", "for", "while", "quote", "if", "else", "elseif", "try", "finally", "catch", "do", "end", "else", "elseif", "catch", "finally"]
+
 module_usings(mod) = ccall(:jl_module_usings, Any, (Any,), mod)
 
+# Only provides exported names, except in Main
 accessible_names(mod = Main) =
-  @as _ mod [_, module_usings(_)...] map(names, _) [_...]
+  @as _ mod [_, module_usings(_)...] map(names, _) [builtins, _...]
 
 packages() =
-  @>> Pkg.dir() readdir filter(x->!ismatch(r"^\.|^METADATA", x))
+  @>> Pkg.dir() readdir filter(x->!ismatch(r"^\.|^METADATA$|^REQUIRE$", x))
 
 handle("editor.julia.hints") do req, data
-  editor_command(req, "hints", {:hints => [string(n) for n in accessible_names()]})
+  cur_line = lines(data["code"])[data["cursor"]["line"]]
+  if ismatch(r"^using ", cur_line)
+    # Suggest packages after `using`
+    # Still gives default hints, could be better
+    editor_command(req, "hints", {:hints => packages()})
+  else
+    mod = get_module_name(lines(data["code"]), data["cursor"]["line"])
+    mod = get(Main, mod, Main)
+    editor_command(req, "hints", {:hints => [string(n) for n in accessible_names(mod)]})
+  end
 end
