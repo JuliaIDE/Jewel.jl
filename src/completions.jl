@@ -4,19 +4,22 @@ const builtins = ["begin", "function", "type", "immutable", "let", "macro", "for
 
 module_usings(mod) = ccall(:jl_module_usings, Any, (Any,), mod)
 
-# Only provides exported names, except in Main
 accessible_names(mod = Main) =
-  @as _ mod [_, module_usings(_)...] map(names, _) [builtins, _...]
+  [names(mod, true, true),
+   map(names, module_usings(mod))...,
+   builtins] |> unique
 
 packages() =
   @>> Pkg.dir() readdir filter(x->!ismatch(r"^\.|^METADATA$|^REQUIRE$", x))
 
+# TODO: Module.name
+
 handle("editor.julia.hints") do req, data
   cur_line = lines(data["code"])[data["cursor"]["line"]]
-  if ismatch(r"^using ", cur_line)
-    # Suggest packages after `using`
-    # Still gives default hints, could be better
+
+  if ismatch(r"^using ", cur_line) # Staight after using
     editor_command(req, "hints", {:hints => packages()})
+
   else
     mod = get_module_name(lines(data["code"]), data["cursor"]["line"])
     mod = get(Main, mod, Main)
