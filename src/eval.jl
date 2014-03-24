@@ -2,6 +2,9 @@
 # Eval
 # ----
 
+# TODO: remove result display in eval.all
+#       support #jewel module in eval.all
+
 handle("editor.eval.julia") do req, data
   info = get_code(data)
   # println(info[:code])

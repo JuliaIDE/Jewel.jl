@@ -26,7 +26,7 @@ function ltconnect(port, id)
   global conn = connect(port)
   ltwrite({"type" => "julia",
            "name" => "Julia",
-           "commands" => ["editor.eval.julia"],
+           "commands" => ["editor.eval.julia", "editor.julia.hints", "editor.julia.doc"],
            "client-id" => id})
 end
 
@@ -129,8 +129,8 @@ end
 
 include("parse.jl")
 include("eval.jl")
-
 include("completions.jl")
+include("doc.jl")
 
 # ------------
 # Display Code
