@@ -2,14 +2,18 @@
 
 # Modules
 
-Base.in(name::Symbol, m::Module) = isdefined(m, name)
+import Base: in, get
 
-Base.get(m::Module, name::Symbol) = m.(name)
+in(name::Symbol, m::Module) = isdefined(m, name)
 
-Base.get(m::Module, name::Symbol, default) =
+get(m::Module, name::Symbol) = m.(name)
+
+get(m::Module, name::Symbol, default) =
   name in m ? get(m, name) : default
 
-Base.get(m::Module, name, default) = default
+get(m::Module, name::String, args...) = get(m, symbol(name), args...)
+
+get(m::Module, name, default) = default
 
 function get_thing(mod, name::Vector{Symbol})
   sub = mod
