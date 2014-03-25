@@ -10,14 +10,12 @@ module_usings(mod) = ccall(:jl_module_usings, Any, (Any,), mod)
 filter_valid(names) =
   filter(x->!ismatch(r"#", x), [string(x) for x in names])
 
-accessible_names(mod = Main) =
+accessible_names(mod::Module = Main) =
   [names(mod, true, true),
    map(names, module_usings(mod))...,
    builtins] |> unique |> filter_valid
 
-accessible_names(mod::String) = accessible_names(get_thing(mod))
-
-accessible_names(::Nothing) = accessible_names()
+accessible_names(m) = accessible_names(to_module(m))
 
 const completions = Dict{String,Function}()
 

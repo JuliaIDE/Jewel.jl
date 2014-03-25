@@ -17,8 +17,15 @@ get(m::Module, name, default) = default
 
 get(::Nothing, args...) = get(Main, args...)
 
-function get_thing(mod::Module, name::Vector{Symbol})
-  sub = mod
+# Retrieve arbitrarily nested , if possible
+
+to_module(m::Module) = m
+to_module(m::Symbol) = get(Main, m, Main)
+to_module(m::String) = to_module(symbol(m))
+to_module(_) = Main
+
+function get_thing(mod, name::Vector{Symbol})
+  sub = to_module(mod)
   for i = 1:length(name)
     sub = get(sub, name[i], nothing)
     !isa(sub, Module) && i < length(name) && return nothing
@@ -26,15 +33,8 @@ function get_thing(mod::Module, name::Vector{Symbol})
   return sub
 end
 
-get_thing(::Nothing, names::String...) = get_thing(Main, names...)
-
 get_thing(mod, names::String...) =
   @as _ names join(_, ".") split(_, ".") map(symbol, _) get_thing(mod, _)
-
-get_thing(names::String...) =
-  @as _ names join(_, ".") get_thing
-
-get_thing(::Nothing, args...) = get_thing(Main, args...)
 
 # Text
 

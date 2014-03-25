@@ -10,7 +10,7 @@ handle("editor.eval.julia") do req, data
   # println(info[:code])
 
   val = nothing
-  mod = get(Main, info[:module], Main)
+  mod = to_module(info[:module])
 
   path = get(data, "path", nothing)
   task_local_storage()[:SOURCE_PATH] = path
