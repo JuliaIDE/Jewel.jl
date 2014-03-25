@@ -4,6 +4,7 @@
 # Eval
 # ----
 
+# Shoud be split into eval and eval.all
 handle("editor.eval.julia") do req, data
   info = get_code(data)
   all = get(data, "all", false)
