@@ -8,5 +8,3 @@ handle("editor.julia.doc") do req, data
   editor_command(req, "doc", {:doc => help_str(token),
                               :loc => {:line => data["cursor"]["line"]-1}})
 end
-
-names
