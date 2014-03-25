@@ -15,6 +15,8 @@ get(m::Module, name::String, args...) = get(m, symbol(name), args...)
 
 get(m::Module, name, default) = default
 
+get(::Nothing, args...) = get(Main, args...)
+
 function get_thing(mod, name::Vector{Symbol})
   sub = mod
   for m in name

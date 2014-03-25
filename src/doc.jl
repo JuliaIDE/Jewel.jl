@@ -8,7 +8,7 @@ handle("editor.julia.doc") do req, data
   meth = get(data, "type", nothing) == "methods"
 
   meth && (mod = get_module_name(data);
-              thing = get_thing(mod, token))
+           thing = get_thing(mod, token))
 
   (!meth || thing != nothing) &&
     editor_command(req, "doc", {:doc => meth?
@@ -17,4 +17,3 @@ handle("editor.julia.doc") do req, data
                                 :loc => {:line => data["cursor"]["line"]-1},
                                 :html => meth})
 end
-
