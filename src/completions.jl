@@ -17,7 +17,7 @@ packages() =
 handle("editor.julia.hints") do req, data
   cur_line = lines(data["code"])[data["cursor"]["line"]]
 
-  if ismatch(r"^using ", cur_line) # Staight after using
+  if ismatch(r"^using ", cur_line) # Straight after using
     editor_command(req, "hints", {:hints => packages()})
 
   else
