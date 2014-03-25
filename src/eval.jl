@@ -4,8 +4,6 @@
 # Eval
 # ----
 
-# TODO: fix error for two-line fns
-
 handle("editor.eval.julia") do req, data
   info = get_code(data)
   all = get(data, "all", false)
