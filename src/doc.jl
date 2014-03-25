@@ -2,7 +2,7 @@
 
 handle("editor.julia.doc") do req, data
   line = lines(data["code"])[data["cursor"]["line"]]
-  isempty(line) && return
+  isempty(line) && return notify_done("")
   token = get_qualified_name(line, data["cursor"]["col"])
 
   meth = get(data, "type", nothing) == "methods"
