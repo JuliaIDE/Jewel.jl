@@ -25,7 +25,7 @@ handle("editor.julia.hints") do req, data
   cur_line = lines(data["code"])[data["cursor"]["line"]]
   qualified = @> cur_line get_qualified_name(data["cursor"]["col"]) split(".") (x->map(symbol, x))
 
-  ismatch(r"^using ", cur_line) && # Staight after using
+  ismatch(r"^using ", cur_line) && # Straight after using
     return editor_command(req, "hints", {:hints => packages()})
 
   mod = get_module_name(lines(data["code"]), data["cursor"]["line"])
