@@ -8,7 +8,7 @@ const builtins = ["begin", "function", "type", "immutable", "let", "macro",
 module_usings(mod) = ccall(:jl_module_usings, Any, (Any,), mod)
 
 filter_valid(names) =
-  filter(x->!ismatch(r"[\W]", x), [string(x) for x in names])
+  filter(x->!ismatch(r"[\W#]", x), [string(x) for x in names])
 
 accessible_names(mod = Main) =
   [names(mod, true, true),
@@ -42,7 +42,8 @@ handle("editor.julia.hints") do req, data
   if length(qualified) > 1
     sub = get_submodule(mod, qualified[1:end-1])
     sub != nothing &&
-      return editor_command(req, "hints", {:hints => [string(n) for n in names(sub, true)], :notextual => true})
+      return editor_command(req, "hints", {:hints => filter_valid(names(sub, true)),
+                                           :notextual => true})
   end
 
   # Specific completions
@@ -52,7 +53,7 @@ handle("editor.julia.hints") do req, data
   end
 
   # Otherwise, suggest all accessible names
-  return editor_command(req, "hints", {:hints => [string(n) for n in accessible_names(mod)]})
+  return editor_command(req, "hints", {:hints => accessible_names(mod)})
 end
 
 # Package Completions
@@ -60,22 +61,24 @@ end
 packages(dir = Pkg.dir()) =
   @>> dir readdir filter(x->!ismatch(r"^\.|^METADATA$|^REQUIRE$", x))
 
+all_packages() = packages(Pkg.dir("METADATA"))
+
+required_packages() =
+  @>> Pkg.dir("REQUIRE") readall lines
+
+available_packages() = setdiff(all_packages(), required_packages())
+
 complete("using") do line, pos
   beginswith(line, "using ") &&
     {:hints => packages(), :notextual => true}
 end
 
-all_packages() = packages(Pkg.dir("METADATA"))
-
 complete("pkg-add") do line, pos
   beginswith(line, "Pkg.add(") &&
-    {:hints => all_packages(), :notextual => true}
+    {:hints => available_packages(), :notextual => true}
 end
-
-req_packages() =
-  @>> Pkg.dir("REQUIRE") readall lines
 
 complete("pkg-rm") do line, pos
   beginswith(line, "Pkg.rm(") &&
-    {:hints => req_packages(), :notextual => true}
+    {:hints => required_packages(), :notextual => true}
 end
