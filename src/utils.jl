@@ -20,11 +20,13 @@ get(::Nothing, args...) = get(Main, args...)
 function get_thing(mod::Module, name::Vector{Symbol})
   sub = mod
   for i = 1:length(name)
-    sub = get(sub, m, nothing)
+    sub = get(sub, name[i], nothing)
     !isa(sub, Module) && i < length(name) && return nothing
   end
   return sub
 end
+
+get_thing(::Nothing, names::String...) = get_thing(Main, names...)
 
 get_thing(mod, names::String...) =
   @as _ names join(_, ".") split(_, ".") map(symbol, _) get_thing(mod, _)
