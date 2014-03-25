@@ -1,6 +1,9 @@
 #jewel module Jewel
 
-const builtins = ["begin", "function", "type", "immutable", "let", "macro", "for", "while", "quote", "if", "else", "elseif", "try", "finally", "catch", "do", "end", "else", "elseif", "catch", "finally", "true", "false"]
+const builtins = ["begin", "function", "type", "immutable", "let", "macro",
+                  "for", "while", "quote", "if", "else", "elseif", "try",
+                  "finally", "catch", "do", "end", "else", "elseif", "catch",
+                  "finally", "true", "false"]
 
 module_usings(mod) = ccall(:jl_module_usings, Any, (Any,), mod)
 
@@ -9,8 +12,10 @@ accessible_names(mod = Main) =
    map(names, module_usings(mod))...,
    builtins] |> unique
 
-packages() =
-  @>> Pkg.dir() readdir filter(x->!ismatch(r"^\.|^METADATA$|^REQUIRE$", x))
+packages(dir = Pkg.dir()) =
+  @>> dir readdir filter(x->!ismatch(r"^\.|^METADATA$|^REQUIRE$", x))
+
+packages_all() = packages(Pkg.dir("METADATA"))
 
 function get_submodule(mod, names)
   sub = nothing
@@ -25,8 +30,11 @@ handle("editor.julia.hints") do req, data
   cur_line = lines(data["code"])[data["cursor"]["line"]]
   qualified = @> cur_line get_qualified_name(data["cursor"]["col"]) split(".") (x->map(symbol, x))
 
-  ismatch(r"^using ", cur_line) && # Straight after using
-    return editor_command(req, "hints", {:hints => packages()})
+  beginswith(cur_line, "using ") &&
+    return editor_command(req, "hints", {:hints => packages(), :notextual => true})
+
+  beginswith(cur_line, "Pkg.add(") &&
+    return editor_command(req, "hints", {:hints => packages(), :notextual => true})
 
   mod = get_module_name(lines(data["code"]), data["cursor"]["line"])
   mod = get(Main, mod, Main)
