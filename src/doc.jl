@@ -8,12 +8,13 @@ handle("editor.julia.doc") do req, data
   meth = get(data, "type", nothing) == "methods"
 
   meth && (mod = get_module_name(data);
-           thing = get_thing(mod, token))
+           f = get_thing(mod, token))
 
-  (!meth || thing != nothing) &&
+  (!meth || (isa(f, Function) && isgeneric(f))) &&
     editor_command(req, "doc", {:doc => meth?
-                                          sprint(writemime, "text/html", methods(thing)) :
+                                          sprint(writemime, "text/html", methods(f)) :
                                           help_str(token),
                                 :loc => {:line => data["cursor"]["line"]-1},
                                 :html => meth})
+  notify_done("")
 end

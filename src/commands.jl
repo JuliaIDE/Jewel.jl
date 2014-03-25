@@ -26,8 +26,8 @@ function ltprint(message; error = false)
            :error => error])
 end
 
-function notify_done()
-  command("done")
+function notify_done(msg = nothing)
+  command("done", {:msg => msg})
 end
 
 function notify(message; class = "")
