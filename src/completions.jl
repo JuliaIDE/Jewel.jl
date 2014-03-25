@@ -16,9 +16,9 @@ accessible_names(mod = Main) =
    builtins] |> unique |> filter_valid
 
 function get_submodule(mod, names)
-  sub = nothing
+  sub = mod
   for m in names
-    sub = get(mod, m, nothing)
+    sub = get(sub, m, nothing)
     sub == nothing && break
   end
   return sub
