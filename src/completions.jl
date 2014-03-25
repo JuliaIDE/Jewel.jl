@@ -7,10 +7,13 @@ const builtins = ["begin", "function", "type", "immutable", "let", "macro",
 
 module_usings(mod) = ccall(:jl_module_usings, Any, (Any,), mod)
 
+filter_valid(names) =
+  filter(x->!ismatch(r"[\W]", x), [string(x) for x in names])
+
 accessible_names(mod = Main) =
   [names(mod, true, true),
    map(names, module_usings(mod))...,
-   builtins] |> unique
+   builtins] |> unique |> filter_valid
 
 function get_submodule(mod, names)
   sub = nothing
