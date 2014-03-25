@@ -1,6 +1,12 @@
+#jewel module Jewel
+
 # -------------
 # Code handling
 # -------------
+
+# All this is a somewhat temporary solution,
+# it can be much improved once CodeMirror's
+# julia mode is fixed
 
 cursor_start(data) = data["start"]["line"], data["start"]["col"]
 cursor_end(data) = data["end"]["line"], data["end"]["col"]
@@ -82,3 +88,28 @@ get_code(data::Dict) =
   cursor_start(data) == cursor_end(data) ?
     get_code(data["code"], cursor(data)[1]) :
     get_code(data["code"], cursor_start(data), cursor_end(data))
+
+# Token parsing
+
+# Very basic
+function get_qualified_name(str::String, index)
+  next(s, i) = s[nextind(s, i)]
+  prev(s, i) = s[prevind(s, i)]
+  word_char(c; dot = true) = ismatch(dot ? r"[\.@a-zA-Z!]" : r"[@a-zA-Z!]", string(c))
+
+  index > endof(str) &&
+    (word_char(str[end]) ? index = endof(str) : return "")
+
+  i = index
+
+  while i > 1 && word_char(prev(str, i))
+    i = prevind(str, i)
+  end
+
+  j = word_char(str[index]) ? index : prevind(str, index)
+  while j < endof(str) && word_char(next(str, j), dot=false)
+    j = nextind(str, j)
+  end
+
+  return str[i:j]
+end
