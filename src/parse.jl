@@ -62,6 +62,11 @@ function get_module_name(code::Vector, line)
   return nothing
 end
 
+function file_module(code::String)
+  m = match(r"^\s*#jewel module (\w+)", code)
+  m == nothing ? nothing : symbol(m.captures[1])
+end
+
 function get_code(s, start, stop)
   i, j = index_of(s, start[1], start[2]), index_of(s, stop[1], stop[2]-1) # Selection is in front of cursor
   {:code   => s[i:j],
@@ -80,7 +85,7 @@ end
 function get_code(s::String)
   {:code   => s,
    :lines  => (1, length(lines(s))),
-   :module => nothing}
+   :module => file_module(s)}
 end
 
 get_code(data::Dict) =

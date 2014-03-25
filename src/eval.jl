@@ -1,9 +1,11 @@
+#jewel module Jewel
+
 # ----
 # Eval
 # ----
 
 # TODO: remove result display in eval.all
-#       support #jewel module in eval.all
+#       fix error for one-line fns
 
 handle("editor.eval.julia") do req, data
   info = get_code(data)
@@ -15,7 +17,7 @@ handle("editor.eval.julia") do req, data
   task_local_storage()[:SOURCE_PATH] = get(data, "path", nothing)
 
   try
-    if get(data, "all", false) || mod == Main
+    if mod == Main
       val = include_string(info[:code])
     else
       code = parse("begin\n"*info[:code]*"\nend")
