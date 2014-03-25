@@ -4,17 +4,18 @@
 # Eval
 # ----
 
-# TODO: remove result display in eval.all
-#       fix error for one-line fns
+# TODO: fix error for two-line fns
 
 handle("editor.eval.julia") do req, data
   info = get_code(data)
+  all = get(data, "all", false)
   # println(info[:code])
 
   val = nothing
   mod = get(Main, info[:module], Main)
 
-  task_local_storage()[:SOURCE_PATH] = get(data, "path", nothing)
+  path = get(data, "path", nothing)
+  task_local_storage()[:SOURCE_PATH] = path
 
   try
     if mod == Main
@@ -28,5 +29,11 @@ handle("editor.eval.julia") do req, data
     return
   end
 
-  display_result(req, val, info[:lines])
+  if all
+    notify_done()
+    file = path == nothing ? "file" : splitdir(path)[2]
+    notify("✓ Evaluated $file in module $mod")
+  else
+    display_result(req, val, info[:lines])
+  end
 end

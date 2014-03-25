@@ -30,12 +30,8 @@ function notify_done()
   command("done")
 end
 
-# notify_done()
-
 function notify(message; class = "")
   command("notify",
-          {:value => message,
+          {:msg => message,
            :class => class})
 end
-
-current_module()
