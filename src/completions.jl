@@ -17,6 +17,8 @@ accessible_names(mod = Main) =
 
 accessible_names(mod::String) = accessible_names(get_thing(mod))
 
+accessible_names(::Nothing) = accessible_names()
+
 const completions = Dict{String,Function}()
 
 complete(f, s) = completions[s] = f
@@ -27,7 +29,6 @@ handle("editor.julia.hints") do req, data
   pos = data["cursor"]["col"]
 
   mod = get_module_name(lines(data["code"]), data["cursor"]["line"])
-  mod == nothing && (mod = Main)
 
   qualified = @> cur_line get_qualified_name(pos) split(".")
 

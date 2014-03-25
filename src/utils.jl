@@ -17,22 +17,22 @@ get(m::Module, name, default) = default
 
 get(::Nothing, args...) = get(Main, args...)
 
-function get_thing(mod, name::Vector{Symbol})
+function get_thing(mod::Module, name::Vector{Symbol})
   sub = mod
-  for m in name
+  for i = 1:length(name)
     sub = get(sub, m, nothing)
-    sub == nothing && break
+    !isa(sub, Module) && i < length(name) && return nothing
   end
   return sub
 end
 
-get_thing(mod, name::String) =
-  @as _ name split(_, ".") map(symbol, _) get_thing(mod, _)
-
-get_thing(name::String) = get_thing(Main, name)
+get_thing(mod, names::String...) =
+  @as _ names join(_, ".") split(_, ".") map(symbol, _) get_thing(mod, _)
 
 get_thing(names::String...) =
   @as _ names join(_, ".") get_thing
+
+get_thing(::Nothing, args...) = get_thing(Main, args...)
 
 # Text
 
