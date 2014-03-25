@@ -8,21 +8,14 @@ const builtins = ["begin", "function", "type", "immutable", "let", "macro",
 module_usings(mod) = ccall(:jl_module_usings, Any, (Any,), mod)
 
 filter_valid(names) =
-  filter(x->!ismatch(r"[\W#]", x), [string(x) for x in names])
+  filter(x->!ismatch(r"#", x), [string(x) for x in names])
 
 accessible_names(mod = Main) =
   [names(mod, true, true),
    map(names, module_usings(mod))...,
    builtins] |> unique |> filter_valid
 
-function get_submodule(mod, names)
-  sub = mod
-  for m in names
-    sub = get(sub, m, nothing)
-    sub == nothing && break
-  end
-  return sub
-end
+accessible_names(mod::String) = accessible_names(get_thing(mod))
 
 const completions = Dict{String,Function}()
 
@@ -34,14 +27,14 @@ handle("editor.julia.hints") do req, data
   pos = data["cursor"]["col"]
 
   mod = get_module_name(lines(data["code"]), data["cursor"]["line"])
-  mod = get(Main, mod, Main)
+  mod == nothing && (mod = Main)
 
-  qualified = @> cur_line get_qualified_name(pos) split(".") (x->map(symbol, x))
+  qualified = @> cur_line get_qualified_name(pos) split(".")
 
   # Module.name completions
   if length(qualified) > 1
-    sub = get_submodule(mod, qualified[1:end-1])
-    sub != nothing &&
+    sub = get_thing(mod, qualified[1:end-1]...)
+    isa(sub, Module) &&
       return editor_command(req, "hints", {:hints => filter_valid(names(sub, true)),
                                            :notextual => true})
   end

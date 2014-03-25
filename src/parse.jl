@@ -28,8 +28,6 @@ function index_of(s, line, char)
   error("Position $line:$char not found in string.")
 end
 
-lines(s) = split(s, "\n")
-
 isblank(s) = ismatch(r"^\s*(#.*)?$", s)
 isend(s) = ismatch(r"^end", s)
 isstart(s) = !(ismatch(r"^\s", s) || isblank(s) || isend(s))
@@ -57,10 +55,16 @@ function get_module_name(code::Vector, line)
   while line > 1
     line -= 1
     m = match(r"^(?:#jewel )?module (\w+)", code[line])
-    m == nothing || return symbol(m.captures[1])
+    m == nothing || return m.captures[1]
   end
   return nothing
 end
+
+get_module_name(code::String, line) =
+  get_module_name(lines(code), line)
+
+get_module_name(data::Dict) =
+  get_module_name(data["code"], data["cursor"]["line"])
 
 function file_module(code::String)
   m = match(r"^\s*#jewel module (\w+)", code)
@@ -100,7 +104,7 @@ get_code(data::Dict) =
 function get_qualified_name(str::String, index)
   next(s, i) = s[nextind(s, i)]
   prev(s, i) = s[prevind(s, i)]
-  word_char(c; dot = true) = ismatch(dot ? r"[\.@a-zA-Z!]" : r"[@a-zA-Z!]", string(c))
+  word_char(c; dot = true) = ismatch(dot ? r"[\.@a-zA-Z_!]" : r"[@a-zA-Z!]", string(c))
 
   index > endof(str) &&
     (word_char(str[end]) ? index = endof(str) : return "")

@@ -1,13 +1,36 @@
 #jewel module Jewel
 
+# Modules
+
 Base.in(name::Symbol, m::Module) = isdefined(m, name)
 
-Base.get(m::Module, name) = m.(name)
+Base.get(m::Module, name::Symbol) = m.(name)
 
 Base.get(m::Module, name::Symbol, default) =
   name in m ? get(m, name) : default
 
 Base.get(m::Module, name, default) = default
+
+function get_thing(mod, name::Vector{Symbol})
+  sub = mod
+  for m in name
+    sub = get(sub, m, nothing)
+    sub == nothing && break
+  end
+  return sub
+end
+
+get_thing(mod, name::String) =
+  @as _ name split(_, ".") map(symbol, _) get_thing(mod, _)
+
+get_thing(name::String) = get_thing(Main, name)
+
+get_thing(names::String...) =
+  @as _ names join(_, ".") get_thing
+
+# Text
+
+lines(s) = split(s, "\n")
 
 function with_out_str(f::Function)
   orig_stdout = STDOUT
