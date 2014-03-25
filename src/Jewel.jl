@@ -17,7 +17,7 @@ function server(port, id)
     try
       handle_next()
     catch e
-      warn("Jewel: "sprint(show, e))
+      warn("Jewel: "sprint(showerror, e, catch_backtrace()))
     end
   end
 end

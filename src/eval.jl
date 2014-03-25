@@ -25,7 +25,7 @@ handle("editor.eval.julia") do req, data
       val = eval(mod, code)
     end
   catch e
-    show_exception(req, sprint(showerror, e), info[:lines])
+    show_exception(req, sprint(showerror, e, catch_backtrace()), info[:lines])
     return
   end
 
