@@ -26,7 +26,7 @@ handle("editor.julia.hints") do req, data
   cur_line |> isempty && return
   pos = data["cursor"]["col"]
 
-  mod = get_module_name(lines(data["code"]), data["cursor"]["line"])
+  mod = get_module_name(data)
 
   qualified = @> cur_line get_qualified_name(pos) split(".")
 

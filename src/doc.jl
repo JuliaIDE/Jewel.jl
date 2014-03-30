@@ -1,5 +1,6 @@
 #jewel module Jewel
 
+# Should split out editor.julia.methods
 handle("editor.julia.doc") do req, data
   line = lines(data["code"])[data["cursor"]["line"]]
   isempty(line) && return notify_done("")
@@ -10,11 +11,17 @@ handle("editor.julia.doc") do req, data
   meth && (mod = get_module_name(data);
            f = get_thing(mod, token))
 
-  (!meth || (isa(f, Function) && isgeneric(f))) &&
-    editor_command(req, "doc", {:doc => meth?
-                                          sprint(writemime, "text/html", methods(f)) :
-                                          help_str(token),
+  doc_str = nothing
+  meth && f != nothing &&
+    (doc_str = sprint(writemime, "text/html",
+                 typeof(f) in (Function, DataType) && isgeneric(f) ?
+                   methods(f) : eval(Main, :(methodswith($(typeof(f)), true)))))
+  !meth && (doc_str = help_str(token))
+
+  (doc_str != nothing &&
+    editor_command(req, "doc", {:doc => doc_str,
                                 :loc => {:line => data["cursor"]["line"]-1},
-                                :html => meth})
+                                :html => meth}))
   notify_done("")
 end
+
