@@ -1,8 +1,8 @@
 module Jewel
 
-# export server
-
 using JSON, Lazy
+
+export server, ltprint, popup, notify
 
 include("utils.jl")
 
