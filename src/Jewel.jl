@@ -12,7 +12,7 @@ include("utils.jl")
 
 function server(port, id)
   ltconnect(port, id)
-  println("connected")
+  print("connected")
   while isopen(conn)
     try
       handle_next()
