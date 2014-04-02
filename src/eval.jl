@@ -17,7 +17,8 @@ handle("editor.eval.julia") do req, data
   task_local_storage()[:SOURCE_PATH] = path
 
   try
-    code = parse("begin\n"*info[:code]*"\nend")
+    code = parse("begin; " * info[:code] * "; end")
+    code = Expr(:toplevel, code.args...)
     val = eval(mod, code)
   catch e
     show_exception(req, sprint(showerror, e, catch_backtrace()), info[:lines])
