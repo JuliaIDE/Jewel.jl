@@ -21,6 +21,7 @@ function index_of(s, line, char)
     if s[i] == '\n'
       lines += 1
       chars =  0
+      i == length(s) && return i-1
     else
       chars += 1
     end
