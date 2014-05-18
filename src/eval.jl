@@ -27,7 +27,8 @@ handle("editor.eval.julia") do req, data
   try
     val = include_string(mod, info[:code], path, info[:lines][1])
   catch e
-    show_exception(req, sprint(showerror, e, catch_backtrace()), info[:lines])
+    # The magic number here seems a bit dangerous
+    show_exception(req, sprint(showerror, e, catch_backtrace()[1:end-30]), info[:lines])
     return
   end
 
