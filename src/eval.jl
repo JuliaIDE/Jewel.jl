@@ -12,6 +12,20 @@ function Base.include_string(mod::Module, args...)
   eval(mod, :(include_string($(args...))))
 end
 
+function custom_showerror(io::IO, e::LoadError, bt)
+  custom_showerror_inner(io, e.error, bt)
+end
+
+function custom_showerror_inner(io::IO, e, bt)
+  showerror(io, e)
+  Base.show_backtrace(io, :include_string, bt, 1:typemax(Int))
+end
+
+function custom_showerror_inner(io::IO, e::LoadError, bt)
+  showerror(io, e.error)
+  print(io, "\nwhile loading $(e.file), in expression starting on line $(e.line)")
+end
+
 # Shoud be split into eval and eval.all
 handle("editor.eval.julia") do req, data
   info = get_code(data)
@@ -27,7 +41,7 @@ handle("editor.eval.julia") do req, data
   try
     val = include_string(mod, info[:code], path, info[:lines][1])
   catch e
-    show_exception(req, sprint(showerror, e, catch_backtrace()), info[:lines])
+    show_exception(req, sprint(custom_showerror, e, catch_backtrace()), info[:lines])
     return
   end
 
