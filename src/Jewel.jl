@@ -6,11 +6,14 @@ export server, ltprint, popup, notify
 
 include("utils.jl")
 
+exit_on_sigint(on) = ccall(:jl_exit_on_sigint, Void, (Cint,), on)
+
 # -------------------
 # Basic Communication
 # -------------------
 
 function server(port, id)
+  exit_on_sigint(false)
   ltconnect(port, id)
   print("connected")
   while isopen(conn)
