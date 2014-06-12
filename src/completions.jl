@@ -21,10 +21,19 @@ const completions = Dict{String,Function}()
 
 complete(f, s) = completions[s] = f
 
+const latex_completions = [{:completion => completion, :text => text}
+                           for (text, completion) in Base.REPLCompletions.latex_symbols]
+
 handle("editor.julia.hints") do req, data
   cur_line = lines(data["code"])[data["cursor"]["line"]]
   cur_line |> isempty && return
   pos = data["cursor"]["col"]
+
+  latex = get_latex_input(cur_line, pos)
+  if latex != ""
+    return editor_command(req, "hints", {:hints => latex_completions,
+                                         :notextual => true})
+  end
 
   mod = get_module_name(data)
 
