@@ -21,7 +21,11 @@ const completions = Dict{String,Function}()
 
 complete(f, s) = completions[s] = f
 
-const latex_completions = [{:completion => completion, :text => text}
+const tab_length = 8
+
+tabpad(s, ts) = s * "\t"^max((ts - length(s)÷tab_length), 1)
+
+const latex_completions = [{:completion => completion, :text => tabpad(text, 2) * completion}
                            for (text, completion) in Base.REPLCompletions.latex_symbols]
 
 handle("editor.julia.hints") do req, data
