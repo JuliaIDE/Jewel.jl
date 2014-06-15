@@ -134,7 +134,11 @@ type LightTable <: Display end
 import Base: display
 
 function display(d::LightTable, m::MIME"text/plain", x)
-  console(sprint(writemime, m, x))
+  console(stringmime(m, x))
+end
+
+function display(d::LightTable, m::MIME"text/html", x)
+  console(stringmime(m, x), html = true)
 end
 
 display(d::LightTable, x) = display(d, best_mime(x), x)
