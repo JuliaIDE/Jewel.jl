@@ -61,6 +61,12 @@ handle("editor.julia.hints") do req, data
   return editor_command(req, "hints", {:hints => accessible_names(mod)})
 end
 
+# Path completions
+
+path_completions(path, root = true) =
+  [path == "" ? readdir(pwd()) : [path*name for name in readdir(path)],
+   root ? path_completions("/", false) : []]
+
 # Package Completions
 
 packages(dir = Pkg.dir()) =
