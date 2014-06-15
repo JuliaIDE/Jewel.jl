@@ -5,7 +5,7 @@
 # ---------------
 
 handle("julia.set-global-client") do req, data
-  global const global_client = req[1]
+  global global_client = req[1]
 end
 
 function command(cmd, data = Dict())
@@ -34,4 +34,10 @@ function notify(message; class = "")
   command("notify",
           {:msg => message,
            :class => class})
+end
+
+function console(value::String; html = false)
+  command("console",
+          {"value" => value,
+           "html"  => html})
 end

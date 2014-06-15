@@ -16,6 +16,7 @@ function server(port, id)
   exit_on_sigint(false)
   ltconnect(port, id)
   print("connected")
+  pushdisplay(LightTable())
   while isopen(conn)
     try
       handle_next()
@@ -113,19 +114,29 @@ include("doc.jl")
 # ------------
 # Display Code
 # ------------
-
 function best_mime(val)
   for mime in ("text/html", "text/plain")
-    mimewritable(mime, val) && return mime
+    mimewritable(mime, val) && return MIME(symbol(mime))
   end
+  error("Cannot display $val.")
 end
 
 function display_result(req, val, bounds)
   mime = best_mime(val)
-  val == nothing       ? result(req, "✓", bounds) :
-  mime == "text/plain" ? result(req, sprint(writemime, "text/plain", val), bounds) :
-  mime == "text/html"  ? result(req, sprint(writemime, "text/html", val), bounds, html = true) :
+  is(val, nothing)     ? result(req, "✓", bounds) :
+  mime == MIME"text/plain"() ? result(req, sprint(writemime, mime, val), bounds) :
+  mime == MIME"text/html"()  ? result(req, sprint(writemime, mime, val), bounds, html = true) :
   error("Cannot display $val.")
 end
+
+type LightTable <: Display end
+
+import Base: display
+
+function display(d::LightTable, m::MIME"text/plain", x)
+  console(sprint(writemime, m, x))
+end
+
+display(d::LightTable, x) = display(d, best_mime(x), x)
 
 end # module
