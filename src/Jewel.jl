@@ -125,7 +125,7 @@ function display_result(req, val, bounds)
   mime = best_mime(val)
   is(val, nothing)     ? result(req, "✓", bounds) :
   mime == MIME"text/plain"() ? result(req, sprint(writemime, mime, val), bounds) :
-  mime == MIME"text/html"()  ? result(req, sprint(writemime, mime, val), bounds, html = true) :
+  mime == MIME"text/html"()  ? result(req, sprint(writemime, mime, val), bounds, html=true, under=true) :
   error("Cannot display $val.")
 end
 
