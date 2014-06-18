@@ -24,4 +24,3 @@ handle("editor.julia.doc") do req, data
                                 :html => meth}))
   notify_done("")
 end
-

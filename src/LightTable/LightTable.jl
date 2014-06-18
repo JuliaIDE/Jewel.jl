@@ -1,4 +1,4 @@
-module Jewel
+module LightTable
 
 using JSON, Lazy
 
@@ -16,7 +16,7 @@ function server(port, id)
   exit_on_sigint(false)
   ltconnect(port, id)
   print("connected")
-  pushdisplay(LightTable())
+  pushdisplay(LTConsole())
   while isopen(conn)
     try
       handle_next()
@@ -130,7 +130,7 @@ function display_result(req, val, bounds)
   error("Cannot display $val.")
 end
 
-type LightTable <: Display end
+type LTConsole <: Display end
 
 import Base: display, writemime
 
@@ -143,16 +143,16 @@ writemime(io::IO, ::MIME"text/html", h::HTML) = print(io, h.content)
 # Should use CSS for width
 html_image(img) = HTML("""<img width="500px" src="data:image/png;base64,$(stringmime("image/png", img))" />""")
 
-function display(d::LightTable, m::MIME"text/plain", x)
+function display(d::LTConsole, m::MIME"text/plain", x)
   console(stringmime(m, x))
 end
 
-function display(d::LightTable, m::MIME"text/html", x)
+function display(d::LTConsole, m::MIME"text/html", x)
   console(stringmime(m, x), html = true)
 end
 
-display(d::LightTable, m::MIME"image/png", x) = display(d, html_image(x))
+display(d::LTConsole, m::MIME"image/png", x) = display(d, html_image(x))
 
-display(d::LightTable, x) = display(d, best_mime(x), x)
+display(d::LTConsole, x) = display(d, best_mime(x), x)
 
-end # module
+end
