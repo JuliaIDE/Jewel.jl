@@ -50,6 +50,10 @@ handle("editor.julia.hints") do req, data
     isa(sub, Module) &&
       return editor_command(req, "hints", {:hints => filter_valid(names(sub, true)),
                                            :notextual => true})
+    # Experimental – complete fields of a type
+    # Should only work in global scope
+    return editor_command(req, "hints", {:hints => filter_valid(names(typeof(sub))),
+                                         :notextual => true})
   end
 
   # Specific completions
