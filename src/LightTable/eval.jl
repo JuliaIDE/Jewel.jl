@@ -32,7 +32,7 @@ handle("editor.eval.julia") do req, data
   all = get(data, "all", false)
 
   val = nothing
-  mod = to_module(info[:module])
+  mod = info[:module] != nothing ? info[:module] : Main
 
   path = get(data, "path", nothing)
   task_local_storage()[:SOURCE_PATH] = path

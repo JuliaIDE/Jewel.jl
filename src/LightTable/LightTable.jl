@@ -1,10 +1,10 @@
 module LightTable
 
-using JSON, Lazy
+using JSON, Lazy, Jewel
+
+import Jewel: lines, help_str
 
 export server, ltprint, popup, notify
-
-include("utils.jl")
 
 exit_on_sigint(on) = ccall(:jl_exit_on_sigint, Void, (Cint,), on)
 
@@ -22,6 +22,7 @@ function server(port, id)
       handle_next()
     catch e
       warn("Jewel: "sprint(showerror, e, catch_backtrace()))
+#       rethrow()
     end
   end
 end
