@@ -1,4 +1,4 @@
-#jewel module Jewel
+#jewel module LightTable
 
 const builtins = ["begin", "function", "type", "immutable", "let", "macro",
                   "for", "while", "quote", "if", "else", "elseif", "try",
@@ -40,12 +40,13 @@ handle("editor.julia.hints") do req, data
   end
 
   mod = get_module_name(data)
+  mod = get_thing(mod, Main)
 
-  qualified = @> cur_line get_qualified_name(pos) split(".")
+  qualified = @as _ cur_line get_qualified_name(_, pos) split(_, ".") map(symbol, _)
 
   # Module.name completions
   if length(qualified) > 1
-    sub = get_thing(mod, join(qualified[1:end-1], "."))
+    sub = get_thing(mod, qualified[1:end-1])
     isa(sub, Module) &&
       return editor_command(req, "hints", {:hints => filter_valid(names(sub, true)),
                                            :notextual => true})
