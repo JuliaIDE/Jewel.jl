@@ -1,4 +1,4 @@
-#jewel module Jewel
+#jewel module LightTable
 
 # Should split out editor.julia.methods
 handle("editor.julia.doc") do req, data
@@ -8,7 +8,7 @@ handle("editor.julia.doc") do req, data
 
   meth = get(data, "type", nothing) == "methods"
 
-  meth && (mod = get_module_name(data);
+  meth && (mod = get_thing(get_module_name(data), Main);
            f = get_thing(mod, token))
 
   doc_str = nothing
