@@ -35,8 +35,8 @@ handle("editor.julia.hints") do req, data
 
   latex = get_latex_input(cur_line, pos)
   if latex != ""
-    return editor_command(req, "hints", {:hints => latex_completions,
-                                         :notextual => true})
+    return raise(req, "editor.julia.hints.update", {:hints => latex_completions,
+                                                    :notextual => true})
   end
 
   mod = get_module_name(data)
@@ -48,22 +48,22 @@ handle("editor.julia.hints") do req, data
   if length(qualified) > 1
     sub = get_thing(mod, qualified[1:end-1])
     isa(sub, Module) &&
-      return editor_command(req, "hints", {:hints => filter_valid(names(sub, true)),
-                                           :notextual => true})
+      return raise(req, "editor.julia.hints.update", {:hints => filter_valid(names(sub, true)),
+                                                      :notextual => true})
     # Experimental – complete fields of a type
     # Should only work in global scope
-    return editor_command(req, "hints", {:hints => filter_valid(names(typeof(sub))),
-                                         :notextual => true})
+    return raise(req, "editor.julia.hints.update", {:hints => filter_valid(names(typeof(sub))),
+                                                    :notextual => true})
   end
 
   # Specific completions
   for (s, f) in completions
     ret = f(cur_line, pos)
-    ret in (nothing, false) || return editor_command(req, "hints", ret)
+    ret in (nothing, false) || return raise(req, "hints", ret)
   end
 
   # Otherwise, suggest all accessible names
-  return editor_command(req, "hints", {:hints => accessible_names(mod)})
+  return raise(req, "editor.julia.hints.update", {:hints => accessible_names(mod)})
 end
 
 # Path completions
