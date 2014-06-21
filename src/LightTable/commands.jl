@@ -10,7 +10,7 @@ end
 
 function command(cmd, data = Dict())
   data[:cmd] = cmd
-  send(global_client, "editor.eval.julia.command", data)
+  raise(global_client, "editor.eval.julia.command", data)
 end
 
 function popup(header, body="", buttons = [{:label => "Ok"}])

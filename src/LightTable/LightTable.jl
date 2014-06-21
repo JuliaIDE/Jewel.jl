@@ -49,8 +49,8 @@ function ltread()
   JSON.parse(conn)
 end
 
-send(client::Integer, command, info) = ltwrite([client, command, info])
-send(req, command, info) = send(req[1], command, info)
+raise(object::Integer, command, data) = ltwrite([object, command, data])
+raise(req, command, data) = raise(req[1], command, data)
 
 # ----------------
 # Command Handling
@@ -83,7 +83,7 @@ end
 
 function editor_command(client, cmd, data)
   data[:cmd] = cmd
-  send(client, "editor.eval.julia.editor-command", data)
+  raise(client, "editor.eval.julia.editor-command", data)
 end
 
 function result(req, value::String, bounds::(Int, Int); under = false, html = false)
