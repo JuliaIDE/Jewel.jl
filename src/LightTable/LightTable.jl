@@ -63,7 +63,7 @@ function handle_cmd(data)
   global last_data = data[3]
   cmd = data[2]
   if haskey(cmd_handlers, cmd)
-    cmd_handlers[cmd](data, data[3])
+    cmd_handlers[cmd](data[1], data[3])
   else
     error("Can't handle command $cmd")
   end
