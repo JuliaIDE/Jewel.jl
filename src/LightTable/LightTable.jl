@@ -159,6 +159,7 @@ display(d::LTConsole, x) = display(d, best_mime(x), x)
 
 handle("editor.julia.module.update") do editor, data
   mod = data["path"] == nothing ? "Main" : Jewel.file_module(data["path"])
+  mod == "" && (mod = "Main")
   if get_thing(mod) == nothing
     notify("This file's module, `$mod`, isn't loaded yet.", class = "error")
     mod = "Main"
