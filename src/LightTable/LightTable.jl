@@ -159,7 +159,8 @@ display(d::LTConsole, x) = display(d, best_mime(x), x)
 
 handle("editor.julia.module.update") do editor, data
   mod = data["path"] == nothing ? "Main" : Jewel.file_module(data["path"])
-  raise(editor, "editor.julia.module.update", mod == "" ? "Main" : mod)
+  mod = get_thing(mod) == nothing ? "Main" : mod
+  raise(editor, "editor.julia.module.update", mod)
 end
 
 end
