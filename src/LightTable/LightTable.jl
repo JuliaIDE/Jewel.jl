@@ -159,7 +159,10 @@ display(d::LTConsole, x) = display(d, best_mime(x), x)
 
 handle("editor.julia.module.update") do editor, data
   mod = data["path"] == nothing ? "Main" : Jewel.file_module(data["path"])
-  mod = get_thing(mod) == nothing ? "Main" : mod
+  if get_thing(mod) == nothing
+    notify("This file's module, `Markdown`, isn't loaded yet.", class = "error")
+    mod = "Main"
+  end
   raise(editor, "editor.julia.module.update", mod)
 end
 
