@@ -1,3 +1,11 @@
+function get_module(data::Dict)
+  mod = get_module_name(data)
+  mod == "" || return get_thing(mod)
+  mod = data["module"]
+  mod == nothing || return get_thing(mod)
+  return Main
+end
+
 # ----
 # Eval
 # ----

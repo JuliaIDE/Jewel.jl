@@ -6,7 +6,7 @@ handle("editor.julia.doc") do req, data
 
   meth = get(data, "type", nothing) == "methods"
 
-  meth && (mod = get_thing(get_module_name(data), Main);
+  meth && (mod = get_module(data);
            f = get_thing(mod, token))
 
   doc_str = nothing
@@ -17,8 +17,8 @@ handle("editor.julia.doc") do req, data
   !meth && (doc_str = help_str(token))
 
   (doc_str != nothing &&
-    editor_command(req, "doc", {:doc => doc_str,
-                                :loc => {:line => data["cursor"]["line"]-1},
-                                :html => meth}))
+     raise(req, "editor.julia.doc", {:doc => doc_str,
+                                     :loc => {:line => data["cursor"]["line"]-1},
+                                     :html => meth}))
   notify_done("")
 end
