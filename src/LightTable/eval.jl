@@ -1,4 +1,4 @@
-#jewel module Jewel
+#jewel module LightTable
 
 # ----
 # Eval
@@ -32,7 +32,10 @@ handle("editor.eval.julia") do req, data
   all = get(data, "all", false)
 
   val = nothing
-  mod = info[:module] != nothing ? info[:module] : Main
+  mod = info[:module] != nothing ? info[:module] :
+        data["module"] != nothing ? get_thing(data["module"]) : Main
+
+  mod == nothing && error("Module $(data["mod"]) not found")
 
   path = get(data, "path", nothing)
   task_local_storage()[:SOURCE_PATH] = path
