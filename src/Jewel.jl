@@ -4,6 +4,7 @@ using Lazy
 
 include("io.jl")
 include("LineNumberingReader.jl")
+include("parse.jl")
 include("eval.jl")
 include("module.jl")
 
