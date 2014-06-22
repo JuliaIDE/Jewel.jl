@@ -22,7 +22,6 @@ function server(port, id)
       handle_next()
     catch e
       warn("Jewel: "sprint(showerror, e, catch_backtrace()))
-#       rethrow()
     end
   end
 end
@@ -155,5 +154,12 @@ end
 display(d::LTConsole, m::MIME"image/png", x) = display(d, html_image(x))
 
 display(d::LTConsole, x) = display(d, best_mime(x), x)
+
+# Modules
+
+handle("editor.julia.module.update") do editor, data
+  mod = data["path"] == nothing ? "Main" : Jewel.file_module(data["path"])
+  raise(editor, "editor.julia.module.update", mod == "" ? "Main" : mod)
+end
 
 end
