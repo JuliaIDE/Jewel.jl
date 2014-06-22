@@ -1,5 +1,3 @@
-#jewel module Jewel
-
 export file_module
 
 # –––––––––––––––

@@ -1,5 +1,3 @@
-#jewel module LightTable
-
 # Should split out editor.julia.methods
 handle("editor.julia.doc") do req, data
   line = lines(data["code"])[data["cursor"]["line"]]

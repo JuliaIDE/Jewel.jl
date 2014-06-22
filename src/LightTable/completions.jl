@@ -1,5 +1,3 @@
-#jewel module LightTable
-
 const builtins = ["begin", "function", "type", "immutable", "let", "macro",
                   "for", "while", "quote", "if", "else", "elseif", "try",
                   "finally", "catch", "do", "end", "else", "elseif", "catch",
