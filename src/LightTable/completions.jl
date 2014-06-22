@@ -64,7 +64,7 @@ handle("editor.julia.hints") do req, data
   # Specific completions
   for (s, f) in completions
     ret = f(cur_line, pos)
-    ret in (nothing, false) || return raise(req, "hints", ret)
+    ret in (nothing, false) || return raise(req, "editor.julia.hints.update", ret)
   end
 
   # Otherwise, suggest all accessible names
