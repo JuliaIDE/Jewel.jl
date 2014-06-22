@@ -36,7 +36,8 @@ handle("editor.julia.hints") do req, data
   latex = get_latex_input(cur_line, pos)
   if latex != ""
     return raise(req, "editor.julia.hints.update", {:hints => latex_completions,
-                                                    :notextual => true})
+                                                    :notextual => true,
+                                                    :pattern => r"\\[a-zA-Z0-9^_]*".pattern})
   end
 
   mod = get_module_name(data)
