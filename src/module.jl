@@ -50,7 +50,7 @@ function includeline(file::String, included_file::String)
   i = 0
   open(file) do io
     for (index, line) in enumerate(eachline(io))
-      m = match(r"include\(\"([a-zA-Z_\.]*)\"\)", line)
+      m = match(r"include\(\"([a-zA-Z_\.\\/]*)\"\)", line)
       if m != nothing && normpath(joinpath(dirname(file), m.captures[1])) == included_file
         i = index
         break
@@ -81,10 +81,10 @@ function file_module(path::String)
     file, line = loc
     mod = Main.LightTable.get_module_name(readall(file), line) # TODO: use more robust parser
     super = file_module(file)
-    if super != ""
+    if super != "" && mod != ""
       return "$super.$mod"
     else
-      return mod
+      return super == "" ? mod : super
     end
   end
   return ""
