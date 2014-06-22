@@ -28,13 +28,17 @@ tabpad(s, ts) = s * "\t"^max((ts - length(s)÷tab_length), 1)
 const latex_completions = [{:completion => completion, :text => tabpad(text, 2) * completion}
                            for (text, completion) in Base.REPLCompletions.latex_symbols]
 
+function islatexinput(str::String, index)
+  pre = str[1:(index-1 <= endof(str) ? index-1 : end)]
+  ismatch(r"\\[a-zA-Z0-9_^]*$", pre)
+end
+
 handle("editor.julia.hints") do req, data
   cur_line = lines(data["code"])[data["cursor"]["line"]]
   cur_line |> isempty && return
   pos = data["cursor"]["col"]
 
-  latex = get_latex_input(cur_line, pos)
-  if latex != ""
+  if islatexinput(cur_line, pos)
     return raise(req, "editor.julia.hints.update", {:hints => latex_completions,
                                                     :notextual => true,
                                                     :pattern => r"\\[a-zA-Z0-9^_]*".pattern})

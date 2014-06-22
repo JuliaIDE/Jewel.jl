@@ -124,8 +124,3 @@ function get_qualified_name(str::String, index)
     return pre * post
   end
 end
-
-function get_latex_input(str::String, index)
-  pre = str[1:(index <= endof(str) ? index : end)]
-  match_or_empty(r"\\[a-zA-Z0-9_^]*$", pre)
-end
