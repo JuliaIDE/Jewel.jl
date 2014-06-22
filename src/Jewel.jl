@@ -11,4 +11,7 @@ server(args...) = Main.LightTable.server(args...)
 
 end # module
 
+# Work around for lack-of-a-decent-parser issue
+#jewel module Main
+
 include("LightTable/LightTable.jl")
