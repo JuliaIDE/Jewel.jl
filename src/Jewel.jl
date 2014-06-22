@@ -3,6 +3,7 @@ module Jewel
 using Lazy
 
 include("io.jl")
+include("LineNumberingReader.jl")
 include("eval.jl")
 include("module.jl")
 
