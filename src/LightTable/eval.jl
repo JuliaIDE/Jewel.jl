@@ -10,30 +10,16 @@ end
 # Eval
 # ----
 
-# function custom_showerror(io::IO, e::LoadError, bt)
-#   custom_showerror_inner(io, e.error, bt)
-# end
-
-# function custom_showerror_inner(io::IO, e, bt)
-#   showerror_html(io, e, bt, :include_string)
-# end
-
-# function custom_showerror_inner(io::IO, e::LoadError, bt)
-#   showerror_html(io, e.error, bt)
-#   print(io, "\nwhile loading $(e.file), in expression starting on line $(e.line)")
-# end
-
 function custom_showerror(io::IO, e::LoadError, bt)
   custom_showerror_inner(io, e.error, bt)
 end
 
 function custom_showerror_inner(io::IO, e, bt)
-  showerror(io, e)
-  Base.show_backtrace(io, :include_string, bt, 1:typemax(Int))
+  showerror_html(io, e, bt, :include_string)
 end
 
 function custom_showerror_inner(io::IO, e::LoadError, bt)
-  showerror(io, e.error, bt)
+  showerror_html(io, e.error, bt)
   print(io, "\nwhile loading $(e.file), in expression starting on line $(e.line)")
 end
 
