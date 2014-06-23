@@ -22,3 +22,13 @@ get_thing(mod::Module, name::String, default = nothing) =
 
 get_thing(name::String, default = nothing) =
   get_thing(Main, name, default)
+
+# include_string with line numbers
+
+function Base.include_string(s::String, fname::String, line::Integer)
+  include_string("\n"^(line-1)*s, fname)
+end
+
+function Base.include_string(mod::Module, args...)
+  eval(mod, :(include_string($(args...))))
+end

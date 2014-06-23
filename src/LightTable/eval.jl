@@ -10,14 +10,6 @@ end
 # Eval
 # ----
 
-function Base.include_string(s::String, fname::String, line::Integer)
-  include_string("\n"^(line-1)*s, fname)
-end
-
-function Base.include_string(mod::Module, args...)
-  eval(mod, :(include_string($(args...))))
-end
-
 # function custom_showerror(io::IO, e::LoadError, bt)
 #   custom_showerror_inner(io, e.error, bt)
 # end
