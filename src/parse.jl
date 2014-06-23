@@ -31,7 +31,7 @@ function starts_with{T<:String}(stream::IO, ss::Vector{T}; eat = true)
 end
 
 function starts_with(stream::IO, r::Regex; eat = true, padding = false)
-  @assert begins_with(r.pattern, "^")
+  @assert beginswith(r.pattern, "^")
   start = position(stream)
   padding && skip_whitespace(stream)
   line = chomp(readline(stream))
