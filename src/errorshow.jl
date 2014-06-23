@@ -1,11 +1,13 @@
 export showerror_html, showbacktrace_html
 
+url(file) =
+  isabspath(file) ?
+    "file://$file" :
+    "https://github.com/JuliaLang/julia/tree/$(Base.GIT_VERSION_INFO.commit)/base/$file#L$line"
+
 function to_link(path)
   file, line = match(r"^([a-zA-Z_\.\\/0-9:]+\.jl)(?::([0-9]*))?$", path).captures
-  """<a href="$(isabspath(path) ? "file://$file" :
-                "https://github.com/JuliaLang/julia/tree/$(Base.GIT_VERSION_INFO.commit)/base/$file#L$line")">
-     $path
-     </a>"""
+  """<a href="$(url(file))">$path</a>"""
 end
 
 function showerror_html(io, e)
