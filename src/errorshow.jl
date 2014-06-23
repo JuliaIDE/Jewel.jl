@@ -8,7 +8,11 @@ function to_link(path)
      </a>"""
 end
 
-showerror_html(io, e) = showerror(io, e)
+function showerror_html(io, e)
+  print(io, """<span class="julia error-description">""")
+  showerror(io, e)
+  print(io, """</span>""")
+end
 
 function showerror_html(io, e, bt, top_function = :eval_user_input)
   println(io, """<div class="julia error">""")
