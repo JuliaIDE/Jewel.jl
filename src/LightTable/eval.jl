@@ -18,6 +18,19 @@ function Base.include_string(mod::Module, args...)
   eval(mod, :(include_string($(args...))))
 end
 
+# function custom_showerror(io::IO, e::LoadError, bt)
+#   custom_showerror_inner(io, e.error, bt)
+# end
+
+# function custom_showerror_inner(io::IO, e, bt)
+#   showerror_html(io, e, bt, :include_string)
+# end
+
+# function custom_showerror_inner(io::IO, e::LoadError, bt)
+#   showerror_html(io, e.error, bt)
+#   print(io, "\nwhile loading $(e.file), in expression starting on line $(e.line)")
+# end
+
 function custom_showerror(io::IO, e::LoadError, bt)
   custom_showerror_inner(io, e.error, bt)
 end
@@ -28,7 +41,7 @@ function custom_showerror_inner(io::IO, e, bt)
 end
 
 function custom_showerror_inner(io::IO, e::LoadError, bt)
-  showerror(io, e.error)
+  showerror(io, e.error, bt)
   print(io, "\nwhile loading $(e.file), in expression starting on line $(e.line)")
 end
 

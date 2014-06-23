@@ -7,6 +7,7 @@ include("LineNumberingReader.jl")
 include("parse.jl")
 include("eval.jl")
 include("module.jl")
+include("errorshow.jl")
 
 # Shim for now
 server(args...) = Main.LightTable.server(args...)
