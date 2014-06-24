@@ -1,3 +1,5 @@
+# A pseudo-parser which extracts information from Julia code
+
 # stream utils
 
 include("LineNumberingReader.jl")
