@@ -2,9 +2,9 @@ include("scope.jl")
 
 lines(s) = split(s, "\n")
 
-tokens(s) = scope_pass(s)
-scopes(s, cursor) = scope_pass(s, collect = false, stop = true, target = cursor)
-scope(s, cursor) = scopes(s, cursor)[end]
+tokens(code) = scope_pass(code)
+scopes(code, cursor) = scope_pass(code, collect = false, stop = true, target = cursor)
+scope(code, cursor) = scopes(code, cursor)[end]
 
 # some utils, not essential any more
 
