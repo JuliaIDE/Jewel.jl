@@ -32,3 +32,8 @@ end
 function Base.include_string(mod::Module, args...)
   eval(mod, :(include_string($(args...))))
 end
+
+# Get the current module for a file/pos
+
+# function get_module(code::String, )
+# end

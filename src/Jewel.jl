@@ -2,9 +2,7 @@ module Jewel
 
 using Lazy
 
-include("io.jl")
-include("LineNumberingReader.jl")
-include("parse.jl")
+include("parse/parse.jl")
 include("eval.jl")
 include("module.jl")
 include("errorshow.jl")

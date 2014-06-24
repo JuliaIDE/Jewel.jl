@@ -1,5 +1,3 @@
-export file_module
-
 # –––––––––––––––
 # Some file utils
 # –––––––––––––––

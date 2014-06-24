@@ -1,5 +1,7 @@
 # stream utils
 
+include("LineNumberingReader.jl")
+
 import Base: peek
 
 const whitespace = " \t"
@@ -61,10 +63,6 @@ const operators_end = Regex("^\\s*"*operators.pattern*"\$")
 
 const macros = Regex("@(?:" * identifier.pattern * "\\.?)*")
 const macro_start = Regex("^"*macros.pattern)
-
-tokens(s) = scope_pass(s)
-scopes(s, cursor) = scope_pass(s, collect = false, stop = true, target = cursor)
-scope(s, cursor) = scopes(s, cursor)[end]
 
 scope_pass(s::String; kws...) = scope_pass(LineNumberingReader(s); kws...)
 
