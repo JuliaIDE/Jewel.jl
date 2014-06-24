@@ -11,7 +11,7 @@ code_module(code, pos) =
 
 # some utils, not essential any more
 
-function with_out_str(f::Function)
+function withoutstr(f::Function)
   orig_stdout = STDOUT
   rd, wr = redirect_stdout()
   f()
@@ -19,8 +19,8 @@ function with_out_str(f::Function)
   return readavailable(rd)
 end
 
-macro with_out_str(expr)
-  :(with_out_str(()->$expr)) |> esc
+macro withoutstr(expr)
+  :(withoutstr(()->$expr)) |> esc
 end
 
-help_str(x) = @with_out_str help(x)
+help_str(x) = @withoutstr help(x)
