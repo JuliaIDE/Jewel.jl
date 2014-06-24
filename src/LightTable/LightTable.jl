@@ -2,7 +2,7 @@ module LightTable
 
 using JSON, Lazy, Jewel
 
-import Jewel: lines, help_str
+import Jewel: lines, helpstr
 
 export server, ltprint, popup, notify
 

@@ -6,6 +6,7 @@ include("parse/parse.jl")
 include("eval.jl")
 include("module.jl")
 include("errorshow.jl")
+include("completions.jl")
 
 # Shim for now
 server(args...) = Main.LightTable.server(args...)

@@ -152,7 +152,6 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
           while starts_with(stream, ".")
             if (next = starts_with(stream, identifier_start)) != ""
               token *= ".$next"
-              pushtoken(token)
             end
           end
           starts_with(stream, "(") ?
