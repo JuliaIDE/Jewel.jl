@@ -5,6 +5,8 @@ using Base.Test, Jewel
 
 @test Jewel.file_module(Pkg.dir("Jewel", "src", "module.jl")) == "Jewel"
 
+Profile.clear()
+
 include("utils.jl")
 
 @test get_scope("""
@@ -15,9 +17,9 @@ include("utils.jl")
 
 @test get_scope("""
   let x = 1, y = 2
-    foo(x, |)
+    Pkg.add(x, |)
   end
-  """) == "foo"
+  """) == "Pkg.add"
 
 @test get_scope("""
   for i in 1:10

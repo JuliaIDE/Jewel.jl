@@ -67,15 +67,16 @@ const macro_start = Regex("^"*macros.pattern)
 scope_pass(s::String; kws...) = scope_pass(LineNumberingReader(s); kws...)
 
 # Pretty much just a port of the CodeMirror mode
-# I'm going to be upfront on this one: This is not my prettiest code.
+# TODO: Optimise the hell out of this. Right now it's ugly AND slow.
 function scope_pass(stream::LineNumberingReader; stop = false, collect = true, target = (0, 0))
   isa(target, Integer) && (target = (target, 1))
-  tokens = Set{UTF8String}()
+  collect && (tokens = Set{UTF8String}())
   scopes = Dict[{:type => :toplevel}]
 
   cur_scope() = scopes[end][:type]
   cur_scope(ts...) = cur_scope() in ts
   leaving_expr() = cur_scope() == :binary && pop!(scopes)
+  pushtoken(t) = collect && push!(tokens, t)
   function pushscope(scope)
     if !(stop && line(stream) > target[1] || (line(stream) == target[1] && column(stream) > target[2]))
       push!(scopes, scope)
@@ -127,7 +128,7 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
 
     elseif starts_with(stream, "@", eat = false)
       token = starts_with(stream, macro_start)
-      token != "" && push!(tokens, token)
+      token != "" && pushtoken(token)
 
     # Tokens
     elseif (token = starts_with(stream, identifier_start)) != ""
@@ -145,7 +146,13 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
                                              :name => token});
                                   keyword = true)
         if !keyword
-          push!(tokens, token)
+          pushtoken(token)
+          while starts_with(stream, ".")
+            if (next = starts_with(stream, identifier_start)) != ""
+              token *= ".$next"
+              pushtoken(token)
+            end
+          end
           starts_with(stream, "(") ?
             pushscope({:type => :call, :name => token}) :
             leaving_expr()
