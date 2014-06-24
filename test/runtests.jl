@@ -3,7 +3,7 @@ using Base.Test, Jewel
 @test getthing("Base.fft") == fft
 @test getthing(Base, [:fft]) == fft
 
-@test Jewel.file_module(Pkg.dir("Jewel", "src", "module.jl")) == "Jewel"
+@test Jewel.filemodule(Pkg.dir("Jewel", "src", "module.jl")) == "Jewel"
 
 Profile.clear()
 
@@ -57,7 +57,7 @@ include("utils.jl")
   end
   """) == "else"
 
-@test Jewel.code_module(to_cursor("""
+@test Jewel.codemodule(to_cursor("""
   module Foo
   module Bar|
   end

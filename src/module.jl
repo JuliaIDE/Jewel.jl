@@ -73,12 +73,12 @@ end
 Takes an absolute path to a file and returns a string
 representing the module it belongs to.
 """
-function file_module(path::String)
+function filemodule(path::String)
   loc = find_include(path)
   if loc != nothing
     file, line = loc
-    mod = code_module(readall(file), line)
-    super = file_module(file)
+    mod = codemodule(readall(file), line)
+    super = filemodule(file)
     if super != "" && mod != ""
       return "$super.$mod"
     else

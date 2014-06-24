@@ -65,7 +65,7 @@ get_module_name(code::String, line) =
 get_module_name(data::Dict) =
   get_module_name(data["code"], data["cursor"]["line"])
 
-function file_module(code::String)
+function filemodule(code::String)
   m = match(r"^\s*#jewel module (\w+)", code)
   m == nothing ? nothing : symbol(m.captures[1])
 end
@@ -88,7 +88,7 @@ end
 function get_code(s::String)
   {:code   => s,
    :lines  => (1, length(lines(s))),
-   :module => file_module(s)}
+   :module => filemodule(s)}
 end
 
 get_code(data::Dict) =
