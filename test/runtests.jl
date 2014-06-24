@@ -3,7 +3,7 @@ using Base.Test, Jewel
 @test get_thing("Base.fft") == fft
 @test get_thing(Base, [:fft]) == fft
 
-@test file_module(Pkg.dir("Jewel", "src", "module.jl")) == "Jewel"
+@test Jewel.file_module(Pkg.dir("Jewel", "src", "module.jl")) == "Jewel"
 
 include("utils.jl")
 
@@ -38,3 +38,10 @@ include("utils.jl")
     end
   end
   """) == "function"
+
+@test Jewel.code_module(to_cursor("""
+  module Foo
+  module Bar|
+  end
+  end
+  """)...) == "Foo.Bar"

@@ -6,6 +6,9 @@ tokens(code) = scope_pass(code)
 scopes(code, cursor) = scope_pass(code, collect = false, stop = true, target = cursor)
 scope(code, cursor) = scopes(code, cursor)[end]
 
+code_module(code, pos) =
+  @as _ code scopes(_, pos) filter(s->s[:type]==:module, _) map(s->s[:name], _) join(_, ".")
+
 # some utils, not essential any more
 
 function with_out_str(f::Function)
@@ -21,4 +24,3 @@ macro with_out_str(expr)
 end
 
 help_str(x) = @with_out_str help(x)
-
