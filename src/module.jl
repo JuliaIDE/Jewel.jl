@@ -77,7 +77,7 @@ function file_module(path::String)
   loc = find_include(path)
   if loc != nothing
     file, line = loc
-    mod = Main.LightTable.get_module_name(readall(file), line) # TODO: use more robust parser
+    mod = code_module(readall(file), line)
     super = file_module(file)
     if super != "" && mod != ""
       return "$super.$mod"

@@ -69,13 +69,13 @@ scope_pass(s::String; kws...) = scope_pass(LineNumberingReader(s); kws...)
 # Pretty much just a port of the CodeMirror mode
 # I'm going to be upfront on this one: This is not my prettiest code.
 function scope_pass(stream::LineNumberingReader; stop = false, collect = true, target = (0, 0))
-  isinteger(target) && target = (target, 1)
+  isa(target, Integer) && (target = (target, 1))
   tokens = Set{UTF8String}()
   scopes = Dict[{:type => :toplevel}]
 
   cur_scope() = scopes[end][:type]
   cur_scope(ts...) = cur_scope() in ts
-  leaving_expr() = if cur_scope() == :binary; pop!(scopes) end
+  leaving_expr() = cur_scope() == :binary && pop!(scopes)
   function pushscope(scope)
     if !(stop && line(stream) > target[1] || (line(stream) == target[1] && column(stream) > target[2]))
       push!(scopes, scope)
@@ -139,15 +139,17 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
         pushscope({:type => :module,
                    :name => starts_with(stream, identifier_start)})
       else
-        token in blockclosers && (pop!(scopes); @goto keyword)
+        keyword = false
+        token in blockclosers && (pop!(scopes); keyword = true)
         token in blockopeners && (pushscope({:type => :block,
                                              :name => token});
-                                  @goto keyword)
-        push!(tokens, token)
-        starts_with(stream, "(") ?
-          pushscope({:type => :call, :name => token}) :
-          leaving_expr()
-        @label keyword
+                                  keyword = true)
+        if !keyword
+          push!(tokens, token)
+          starts_with(stream, "(") ?
+            pushscope({:type => :call, :name => token}) :
+            leaving_expr()
+        end
       end
     else
       read(stream, Char)

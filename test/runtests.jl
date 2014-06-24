@@ -39,6 +39,22 @@ include("utils.jl")
   end
   """) == "function"
 
+@test get_scope("""
+  try
+    foo()
+  catch e
+    |bar()
+  end
+  """) == "catch"
+
+@test get_scope("""
+  if a
+    foo()
+  else
+    |bar()
+  end
+  """) == "else"
+
 @test Jewel.code_module(to_cursor("""
   module Foo
   module Bar|
