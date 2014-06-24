@@ -9,6 +9,9 @@ scope(code, cursor) = scopes(code, cursor)[end]
 codemodule(code, pos) =
   @as _ code scopes(_, pos) filter(s->s[:type]==:module, _) map(s->s[:name], _) join(_, ".")
 
+precursor(s::String, i) = s[1:(i-1 <= endof(s) ? i-1 : end)]
+postcursor(s::String, i) = s[i:end]
+
 # some utils, not essential any more
 
 function withoutstr(f::Function)
