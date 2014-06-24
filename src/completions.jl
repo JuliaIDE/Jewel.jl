@@ -17,7 +17,8 @@ function completions(code, cursor, mod = Main)
     if isa(thing, Module)
       {:kind => :identifier,
        :hints => (@> thing names(true) filtervalid),
-       :pattern => identifier}
+       :pattern => identifier,
+       :textual => false}
     end
   end
 end
@@ -34,8 +35,8 @@ filtervalid(names) = @>> names map(string) filter(x->!ismatch(r"#", x))
 
 accessible(mod::Module) =
   [names(mod, true, true),
-   map(names, module_usings(mod))...,
-   builtins] |> unique |> filter_valid
+   map(names, moduleusings(mod))...,
+   builtins] |> unique |> filtervalid
 
 function qualifier(s)
   m = match(Regex("((?:$(identifier.pattern)\\.)+)(?:$(identifier.pattern))?\$"), s)
