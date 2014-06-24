@@ -14,7 +14,7 @@ handle("editor.julia.doc") do req, data
     (doc_str = sprint(writemime, "text/html",
                  typeof(f) in (Function, DataType) && isgeneric(f) ?
                    methods(f) : eval(Main, :(methodswith($(typeof(f)), true)))))
-  !meth && (doc_str = help_str(token))
+  !meth && (doc_str = helpstr(token))
 
   (doc_str != nothing &&
      raise(req, "editor.julia.doc", {:doc => doc_str,

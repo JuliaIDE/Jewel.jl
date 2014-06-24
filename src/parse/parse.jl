@@ -23,4 +23,4 @@ macro withoutstr(expr)
   :(withoutstr(()->$expr)) |> esc
 end
 
-help_str(x) = @withoutstr help(x)
+helpstr(x) = @withoutstr help(x)
