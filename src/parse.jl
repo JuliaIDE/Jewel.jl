@@ -72,21 +72,26 @@ scope_pass(s::String; kws...) = scope_pass(LineNumberingReader(s); kws...)
 # I'm going to be upfront on this one: This is not my prettiest code.
 function scope_pass(stream::LineNumberingReader; stop = false, collect = true, target = (0, 0))
   tokens = Set{UTF8String}()
-  scopes = {{:type => :toplevel}}
+  scopes = Dict[{:type => :toplevel}]
 
   cur_scope() = scopes[end][:type]
   cur_scope(ts...) = cur_scope() in ts
   leaving_expr() = if cur_scope() == :binary; pop!(scopes) end
+  function pushscope(scope)
+    if !(stop && line(stream) > target[1] || (line(stream) == target[1] && column(stream) > target[2]))
+      push!(scopes, scope)
+    end
+  end
 
   while !eof(stream)
     # Comments
     cur_scope() == :comment && pop!(scopes)
     if starts_with(stream, "#=")
-      push!(scopes, {:type => :multiline_comment})
+      pushscope({:type => :multiline_comment})
 
     elseif starts_with(stream, "#")
       readline(stream)
-      push!(scopes, {:type => :comment})
+      pushscope({:type => :comment})
 
     elseif cur_scope() == :multiline_comment
       if starts_with(stream, "=#")
@@ -106,20 +111,20 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
       end
 
     elseif starts_with(stream, "\"\"\"")
-      push!(scopes, {:type => :multiline_string})
+      pushscope({:type => :multiline_string})
     elseif starts_with(stream, "\"")
-      push!(scopes, {:type => :string})
+      pushscope({:type => :string})
 
     # Brackets
     elseif starts_with(stream, ["(", "[", "{"], eat = false)
-      push!(scopes, {:type => :array, :name => read(stream, Char)})
+      pushscope({:type => :array, :name => read(stream, Char)})
 
     elseif cur_scope(:array, :call) && starts_with(stream, [")", "]", "}"])
       pop!(scopes)
 
     # Binary Operators
     elseif starts_with(stream, operators_end) != ""
-      push!(scopes, {:type => :binary})
+      pushscope({:type => :binary})
 
     elseif starts_with(stream, "@", eat = false)
       token = starts_with(stream, macro_start)
@@ -129,12 +134,12 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
     elseif (token = starts_with(stream, identifier_start)) != ""
       token == "end" && (pop!(scopes); leaving_expr(); @goto keyword)
       token in blockclosers && (pop!(scopes); @goto keyword)
-      token in blockopeners && (push!(scopes, {:type => :block,
-                                               :name => token});
+      token in blockopeners && (pushscope({:type => :block,
+                                           :name => token});
                                 @goto keyword)
       push!(tokens, token)
       starts_with(stream, "(") ?
-        push!(scopes, {:type => :call, :name => token}) :
+        pushscope({:type => :call, :name => token}) :
         leaving_expr()
       @label keyword
     else
@@ -145,15 +150,4 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
     end
   end
   return collect ? tokens : scopes
-end
-
-@time begin
-  scope("""
-  function
-    # hello
-    @foo
-    a♭b +
-    c + d(\"""hello world\"""
-    en
-  """, (2, 3))
 end

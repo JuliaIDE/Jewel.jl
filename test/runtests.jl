@@ -25,16 +25,16 @@ include("utils.jl")
   end
   """) == "foo"
 
-# @test get_scope("""
-#   try
-#     fo|o(, y)
-#   end
-#   """) == "try"
+@test get_scope("""
+  try
+    fo|o(, y)
+  end
+  """) == "try"
 
-# @test get_scope("""
-#   function foo()
-#     le|t x = 1, y = 2
-#       foo()
-#     end
-#   end
-#   """) == "function"
+@test get_scope("""
+  function foo()
+    le|t x = 1, y = 2
+      foo()
+    end
+  end
+  """) == "function"
