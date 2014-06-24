@@ -35,7 +35,7 @@ end
 
 # Get the current module for a file/pos
 
-function get_module(file::String, code::String, pos)
+function getmodule(file::String, code::String, pos)
   filem = file_module(file)
   codem = code_module(code, pos)
   modstr = (codem != "" && filem != "") ? "$codem.$filem" :
