@@ -1,8 +1,8 @@
-export get_thing
+export getthing
 
 # Qualified names → objects
 
-function get_thing(mod::Module, name::Vector{Symbol}, default = nothing)
+function getthing(mod::Module, name::Vector{Symbol}, default = nothing)
   thing = mod
   for sym in name
     if isdefined(thing, sym)
@@ -14,14 +14,14 @@ function get_thing(mod::Module, name::Vector{Symbol}, default = nothing)
   return thing
 end
 
-get_thing(name::Vector{Symbol}, default = nothing) =
-  get_thing(Main, name, default)
+getthing(name::Vector{Symbol}, default = nothing) =
+  getthing(Main, name, default)
 
-get_thing(mod::Module, name::String, default = nothing) =
-  @as _ name split(_, ".") map(symbol, _) get_thing(mod, _, default)
+getthing(mod::Module, name::String, default = nothing) =
+  @as _ name split(_, ".") map(symbol, _) getthing(mod, _, default)
 
-get_thing(name::String, default = nothing) =
-  get_thing(Main, name, default)
+getthing(name::String, default = nothing) =
+  getthing(Main, name, default)
 
 # include_string with line numbers
 
@@ -40,5 +40,5 @@ function get_module(file::String, code::String, pos)
   codem = code_module(code, pos)
   modstr = (codem != "" && filem != "") ? "$codem.$filem" :
            codem == "" ? filem : codem
-  get_thing(modstr, Main)
+  getthing(modstr, Main)
 end

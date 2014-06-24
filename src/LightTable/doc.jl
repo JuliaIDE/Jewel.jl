@@ -7,7 +7,7 @@ handle("editor.julia.doc") do req, data
   meth = get(data, "type", nothing) == "methods"
 
   meth && (mod = get_module(data);
-           f = get_thing(mod, token))
+           f = getthing(mod, token))
 
   doc_str = nothing
   meth && f != nothing &&

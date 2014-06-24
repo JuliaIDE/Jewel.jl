@@ -1,7 +1,7 @@
 using Base.Test, Jewel
 
-@test get_thing("Base.fft") == fft
-@test get_thing(Base, [:fft]) == fft
+@test getthing("Base.fft") == fft
+@test getthing(Base, [:fft]) == fft
 
 @test Jewel.file_module(Pkg.dir("Jewel", "src", "module.jl")) == "Jewel"
 

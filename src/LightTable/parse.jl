@@ -74,7 +74,7 @@ function get_code(s, start, stop)
   i, j = index_of(s, start[1], start[2]), index_of(s, stop[1], stop[2]-1) # Selection is in front of cursor
   {:code   => s[i:j],
    :lines  => (start[1], stop[1]),
-   :module => get_thing(get_module_name(lines(s), start[1]))}
+   :module => getthing(get_module_name(lines(s), start[1]))}
 end
 
 function get_code(s, line)
@@ -82,7 +82,7 @@ function get_code(s, line)
   i, j = walk_back(c, line), walk_forward(c, line)
   {:code   => join(c[i:j], "\n"),
    :lines  => (i, j),
-   :module => get_thing(get_module_name(c, i))}
+   :module => getthing(get_module_name(c, i))}
 end
 
 function get_code(s::String)

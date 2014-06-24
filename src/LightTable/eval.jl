@@ -1,8 +1,8 @@
 function get_module(data::Dict)
   mod = get_module_name(data)
-  mod == "" || return get_thing(mod)
+  mod == "" || return getthing(mod)
   mod = data["module"]
-  mod == nothing || return get_thing(mod)
+  mod == nothing || return getthing(mod)
   return Main
 end
 
@@ -30,7 +30,7 @@ handle("editor.eval.julia") do req, data
 
   val = nothing
   mod = info[:module] != nothing ? info[:module] :
-        data["module"] != nothing ? get_thing(data["module"]) : Main
+        data["module"] != nothing ? getthing(data["module"]) : Main
 
   mod == nothing && error("Module $(data["mod"]) not found")
 

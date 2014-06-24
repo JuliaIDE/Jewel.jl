@@ -13,7 +13,7 @@ accessible_names(mod::Module = Main) =
    map(names, module_usings(mod))...,
    builtins] |> unique |> filter_valid
 
-accessible_names(m) = accessible_names(get_thing(m, Main))
+accessible_names(m) = accessible_names(getthing(m, Main))
 
 const completions = Dict{String,Function}()
 
@@ -43,13 +43,13 @@ handle("editor.julia.hints") do req, data
   end
 
   mod = get_module_name(data)
-  mod = get_thing(mod, Main)
+  mod = getthing(mod, Main)
 
   qualified = @as _ cur_line get_qualified_name(_, pos) split(_, ".") map(symbol, _)
 
   # Module.name completions
   if length(qualified) > 1
-    sub = get_thing(mod, qualified[1:end-1])
+    sub = getthing(mod, qualified[1:end-1])
     isa(sub, Module) &&
       return raise(req, "editor.julia.hints.update", {:hints => filter_valid(names(sub, true)),
                                                       :notextual => true})
