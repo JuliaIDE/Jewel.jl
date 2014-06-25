@@ -23,6 +23,13 @@ include("utils.jl")
   """) == "Pkg.add"
 
 @test get_scope("""
+  let x = 1, y = 2
+    # |comment
+    Pkg.add(x, )
+  end
+  """) == {:type => :comment}
+
+@test get_scope("""
   for i in 1:10
     foo(|, y)
   end

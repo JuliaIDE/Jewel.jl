@@ -94,9 +94,9 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
       pushscope({:type => :multiline_comment})
 
     elseif starts_with(stream, "#")
+      pushscope({:type => :comment})
       readline(stream)
       skip(stream, -1)
-      pushscope({:type => :comment})
 
     elseif cur_scope() == :multiline_comment
       if starts_with(stream, "=#")
