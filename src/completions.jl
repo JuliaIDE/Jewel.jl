@@ -1,3 +1,5 @@
+export completions, allcompletions, complete
+
 const builtins = ["begin", "function", "type", "immutable", "let", "macro",
                   "for", "while", "quote", "if", "else", "elseif", "try",
                   "finally", "catch", "do", "end", "else", "elseif", "catch",
@@ -93,6 +95,26 @@ const fncompletions = Dict{Function,Function}()
 complete(completions::Function, f::Function) =
   fncompletions[f] = completions
 
+# Path completions
+
+path_completions(path, root = true) =
+  [path == "" ? readdir(pwd()) : [path*name for name in readdir(path)],
+   root ? path_completions("/", false) : []]
+
+# Package manager completions
+
+packages(dir = Pkg.dir()) =
+  @>> dir readdir filter(x->!ismatch(r"^\.|^METADATA$|^REQUIRE$", x))
+
+all_packages() = packages(Pkg.dir("METADATA"))
+
+required_packages() =
+  @>> Pkg.dir("REQUIRE") readall lines
+
+available_packages() = setdiff(all_packages(), required_packages())
+
 complete(Pkg.add) do
   :add
 end
+
+# What about completing `using`?
