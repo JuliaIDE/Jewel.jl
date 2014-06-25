@@ -17,6 +17,7 @@ include("utils.jl")
 
 @test get_scope("""
   let x = 1, y = 2
+    # comment
     Pkg.add(x, |)
   end
   """) == "Pkg.add"

@@ -4,15 +4,20 @@ function get_cursor(s)
     m = match(r".*?\|", l)
     m == nothing || return (i, length(m.match))
   end
+  error("no cursor found")
 end
 
 rem_cursor(s) = replace(s, r"\|", "")
 
 to_cursor(s) = (rem_cursor(s), get_cursor(s))
 
-function get_scope(s)
+function get_scopes(s)
   s, c = to_cursor(s)
-  sc = Jewel.scope(s, c)
+  Jewel.scopes(s, c)
+end
+
+function get_scope(s)
+  sc = get_scopes(s)[end]
   if sc[:type] in (:call, :block)
     sc[:name]
   else

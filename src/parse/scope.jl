@@ -47,7 +47,6 @@ function starts_with(stream::IO, r::Regex; eat = true, padding = false)
 end
 
 # the parser
-# ⚠ abandon hope all ye who enter here ⚠ #
 
 const identifier = r"(?![!0-9])[^,⊶⩃↣⩄≗≦⥥∓≨⊘×≥≫⥘⪚⋼⭂⥩⩾⥓∝⤞⇼⥍⭈∽⩁⥎⟑⟉∊∷≳≠⩧⫏⇿⬵≬⩗⥭⦾⥖→∪⫑⪀⩠⥢⤌⋝⊕⪪≈⪏≤⨤⪿⟰≼⫂≹⪣⋴≧∸≐⭋∨⨳⭁∺⋥⟽⊷⟱≡\]⤅⪃⩋⩊⋣⋎⥗⨮⬻⪻≢∙⪕⩓⫺∧⧻⨭⊵≓⥬⥛⋿⭃⫒⫕⩡⬺⧷⥄⊱⨰⊇≊⨬≖>⤕⬴⟿⋘⪇≯⋕⤏⟶⥚⥜⨼∥⪠⥝⬷∘⊴⪈⤔⪍⫄?⊰⪌⋩≟⋜⫀\)⫎⩦⋏⫷⊋⪱⤀⩯⤘⫌⩱≜↓⋗↑≛⋌⪢⫖⋖⩰⊏⊗⪡⋆⟈⤂⥆⧁⊻⤋⤖⩹↦⪳⩸⥅∔⨺⋐≶⟵\}⪙⪧⇺%≭≕⥔⥐⊆⋸⅋⋒≃≝≿⇴⩌⋠⇽≰/⫙⊠⪼⇔\[⟾+≩⊟⨶⥰⪉≎≷⩣⭄&⨲⧣⩭≑⊐⫗⩬⩢⬽⪯⪓⪒≪∈⪘⬿⫸⇹⊅⨥⨩≚⋹⊃⊂⪞⋺⨹⋦∦≮⋧⋛⋾⊁≉￪≔±\{⩒⩑⋫￩⥤⨽⬲⪄⫓⪑∩⧡⩮⪟⪛⋽⪦⇒≁⪝⬳⩝⩳≴⪰⟻≣⦼⩷⇶⋳⪺⪜⩕⥦∛≽⋑⤓⟼⩏≲⊲≸⟺⇷⟹∌⩪⊞⫉⨴⪤⪸⥡⩔⭊⪆⩲⫈⥒⫋⬶⫁⪵∗⫊⩖≙⩐≍⨫⦸⋚⊄⫐⥇⥣⪲↔⪷⨈⧺⭌⨨≄⤟^≵⋭⋊⟷⩅∤⫆⊽\(⬸⤒⪾⩞⥫⥙⋙⨱⬹<⊎⤊⤁⇏≺⋵⥏⩴⋶⪂⥕⪨⋇⊊⫅⊖⪶⋬≻⋍⋓⩍≱⇻⩵↮⋋⪖⨢↠⤎⊈⊮⋪⊓⪔\⨧⩜⥞⫇⪫⬾⋷⤃⧥⫃⨷⥈⤄⩼⋤⥠⬼⤠⩛≂↚⥧|∍⨻⊙⨪∋⪋⋲⤍.\"⊑⩟⇎*:￬⭉⤉⥯⬱⇾⋡÷⥟⥋∉⬰≞≾⫍⨵⩚⩫≅⩿⪎⪴⊒⪽≀⫹⤇⋅⩀⊡⤆∜⤈⨣↛⊩⫔⦷⩺≋\-≇⋨⊜~⫛≌⥉√⋢⊛⤗⋟⧶≏⊔⪗⋞ ⩎⊳∾⥨￫⩘⥌⪹⪩⩻=⨸⪊⨇⧤⇸⊉⥑⥮⭀⧀⊚⊬≒\$⊀⋻⦿⭇⥊≆←⤐≘⋉⊼⥪⧴⪅⩽⪬⪁⋄⤑⨦⩶⇵⪥⊍⫘⩂⪐⟒⪭⪮⤝∻\"\n]+"
 const identifier_start = Regex("^" * identifier.pattern)
@@ -69,7 +68,7 @@ const macro_start = Regex("^"*macros.pattern)
 scope_pass(s::String; kws...) = scope_pass(LineNumberingReader(s); kws...)
 
 # Pretty much just a port of the CodeMirror mode
-# TODO: Optimise the hell out of this. Right now it's ugly AND slow.
+# I'm going to be upfront on this one: this is not my prettiest code.
 function scope_pass(stream::LineNumberingReader; stop = false, collect = true, target = (0, 0))
   isa(target, Integer) && (target = (target, 1))
   collect && (tokens = Set{UTF8String}())
@@ -87,12 +86,15 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
 
   while !eof(stream)
     # Comments
-    cur_scope() == :comment && pop!(scopes)
-    if starts_with(stream, "#=")
+    if starts_with(stream, "\n")
+      cur_scope() in (:comment, :using) && pop!(scopes)
+
+    elseif starts_with(stream, "#=")
       pushscope({:type => :multiline_comment})
 
     elseif starts_with(stream, "#")
       readline(stream)
+      skip(stream, -1)
       pushscope({:type => :comment})
 
     elseif cur_scope() == :multiline_comment
@@ -141,6 +143,8 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
         skip_whitespace(stream, newlines = false)
         pushscope({:type => :module,
                    :name => starts_with(stream, identifier_start)})
+      elseif token == "using"
+        pushscope({:type => :using})
       else
         keyword = false
         token in blockclosers && (pop!(scopes); keyword = true)

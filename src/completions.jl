@@ -13,20 +13,33 @@ identifier_completions(hints; textual = true) =
 identifier_completions(; textual = true) =
   identifier_completions(UTF8String[], textual)
 
+function lastcall(scopes)
+  for i = length(scopes):-1:1
+    scopes[i][:type] == :call && return scopes[i][:name]
+  end
+end
+
 """
 Takes a block of code and a cursor and returns autocomplete data.
 """
-function completions(code, cursor, mod = Main)
+function completions(code, cursor; mod = Main, file = nothing)
   line = precursor(lines(code)[cursor[1]], cursor[2])
-  sc = scope(code, cursor)
+  scs = scopes(code, cursor)
+  sc = scs[end]
+  call = lastcall(scs)
+
   if islatexinput(line)
     {:hints => latex_completions,
      :pattern => r"\\[a-zA-Z0-9^_]*",
      :textual => false}
-  elseif sc[:type] == :call
-    f = getthing(sc[:name], mod)
+  elseif sc[:type] == :using
+    pkg_completions(packages())
+  elseif call != nothing
+    f = getthing(call, mod)
     haskey(fncompletions, f) || @goto default
-    fncompletions[f]()
+    fncompletions[f]({:mod => mod,
+                      :file => file,
+                      :input => precursor(line, cursor[2])})
   elseif sc[:type] in (:string, :multiline_string, :comment, :multiline_comment)
     nothing
   elseif (q = qualifier(line)) != nothing
@@ -47,9 +60,9 @@ end
 """
 Takes a file of code and a cursor and returns autocomplete data.
 """
-function allcompletions(code, cursor, mod = Main)
+function allcompletions(code, cursor; mod = Main, file = nothing)
   block, _, cursor = getblockcursor(code, cursor)
-  cs = completions(block, cursor, mod) # need to take into account codemodule
+  cs = completions(block, cursor, mod = mod, file = file) # need to take into account codemodule
   cs == nothing && return nothing
   if !haskey(cs, :textual) || cs[:textual]
     cs[:hints] = [cs[:hints]..., tokens(code)...]
@@ -96,11 +109,23 @@ const fncompletions = Dict{Function,Function}()
 complete(completions::Function, f::Function) =
   fncompletions[f] = completions
 
-# Path completions
+# Include completions
+# TODO: cd completions
 
-path_completions(path, root = true) =
-  [path == "" ? readdir(pwd()) : [path*name for name in readdir(path)],
-   root ? path_completions("/", false) : []]
+const pathpattern = r"[a-zA-Z0-9_\.\\/]*"
+
+includepaths(path) =
+  @>> dirsnearby(path, ascend = 0) jl_files map(p->p[length(path)+2:end])
+
+includepaths(Pkg.dir("Jewel", "src"))
+
+complete(include) do info
+  file = info[:file]
+  dir = file == nothing ? pwd() : dirname(file)
+  {:hints => includepaths(dir),
+   :pattern => pathpattern,
+   :textual => false}
+end
 
 # Package manager completions
 
@@ -112,10 +137,23 @@ all_packages() = packages(Pkg.dir("METADATA"))
 required_packages() =
   @>> Pkg.dir("REQUIRE") readall lines
 
-available_packages() = setdiff(all_packages(), required_packages())
+unused_packages() = setdiff(all_packages(), required_packages())
 
-complete(Pkg.add) do
-  :add
+pkg_completions(hints) =
+  {:hints => hints,
+   :pattern => r"[a-zA-Z0-9]*",
+   :textual => false}
+
+for f in (Pkg.add, Pkg.clone)
+  complete(f) do _
+    pkg_completions(unused_packages())
+  end
+end
+
+for f in (Pkg.checkout, Pkg.free, Pkg.rm, Pkg.publish, Pkg.build, Pkg.test)
+  complete(f) do _
+    pkg_completions(packages())
+  end
 end
 
 # What about completing `using`?
