@@ -20,6 +20,27 @@ end
 
 getblockcursor(code, cursor) = getblockcursor(code, cursor[1], cursor)
 
+function matchorempty(args...)
+  result = match(args...)
+  result == nothing ? "" : result.match
+end
+
+function getqualifiedname(str::String, index)
+  pre = precursor(str, index)
+  post = postcursor(str, index)
+
+  pre = matchorempty(Regex("(?:$identifier\\.)*(?:$identifier)\\.?\$"), pre)
+
+  beginning = pre == "" || last(pre) == '.'
+  post = matchorempty(Regex("^$(beginning ? identifier : identifier_inner)"), post)
+
+  if beginning && post == ""
+    return pre
+  else
+    return pre * post
+  end
+end
+
 # some utils, not essential any more
 
 function withoutstr(f::Function)
