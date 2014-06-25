@@ -18,11 +18,16 @@ Takes a block of code and a cursor and returns autocomplete data.
 """
 function completions(code, cursor, mod = Main)
   line = precursor(lines(code)[cursor[1]], cursor[2])
+  sc = scope(code, cursor)
   if islatexinput(line)
     {:hints => latex_completions,
      :pattern => r"\\[a-zA-Z0-9^_]*",
      :textual => false}
-  elseif (sc = scope(code, cursor))[:type] in (:string, :multiline_string, :comment, :multiline_comment)
+  elseif sc[:type] == :call
+    f = getthing(sc[:name], mod)
+    haskey(fncompletions, f) || @goto default
+    fncompletions[f]()
+  elseif sc[:type] in (:string, :multiline_string, :comment, :multiline_comment)
     nothing
   elseif (q = qualifier(line)) != nothing
     thing = getthing(mod, q, nothing)
@@ -33,10 +38,6 @@ function completions(code, cursor, mod = Main)
       identifier_completions((@> thing names filtervalid),
                               textual = false)
     end
-  elseif sc[:type] == :call
-    f = getthing(sc[:name], mod)
-    haskey(fncompletions, f) || @goto default
-    fncompletions[f]()
   else
     @label default
     identifier_completions(accessible(mod))
@@ -51,7 +52,7 @@ function allcompletions(code, cursor, mod = Main)
   cs = completions(block, cursor, mod) # need to take into account codemodule
   cs == nothing && return nothing
   if !haskey(cs, :textual) || cs[:textual]
-    cs[:hints] = [cs[:hints], tokens(code)]
+    cs[:hints] = [cs[:hints]..., tokens(code)...]
   end
   return cs
 end
