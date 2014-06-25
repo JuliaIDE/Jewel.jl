@@ -25,14 +25,14 @@ function matchorempty(args...)
   result == nothing ? "" : result.match
 end
 
-function getqualifiedname(str::String, index)
+function getqualifiedname(str::String, index::Integer)
   pre = precursor(str, index)
   post = postcursor(str, index)
 
-  pre = matchorempty(Regex("(?:$identifier\\.)*(?:$identifier)\\.?\$"), pre)
+  pre = matchorempty(Regex("(?:$(identifier.pattern)\\.)*(?:$(identifier.pattern))\\.?\$"), pre)
 
   beginning = pre == "" || last(pre) == '.'
-  post = matchorempty(Regex("^$(beginning ? identifier : identifier_inner)"), post)
+  post = matchorempty(Regex("^$(beginning ? identifier.pattern : identifier_inner.pattern*"*")"), post)
 
   if beginning && post == ""
     return pre
@@ -40,6 +40,9 @@ function getqualifiedname(str::String, index)
     return pre * post
   end
 end
+
+# could be more efficient
+getqualifiedname(str::String, cursor) = getqualifiedname(lines(str)[cursor[1]], cursor[2])
 
 # some utils, not essential any more
 

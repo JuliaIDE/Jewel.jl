@@ -1,24 +1,20 @@
 # Should split out editor.julia.methods
-handle("editor.julia.doc") do req, data
-  line = lines(data["code"])[data["cursor"]["line"]]
-  isempty(line) && return notify_done("")
-  token = get_qualified_name(line, data["cursor"]["col"])
+handle("editor.julia.doc") do editor, data
+  code = data["code"]
+  cursor = data["cursor"]["line"], data["cursor"]["col"]
+  mod = getthing(data["module"])
 
-  meth = get(data, "type", nothing) == "methods"
-
-  meth && (mod = get_module(data);
-           f = getthing(mod, token))
-
-  doc_str = nothing
-  meth && f != nothing &&
-    (doc_str = sprint(writemime, "text/html",
-                 typeof(f) in (Function, DataType) && isgeneric(f) ?
-                   methods(f) : eval(Main, :(methodswith($(typeof(f)), true)))))
-  !meth && (doc_str = helpstr(token))
-
-  (doc_str != nothing &&
-     raise(req, "editor.julia.doc", {:doc => doc_str,
-                                     :loc => {:line => data["cursor"]["line"]-1},
-                                     :html => meth}))
+  if get(data, "type", nothing) == "methods"
+    meths = Jewel.methodsorwith(code, cursor, mod)
+    meths != nothing &&
+      raise(editor, "editor.julia.doc", {:doc => stringmime("text/html", meths),
+                                         :loc => {:line => cursor[1]-1},
+                                         :html => true})
+  else
+    help = Jewel.doc(code, cursor, mod)
+    help != nothing &&
+      raise(editor, "editor.julia.doc", {:doc => help,
+                                         :loc => {:line => cursor[1]-1}})
+  end
   notify_done("")
 end
