@@ -3,33 +3,61 @@ const builtins = ["begin", "function", "type", "immutable", "let", "macro",
                   "finally", "catch", "do", "end", "else", "elseif", "catch",
                   "finally", "true", "false", "using"]
 
+identifier_completions(hints; textual = true) =
+  {:hints => hints,
+   :pattern => identifier,
+   :textual => textual}
+
+identifier_completions(; textual = true) =
+  identifier_completions(UTF8String[], textual)
+
+"""
+Takes a block of code and a cursor and returns autocomplete data.
+"""
 function completions(code, cursor, mod = Main)
   line = precursor(lines(code)[cursor[1]], cursor[2])
-  # latex
   if islatexinput(line)
-    {:kind => :latex,
-     :hints => latex_completions,
-     :pattern => r"\\[a-zA-Z0-9^_]*"}
+    {:hints => latex_completions,
+     :pattern => r"\\[a-zA-Z0-9^_]*",
+     :textual => false}
   elseif (sc = scope(code, cursor))[:type] in (:string, :multiline_string, :comment, :multiline_comment)
     nothing
   elseif (q = qualifier(line)) != nothing
     thing = getthing(mod, q, nothing)
     if isa(thing, Module)
-      {:kind => :identifier,
-       :hints => (@> thing names(true) filtervalid),
-       :pattern => identifier,
-       :textual => false}
+      identifier_completions((@> thing names(true) filtervalid),
+                              textual = false)
+    elseif thing != nothing && sc[:type] == :toplevel
+      identifier_completions((@> thing names filtervalid),
+                              textual = false)
     end
+  elseif sc[:type] == :call
+    f = getthing(sc[:name], mod)
+    haskey(fncompletions, f) || @goto default
+    fncompletions[f]()
+  else
+    @label default
+    identifier_completions(accessible(mod))
   end
+end
+
+"""
+Takes a file of code and a cursor and returns autocomplete data.
+"""
+function allcompletions(code, cursor, mod = Main)
+  block, _, cursor = getblockcursor(code, cursor)
+  cs = completions(block, cursor, mod) # need to take into account codemodule
+  cs == nothing && return nothing
+  if !haskey(cs, :textual) || cs[:textual]
+    cs[:hints] = [cs[:hints], tokens(code)]
+  end
+  return cs
 end
 
 # Module completions
 # ––––––––––––––––––
 
 moduleusings(mod) = ccall(:jl_module_usings, Any, (Any,), mod)
-
-# filtervalid(names) =
-#   filter(x->!ismatch(r"#", x), [string(x) for x in names])
 
 filtervalid(names) = @>> names map(string) filter(x->!ismatch(r"#", x))
 
@@ -56,3 +84,15 @@ const latex_completions =
 
 islatexinput(str::String) =
   ismatch(r"\\[a-zA-Z0-9_^]*$", str)
+
+# Custom completions
+# ––––––––––––––––––
+
+const fncompletions = Dict{Function,Function}()
+
+complete(completions::Function, f::Function) =
+  fncompletions[f] = completions
+
+complete(Pkg.add) do
+  :add
+end

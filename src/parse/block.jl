@@ -7,7 +7,7 @@ isend(s) = ismatch(r"^end", s)
 isstart(s) = !(ismatch(r"^\s", s) || isblank(s) || isend(s))
 
 # Find to the start of this block.
-function walk_back(code::Vector, line)
+function walkback(code::Vector, line)
   while line > 1 && !isstart(code[line])
     line -= 1
   end
@@ -16,7 +16,7 @@ end
 
 # Scan to the start of the next block, find the end of
 # this one.
-function walk_forward(code::Vector, line)
+function walkforward(code::Vector, line)
   l = line
   while l < length(code) && (!isstart(code[l]) || l == line)
     l += 1
@@ -25,16 +25,16 @@ function walk_forward(code::Vector, line)
   return line
 end
 
-function get_block(s, line)
+function getblock(s, line)
   c = lines(s)
-  i, j = walk_back(c, line), walk_forward(c, line)
+  i, j = walkback(c, line), walkforward(c, line)
   join(c[i:j], "\n"), (i, j)
 end
 
 # Extract a selection
 
 # TODO: rewrite to use LineNumberingReader
-function index_of(s, line, char)
+function indexof(s, line, char)
   lines = 1
   chars = 0
   for i = 1:endof(s)
@@ -51,7 +51,7 @@ function index_of(s, line, char)
   error("Position $line:$char not found in string.")
 end
 
-function get_code(s, start, stop)
-  i, j = index_of(s, start[1], start[2]), index_of(s, stop[1], stop[2]-1) # Selection is in front of cursor
+function getcode(s, start, stop)
+  i, j = indexof(s, start[1], start[2]), indexof(s, stop[1], stop[2]-1) # Selection is in front of cursor
   s[i:j], (start[1], stop[1])
 end

@@ -1,4 +1,5 @@
 include("scope.jl")
+include("block.jl")
 
 lines(s) = split(s, "\n")
 
@@ -11,6 +12,13 @@ codemodule(code, pos) =
 
 precursor(s::String, i) = s[1:(i-1 <= endof(s) ? i-1 : end)]
 postcursor(s::String, i) = s[i:end]
+
+function getblockcursor(code, line, cursor)
+  code, bounds = getblock(code, line)
+  code, bounds, (cursor[1]-bounds[1]+1, cursor[2])
+end
+
+getblockcursor(code, cursor) = getblockcursor(code, cursor[1], cursor)
 
 # some utils, not essential any more
 
