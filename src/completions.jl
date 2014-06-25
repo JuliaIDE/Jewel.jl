@@ -65,7 +65,11 @@ function allcompletions(code, cursor; mod = Main, file = nothing)
   cs = completions(block, cursor, mod = mod, file = file) # need to take into account codemodule
   cs == nothing && return nothing
   if !haskey(cs, :textual) || cs[:textual]
-    cs[:hints] = [cs[:hints]..., tokens(code)...]
+    ts = tokens(code)
+    hints = cs[:hints]
+    for t in ts
+      push!(hints, t)
+    end
   end
   return cs
 end

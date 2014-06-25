@@ -61,14 +61,10 @@ function handle_cmd(data)
   data == nothing && return
   global last_data = data[3]
   cmd = data[2]
-  e = @elapsed if haskey(cmd_handlers, cmd)
+  if haskey(cmd_handlers, cmd)
     cmd_handlers[cmd](data[1], data[3])
   else
     warn("Can't handle command $cmd")
-  end
-  if e > 1
-    println(data)
-    error("Command $cmd took too long, $(e)s.")
   end
 end
 
