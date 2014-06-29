@@ -55,6 +55,7 @@ function completions(code, cursor; mod = Main, file = nothing)
                                       textual = false)
       end
     end
+    break
   end
   identifier_completions(accessible(mod))
 end
