@@ -30,33 +30,33 @@ function completions(code, cursor; mod = Main, file = nothing)
   sc = scs[end]
   call = lastcall(scs)
 
-  if islatexinput(line)
-    {:hints => latex_completions,
-     :pattern => r"\\[a-zA-Z0-9^_]*",
-     :textual => false}
-  elseif sc[:type] == :using
-    pkg_completions(packages())
-  elseif call != nothing
-    f = getthing(call, mod)
-    haskey(fncompletions, f) || @goto default
-    fncompletions[f]({:mod => mod,
-                      :file => file,
-                      :input => precursor(line, cursor[2])})
-  elseif sc[:type] in (:string, :multiline_string, :comment, :multiline_comment)
-    nothing
-  elseif (q = qualifier(line)) != nothing
-    thing = getthing(mod, q, nothing)
-    if isa(thing, Module)
-      identifier_completions((@> thing names(true) filtervalid),
-                              textual = false)
-    elseif thing != nothing && sc[:type] == :toplevel
-      identifier_completions((@> thing names filtervalid),
-                              textual = false)
+  while true # TODO: use gotos once they've been around for a while
+    if islatexinput(line)
+      return {:hints => latex_completions,
+              :pattern => r"\\[a-zA-Z0-9^_]*",
+              :textual => false}
+    elseif sc[:type] == :using
+      return pkg_completions(packages())
+    elseif call != nothing
+      f = getthing(call, mod)
+      haskey(fncompletions, f) || break
+      return fncompletions[f]({:mod => mod,
+                               :file => file,
+                               :input => precursor(line, cursor[2])})
+    elseif sc[:type] in (:string, :multiline_string, :comment, :multiline_comment)
+      return nothing
+    elseif (q = qualifier(line)) != nothing
+      thing = getthing(mod, q, nothing)
+      if isa(thing, Module)
+        return identifier_completions((@> thing names(true) filtervalid),
+                                      textual = false)
+      elseif thing != nothing && sc[:type] == :toplevel
+        return identifier_completions((@> thing names filtervalid),
+                                      textual = false)
+      end
     end
-  else
-    @label default
-    identifier_completions(accessible(mod))
   end
+  identifier_completions(accessible(mod))
 end
 
 """
