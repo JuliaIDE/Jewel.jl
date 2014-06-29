@@ -1,9 +1,11 @@
 export completions, allcompletions, complete
 
-const builtins = ["begin", "function", "type", "immutable", "let", "macro",
-                  "for", "while", "quote", "if", "else", "elseif", "try",
-                  "finally", "catch", "do", "end", "else", "elseif", "catch",
-                  "finally", "true", "false", "using"]
+const builtins = ["abstract", "baremodule", "begin", "bitstype", "break",
+                  "catch", "ccall", "const", "continue", "do", "else",
+                  "elseif", "end", "export", "finally", "for", "function",
+                  "global", "if", "immutable", "import", "importall", "let",
+                  "local", "macro", "module", "quote", "return", "try", "type",
+                  "typealias", "using", "while"]
 
 identifier_completions(hints; textual = true) =
   {:hints => hints,
