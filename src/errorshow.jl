@@ -1,13 +1,20 @@
 export showerror_html, showbacktrace_html
 
-url(file, line) =
-  isabspath(file) ?
-    "file://$file" :
-    "https://github.com/JuliaLang/julia/tree/$(Base.GIT_VERSION_INFO.commit)/base/$file#L$line"
+const abspathpattern =
+  @windows? r"([a-zA-Z]+:[\\/][a-zA-Z_\./\\ 0-9]+\.jl)(?::([0-9]*))?$" : r"(/[a-zA-Z_\./ 0-9]+\.jl)(?::([0-9]*))?$"
 
-function to_link(path)
-  file, line = match(r"^([a-zA-Z_\.\\/0-9:]+\.jl)(?::([0-9]*))?$", path).captures
-  """<a href="$(url(file, line))">$path</a>"""
+# Make the prefix optional, but disallow spaces
+const relpathpattern =
+  @windows? r"([a-zA-Z_\./\\0-9]+\.jl)(?::([0-9]*))?$" : r"([a-zA-Z_\./0-9]+\.jl)(?::([0-9]*))?$"
+
+function githublink(path)
+  file, line = match(relpathpattern, path).captures
+  """<a href="https://github.com/JuliaLang/julia/tree/$(Base.GIT_VERSION_INFO.commit)/base/$file#L$line">$path</a>"""
+end
+
+function filelink(path)
+  file, line = match(abspathpattern, path).captures
+  """<a href="file://$file">$path</a>"""
 end
 
 function showerror_html(io, e)
@@ -29,9 +36,17 @@ function showbacktrace_html(io::IO, top_function::Symbol, t, set = 1:typemax(Int
 
   for i = 2:length(ls)
     print(io, """<li class="julia trace-entry">""")
-    print(io, replace(ls[i], r"[a-zA-Z_\.\\/0-9:]+\.jl(?::[0-9]*)?$", to_link))
+    if ismatch(abspathpattern, ls[i])
+      print(io, replace(ls[i], abspathpattern, filelink))
+    elseif ismatch(relpathpattern, ls[i])
+      print(io, replace(ls[i], relpathpattern, githublink))
+    else
+      println(io, ls[i])
+    end
     print(io, """</li>""")
   end
 
   println(io, """</ul>""")
 end
+
+match(r"([a-zA-Z_\./\\0-9]+\.jl)(?::([0-9]*))?$", "at C:\\users\\mike innes\\foo.jl")
