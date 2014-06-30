@@ -2,11 +2,19 @@
 # Some file utils
 # –––––––––––––––
 
+function readdirsafe(dir)
+  try
+    readdir(dir)
+  catch e
+    UTF8String[]
+  end
+end
+
 files(dir) =
-  @>> dir readdir map!(f->joinpath(dir, f)) filter!(isfile)
+  @>> dir readdirsafe map!(f->joinpath(dir, f)) filter!(isfile)
 
 dirs(dir) =
-  @>> dir readdir filter!(f->!beginswith(f, ".")) map!(f->joinpath(dir, f)) filter!(isdir)
+  @>> dir readdirsafe filter!(f->!beginswith(f, ".")) map!(f->joinpath(dir, f)) filter!(isdir)
 
 jl_files(dir::String) = @>> dir files filter!(f->endswith(f, ".jl"))
 
