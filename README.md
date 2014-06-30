@@ -9,3 +9,5 @@ It handles things such as:
 * Finding relevant documentation or method definitions at the cursor
 * Detecting the module a file belongs to
 * Evaluation of code blocks with correct file, line and module data
+
+If you want any info on using this package as support for another IDE feel free to drop me a line.
