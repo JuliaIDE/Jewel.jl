@@ -30,6 +30,14 @@ function showerror_html(io, e, bt, top_function = :eval_user_input)
   println(io, """</div>""")
 end
 
+function showerror_html(io::IO, e::LoadError, bt, top_function = :eval_user_input)
+  println(io, """<div class="julia error">""")
+  showerror_html(io, e.error)
+  showbacktrace_html(io, top_function, bt)
+  println(io, """<span class="source">while loading $(e.file), in expression starting on line $(e.line)</span>""")
+  println(io, """</div>""")
+end
+
 function showbacktrace_html(io::IO, top_function::Symbol, t, set = 1:typemax(Int))
   ls = map!(strip, lines(sprint(Base.show_backtrace, top_function, t, set)))
   print(io, """<ul class="julia trace">""")
@@ -48,5 +56,3 @@ function showbacktrace_html(io::IO, top_function::Symbol, t, set = 1:typemax(Int
 
   println(io, """</ul>""")
 end
-
-match(r"([a-zA-Z_\./\\0-9]+\.jl)(?::([0-9]*))?$", "at C:\\users\\mike innes\\foo.jl")
