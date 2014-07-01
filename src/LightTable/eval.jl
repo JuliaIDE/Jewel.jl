@@ -10,19 +10,6 @@ end
 # Eval
 # ----
 
-function custom_showerror(io::IO, e::LoadError, bt)
-  custom_showerror_inner(io, e.error, bt)
-end
-
-function custom_showerror_inner(io::IO, e, bt)
-  showerror_html(io, e, bt, :include_string)
-end
-
-function custom_showerror_inner(io::IO, e::LoadError, bt)
-  showerror_html(io, e.error, bt)
-  print(io, "\nwhile loading $(e.file), in expression starting on line $(e.line)")
-end
-
 # Shoud be split into eval and eval.all
 handle("editor.eval.julia") do req, data
   info = get_code(data)
@@ -41,7 +28,7 @@ handle("editor.eval.julia") do req, data
   try
     val = include_string(mod, info[:code], path, info[:lines][1])
   catch e
-    show_exception(req, sprint(custom_showerror, e, catch_backtrace()), info[:lines])
+    show_exception(req, sprint(io->showerror_html(io, e.error, catch_backtrace(), :include_string)), info[:lines])
     return
   end
 
