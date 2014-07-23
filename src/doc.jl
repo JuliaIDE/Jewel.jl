@@ -1,6 +1,5 @@
 function thingorfunc(code, cursor, mod = Main)
   name = getqualifiedname(code, cursor)
-  name, mod
   name == "" && (name = lastcall(scopes(code, cursor)))
   name == nothing && return
   getthing(mod, name, nothing)
