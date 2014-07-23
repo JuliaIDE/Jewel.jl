@@ -3,7 +3,7 @@ include("block.jl")
 
 lines(s) = split(s, "\n")
 
-tokens(code) = scope_pass(code)
+tokens(code, cursor = (0, 0)) = scope_pass(code, target = cursor)
 scopes(code, cursor) = scope_pass(code, collect = false, stop = true, target = cursor)
 scope(code, cursor) = scopes(code, cursor)[end]
 

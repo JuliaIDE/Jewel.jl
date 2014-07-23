@@ -45,3 +45,13 @@ function line(s::LineNumberingReader)
 end
 
 column(s::LineNumberingReader) = position(s) - s.lines[line(s)] + 1
+
+linecol(s::LineNumberingReader) = LineCol(line(s), column(s))
+
+immutable LineCol
+  line::Int64
+  column::Int64
+end
+
+Base.isless(x::LineCol, y::LineCol) =
+  x.line < y.line || (x.line == y.line && x.column < y.column)

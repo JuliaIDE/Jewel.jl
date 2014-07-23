@@ -11,6 +11,11 @@ rem_cursor(s) = replace(s, r"\|", "")
 
 to_cursor(s) = (rem_cursor(s), get_cursor(s))
 
+function get_tokens(s)
+  s, c = to_cursor(s)
+  Jewel.tokens(s, c)
+end
+
 function get_scopes(s)
   s, c = to_cursor(s)
   Jewel.scopes(s, c)

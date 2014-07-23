@@ -75,17 +75,22 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
   collect && (tokens = Set{UTF8String}())
   scopes = Dict[{:type => :toplevel}]
 
+  tokenstart = LineCol(1, 1)
+  crossedcursor() = tokenstart <= LineCol(target...) <= linecol(stream)
+
   cur_scope() = scopes[end][:type]
   cur_scope(ts...) = cur_scope() in ts
   leaving_expr() = cur_scope() == :binary && pop!(scopes)
-  pushtoken(t) = collect && push!(tokens, t)
+  pushtoken(t) = collect && !crossedcursor() && push!(tokens, t)
   function pushscope(scope)
-    if !(stop && line(stream) > target[1] || (line(stream) == target[1] && column(stream) > target[2]))
+    if !(stop && linecol(stream) > LineCol(target...))
       push!(scopes, scope)
     end
   end
 
   while !eof(stream)
+    tokenstart = linecol(stream)
+
     # Comments
     if startswith(stream, "\n")
       cur_scope() in (:comment, :using) && pop!(scopes)
@@ -157,7 +162,7 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
           pushtoken(token)
           while startswith(stream, ".")
             if (next = startswith(stream, identifier_start)) != ""
-              token *= ".$next"
+              token = "$token.$next"
             end
           end
           startswith(stream, "(") ?
@@ -168,7 +173,7 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
     else
       read(stream, Char)
     end
-    if stop && line(stream) > target[1] || (line(stream) == target[1] && column(stream) >= target[2])
+    if stop && (line(stream) > target[1] || (line(stream) == target[1] && column(stream) >= target[2]))
       return scopes
     end
   end
