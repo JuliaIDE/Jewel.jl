@@ -10,7 +10,7 @@ scope(code, cursor) = scopes(code, cursor)[end]
 codemodule(code, pos) =
   @as _ code scopes(_, pos) filter(s->s[:type]==:module, _) map(s->s[:name], _) join(_, ".")
 
-precursor(s::String, i) = join(collect(s)[1:(i-1 <= endof(s) ? i-1 : end)])
+precursor(s::String, i) = join(collect(s)[1:(i-1 <= length(s) ? i-1 : end)])
 postcursor(s::String, i) = join(collect(s)[i:end])
 
 function getblockcursor(code, line, cursor)

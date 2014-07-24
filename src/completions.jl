@@ -105,7 +105,8 @@ const latex_completions =
   [{:completion => completion, :text => tabpad(text, 2) * completion}
    for (text, completion) in Base.REPLCompletions.latex_symbols]
 
-const reverse_latex_commands = [v => k for (k, v) in Base.REPLCompletions.latex_symbols]
+const reverse_latex_commands =
+  [first(v) => k for (k, v) in Base.REPLCompletions.latex_symbols]
 
 islatexinput(str::String) =
   ismatch(r"\\[a-zA-Z0-9_^]*$", str)
