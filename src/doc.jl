@@ -1,9 +1,4 @@
-function thingorfunc(code::String, cursor::(Int,Int), mod::Module = Main)
-  name = getqualifiedname(code, cursor)
-  thingorfunc(name, code, cursor, mod)
-end
-
-function thingorfunc(name::String, code::String, cursor::(Int,Int), mod::Module = Main)
+function thingorfunc(code, cursor, mod = Main; name = getqualifiedname(code, cursor))
   name == "" && (name = lastcall(scopes(code, cursor)))
   name == nothing ? name : getthing(mod, name, nothing)
 end
@@ -12,7 +7,7 @@ function doc(code, cursor, mod = Main)
   docs = String[]
   name = getqualifiedname(code, cursor)
 
-  thing = thingorfunc(name, code, cursor, mod)
+  thing = thingorfunc(code, cursor, mod; name = name)
   thing == nothing || push!(docs, helpstr(thing))
 
   texcmds = texcommands(name, code, cursor)
@@ -27,7 +22,7 @@ function texcommands(name, code, cursor)
   if isempty(chars) # fallback if getqualifiedname failed
     line = collect(lines(code)[cursor[1]])
     c = cursor[2]
-    chars = line[(c < 2 ? 1 : c - 1):(c <= length(line) ? c : end)]
+    chars = line[max(c - 1, 1):min(c, length(line))]
   end
 
   syms = String[]
