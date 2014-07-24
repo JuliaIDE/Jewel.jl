@@ -10,8 +10,8 @@ scope(code, cursor) = scopes(code, cursor)[end]
 codemodule(code, pos) =
   @as _ code scopes(_, pos) filter(s->s[:type]==:module, _) map(s->s[:name], _) join(_, ".")
 
-precursor(s::String, i) = s[1:(i-1 <= endof(s) ? i-1 : end)]
-postcursor(s::String, i) = s[i:end]
+precursor(s::String, i) = join(collect(s)[1:(i-1 <= length(s) ? i-1 : end)])
+postcursor(s::String, i) = join(collect(s)[i:end])
 
 function getblockcursor(code, line, cursor)
   code, bounds = getblock(code, line)
@@ -19,6 +19,8 @@ function getblockcursor(code, line, cursor)
 end
 
 getblockcursor(code, cursor) = getblockcursor(code, cursor[1], cursor)
+
+charundercursor(code, cursor) = get(collect(lines(code)[cursor[1]]), cursor[2], ' ')
 
 function matchorempty(args...)
   result = match(args...)

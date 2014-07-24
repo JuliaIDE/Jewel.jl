@@ -1,17 +1,38 @@
-function thingorfunc(code, cursor, mod = Main)
-  name = getqualifiedname(code, cursor)
-  name, mod
+function thingorfunc(code, cursor, mod = Main; name = getqualifiedname(code, cursor))
   name == "" && (name = lastcall(scopes(code, cursor)))
-  name == nothing && return
-  getthing(mod, name, nothing)
+  name == nothing ? name : getthing(mod, name, nothing)
 end
 
 function doc(code, cursor, mod = Main)
-  thing = thingorfunc(code, cursor, mod)
-  thing == nothing && return
-  help = helpstr(thing)
-  help != "No help information found.\n" && return help
-  return
+  docs = String[]
+  name = getqualifiedname(code, cursor)
+
+  thing = thingorfunc(code, cursor, mod; name = name)
+  thing == nothing || push!(docs, helpstr(thing))
+
+  texcmds = texcommands(name, code, cursor)
+  texcmds == nothing || push!(docs, texcmds)
+
+  help = join(docs, "\n\n")
+  help in ("No help information found.\n", "") ? nothing : help
+end
+
+function texcommands(name, code, cursor)
+  chars = collect(name)
+  if isempty(chars) # fallback if getqualifiedname failed
+    line = collect(lines(code)[cursor[1]])
+    c = cursor[2]
+    chars = line[max(c - 1, 1):min(c, length(line))]
+  end
+
+  syms = String[]
+  for char in chars
+    cmd = get(reverse_latex_commands, char, "")
+    isempty(cmd) || push!(syms, "  $(char)\u00a0 $(cmd)")
+  end
+  isempty(syms) && return
+
+  "LaTeX command$(length(syms) > 1 ? "s" : ""):\n\n$(join(unique(syms), "\n"))"
 end
 
 function methodsorwith(code, cursor, mod = Main)
