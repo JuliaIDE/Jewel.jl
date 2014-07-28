@@ -1,3 +1,5 @@
+module ProfileView
+
 using Compose, Lazy
 
 # Get traces
@@ -246,3 +248,5 @@ t = @> data traces tree trimroot
 # render(t,childscale=widthscale) |> save
 
 # render(t) |> save
+
+end
