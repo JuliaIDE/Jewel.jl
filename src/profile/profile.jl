@@ -24,16 +24,8 @@ function render_(tree::ProfileTree; childscale = fixedscale, count = 0)
   li = tree.data.line
   compose(context(),
           (context(), rectangle(),
-           jscall("""
-             data("lineinfo", {"func": "$(li.func)",
-                               "file": "$(li.file)",
-                               "line": "$(li.line)",
-                               "percent": "$(@sprintf("%.2f", 100*tree.data.count/count))"});
-           """),
-           jscall("""
-             hover(function(){ updatetooltip(this.data("lineinfo")); },
-                   function(){ updatetooltip(); });
-           """),
+           JS.framedata(li, tree.data.count/count),
+           JS.frametooltip,
            svgclass("file-link"),
            svgattribute("data-file", "$(li.file):$(li.line)")),
           [compose(context(offsets[i], 1, widths[i], scale[i]),
