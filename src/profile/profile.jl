@@ -6,9 +6,6 @@ include("javascript.jl")
 include("css.jl")
 include("data.jl")
 
-childwidths(node::ProfileTree) =
-  map(child -> child.data.count/node.data.count, node.children)
-
 maprange(x1, x2, y1, y2, p) = (p-x1)/(x2-x1)*(y2-y1)+y1
 
 fixedscale(node::ProfileTree) = ones(length(node.children))

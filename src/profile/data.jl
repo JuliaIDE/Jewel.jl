@@ -73,7 +73,26 @@ end
 depth(node::Node) =
   isleaf(node) ? 1 : 1 + maximum(map(depth, node.children))
 
+# Remove redundant lines
+
+childwidths(node::ProfileTree) =
+  map(child -> child.data.count/node.data.count, node.children)
+
 function trimroot(tree::ProfileTree)
   validchildren = tree.children[childwidths(tree) .> 0.1]
   length(validchildren) == 1 ? trimroot(validchildren[1]) : tree
 end
+
+# Flatten the tree
+
+function addmerge!(a::Associative, b::Associative)
+  for (k, v) in b
+    a[k] = haskey(a, k) ? a[k]+b[k] : b[k]
+  end
+  return a
+end
+
+flatlines(tree::ProfileTree; total = tree.data.count) =
+  reduce(addmerge!,
+         [tree.data.line=>tree.data.count/total],
+         map(t->flatlines(t, total = total), tree.children))
