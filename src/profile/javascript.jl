@@ -54,6 +54,47 @@ const mapdrag =
       });
   """)
 
+const nonscalingstroke =
+  jscall("""
+    selectAll("rect").forEach(function (element) {
+      element.attr("vector-effect", "non-scaling-stroke");
+    });
+  """)
+
+const tooltip =
+  jscall("""
+    mousemove(function(event) {
+      tooltip == "nothing" && (tooltip = this.node.parentNode.parentNode.querySelector(".tooltip"));
+      tooltip.style.left = event.clientX;
+      tooltip.style.top = event.clientY;
+      // TODO: Use JQuery show()/hide().
+      if(tooltipvisible != hovering) {
+        if(hovering) {
+          tooltip.style.visibility = "visible";
+          tooltipvisible = true;
+        } else {
+          tooltip.style.visibility = "hidden";
+          tooltipvisible = false;
+        }
+      }
+    });
+
+    var tooltip = "nothing";
+    var tooltipvisible = false;
+    var hovering = false;
+
+    function updatetooltip(data) {
+      if(data != undefined) {
+        hovering = true;
+        tooltip.querySelector(".func").textContent = data.func;
+        tooltip.querySelector(".file").textContent = data.file + ":" + data.line;
+        tooltip.querySelector(".percent").textContent = data.percent + "%";
+      } else {
+        hovering = false;
+      }
+    }
+  """)
+
 nothing
 
 end

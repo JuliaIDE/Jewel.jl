@@ -6,8 +6,6 @@ include("javascript.jl")
 include("css.jl")
 include("data.jl")
 
-# SVG
-
 childwidths(node::ProfileTree) =
   map(child -> child.data.count/node.data.count, node.children)
 
@@ -45,45 +43,7 @@ render(tree::ProfileTree; childscale = fixedscale) =
            render_(tree,childscale = childscale, count = tree.data.count),
            svgclass("tree")),
           (context(), rectangle(), fill("white")),
-          JS.mapzoom,
-          JS.mapdrag,
-          jscall("""
-            selectAll("rect").forEach(function (element) {
-              element.attr("vector-effect", "non-scaling-stroke");
-            });
-          """),
-          jscall("""
-            mousemove(function(event) {
-              tooltip == "nothing" && (tooltip = this.node.parentNode.parentNode.querySelector(".tooltip"));
-              tooltip.style.left = event.clientX;
-              tooltip.style.top = event.clientY;
-              // TODO: Use JQuery show()/hide().
-              if(tooltipvisible != hovering) {
-                if(hovering) {
-                  tooltip.style.visibility = "visible";
-                  tooltipvisible = true;
-                } else {
-                  tooltip.style.visibility = "hidden";
-                  tooltipvisible = false;
-                }
-              }
-            });
-
-            var tooltip = "nothing";
-            var tooltipvisible = false;
-            var hovering = false;
-
-            function updatetooltip(data) {
-              if(data != undefined) {
-                hovering = true;
-                tooltip.querySelector(".func").textContent = data.func;
-                tooltip.querySelector(".file").textContent = data.file + ":" + data.line;
-                tooltip.querySelector(".percent").textContent = data.percent + "%";
-              } else {
-                hovering = false;
-              }
-            }
-          """))
+          JS.mapzoom, JS.mapdrag, JS.nonscalingstroke, JS.tooltip)
 
 showsvg(svg) = sprint(io -> draw(SVGJS(io, 5inch, 3inch, false), svg)) |> LightTable.HTML
 
