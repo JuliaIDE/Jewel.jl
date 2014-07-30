@@ -53,8 +53,8 @@ function save(svg)
     write(io, """
       <div class="profile">
         <div class="tooltip">
-          <div><span class="func">func</span> <span class="percent">percent</span></div>
-          <div class="file">file</div>
+          <div><span class="func"></span> <span class="percent"></span></div>
+          <div class="file"></div>
         </div>
     """)
     draw(SVGJS(io, 5inch, 3inch, false), svg)
