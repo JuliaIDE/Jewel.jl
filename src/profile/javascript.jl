@@ -61,10 +61,16 @@ const nonscalingstroke =
     });
   """)
 
+const settooltip =
+  jscall("""
+    mouseover(function(event) {
+      tooltip == "nothing" && (tooltip = this.node.parentNode.parentNode.querySelector(".tooltip"));
+    });
+  """)
+
 const tooltip =
   jscall("""
     mousemove(function(event) {
-      tooltip == "nothing" && (tooltip = this.node.parentNode.parentNode.querySelector(".tooltip"));
       tooltip.style.left = event.offsetX + 10;
       tooltip.style.top = event.offsetY + 10;
       // TODO: Use JQuery show()/hide().
@@ -84,6 +90,7 @@ const tooltip =
     var hovering = false;
 
     function updatetooltip(data) {
+      if (tooltip == "nothing") return;
       if(data != undefined) {
         hovering = true;
         tooltip.querySelector(".func").textContent = data.func;
