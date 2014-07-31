@@ -42,8 +42,6 @@ render(tree::ProfileTree; childscale = widthscale) =
           (context(), rectangle(), fill("white")),
           JS.mapzoom, JS.mapdrag, JS.nonscalingstroke, JS.tooltip)
 
-# showsvg(svg) = sprint(io -> draw(SVGJS(io, 5inch, 3inch, false), svg)) |> LightTable.HTML
-
 function Base.writemime(io::IO, ::MIME"text/html", tree::ProfileTree)
   write(io, CSS.css)
   write(io, """
@@ -58,13 +56,5 @@ function Base.writemime(io::IO, ::MIME"text/html", tree::ProfileTree)
     </div>
   """)
 end
-
-# function save(svg)
-#   open("test.html", "w") do io
-#     writemime
-#   end
-# end
-
-nothing
 
 end
