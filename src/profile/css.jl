@@ -16,6 +16,8 @@ css = """
     border-radius: 5px;
     padding: 5px;
     visibility: hidden;
+    white-space: nowrap;
+    pointer-events: none;
   }
   .profile .func {
     font-weight: bold;

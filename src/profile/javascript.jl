@@ -30,7 +30,7 @@ const mapzoom =
       var scale = Math.pow(0.9, event.wheelDelta/100);
       var transform = e.transform().localMatrix;
       var inverse = e.transform().globalMatrix.invert();
-      var x = event.clientX; var y = event.clientY;
+      var x = event.offsetX; var y = event.offsetY;
 
       e.transform(transform.scale(scale, scale, inverse.x(x, y), inverse.y(x, y)));
     });
@@ -65,8 +65,8 @@ const tooltip =
   jscall("""
     mousemove(function(event) {
       tooltip == "nothing" && (tooltip = this.node.parentNode.parentNode.querySelector(".tooltip"));
-      tooltip.style.left = event.clientX;
-      tooltip.style.top = event.clientY;
+      tooltip.style.left = event.offsetX + 10;
+      tooltip.style.top = event.offsetY + 10;
       // TODO: Use JQuery show()/hide().
       if(tooltipvisible != hovering) {
         if(hovering) {
