@@ -80,25 +80,20 @@ end
 # Editor Commands
 # ---------------
 
-function editor_command(client, cmd, data)
-  data[:cmd] = cmd
-  raise(client, "editor.eval.julia.editor-command", data)
-end
-
 function result(req, value::String, bounds::(Int, Int); under = false, html = false)
-  editor_command(req, "result",
-                 {"value" => value,
-                  "start" => bounds[1],
-                  "end"   => bounds[2],
-                  "under" => under,
-                  "html"  => html})
+  raise(req, "julia.result",
+        {"value" => value,
+         "start" => bounds[1],
+         "end"   => bounds[2],
+         "under" => under,
+         "html"  => html})
 end
 
 function show_exception(req, value::String, bounds::(Int, Int))
-  editor_command(req, "error",
-                 {"value" => value,
-                  "start" => bounds[1],
-                  "end"   => bounds[2]})
+  raise(req, "julia.error",
+        {"value" => value,
+         "start" => bounds[1],
+         "end"   => bounds[2]})
 end
 
 # ------
