@@ -34,7 +34,7 @@ maxheight(node::ProfileTree; childscale = fixedscale) =
                   map(node->maxheight(node, childscale=childscale),
                       node.children))
 
-render(tree::ProfileTree; childscale = fixedscale) =
+render(tree::ProfileTree; childscale = widthscale) =
   compose(context(),
           (context(0,0,1,1/maxheight(tree, childscale = childscale)),
            render_(tree,childscale = childscale, count = tree.data.count),
@@ -42,24 +42,28 @@ render(tree::ProfileTree; childscale = fixedscale) =
           (context(), rectangle(), fill("white")),
           JS.mapzoom, JS.mapdrag, JS.nonscalingstroke, JS.tooltip)
 
-showsvg(svg) = sprint(io -> draw(SVGJS(io, 5inch, 3inch, false), svg)) |> LightTable.HTML
+# showsvg(svg) = sprint(io -> draw(SVGJS(io, 5inch, 3inch, false), svg)) |> LightTable.HTML
 
-function save(svg)
-  open("test.html", "w") do io
-    write(io, CSS.css)
-    write(io, """
-      <div class="profile">
-        <div class="tooltip">
-          <div><span class="func"></span> <span class="percent"></span></div>
-          <div class="file"></div>
-        </div>
-    """)
-    draw(SVGJS(io, 5inch, 3inch, false), svg)
-    write(io, """
+function Base.writemime(io::IO, ::MIME"text/html", tree::ProfileTree)
+  write(io, CSS.css)
+  write(io, """
+    <div class="profile">
+      <div class="tooltip">
+        <div><span class="func"></span> <span class="percent"></span></div>
+        <div class="file"></div>
       </div>
-    """)
-  end
+  """)
+  draw(SVGJS(io, 5inch, 3inch, false), render(tree))
+  write(io, """
+    </div>
+  """)
 end
+
+# function save(svg)
+#   open("test.html", "w") do io
+#     writemime
+#   end
+# end
 
 nothing
 
