@@ -1,16 +1,14 @@
-#jewel module Jewel
-
 # ---------------
 # Global Commands
 # ---------------
 
 handle("julia.set-global-client") do req, data
-  global const global_client = req[1]
+  global global_client = req[1]
 end
 
 function command(cmd, data = Dict())
   data[:cmd] = cmd
-  send(global_client, "editor.eval.julia.command", data)
+  raise(global_client, "editor.eval.julia.command", data)
 end
 
 function popup(header, body="", buttons = [{:label => "Ok"}])
@@ -34,4 +32,10 @@ function notify(message; class = "")
   command("notify",
           {:msg => message,
            :class => class})
+end
+
+function console(value::String; html = false)
+  command("console",
+          {"value" => value,
+           "html"  => html})
 end
