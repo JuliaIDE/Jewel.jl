@@ -125,6 +125,11 @@ function display_result(req, val, bounds)
   error("Cannot display $val.")
 end
 
+type Pass end
+const pass = Pass()
+
+display_result(req, val::Pass, bounds) = nothing
+
 type LTConsole <: Display end
 
 import Base: display, writemime
