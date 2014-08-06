@@ -96,3 +96,9 @@ flatlines(tree::ProfileTree; total = tree.data.count) =
   reduce(addmerge!,
          [tree.data.line=>tree.data.count/total],
          map(t->flatlines(t, total = total), tree.children))
+
+function fetch()
+  data = Profile.fetch()
+  isempty(data) && error("You need to do some profiling first.")
+  data |> traces |> tree
+end
