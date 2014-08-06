@@ -34,15 +34,11 @@ function displayinline!(req, val, bounds)
   error("Cannot display $val.")
 end
 
+# Light Table's Console as a display
+
 type LTConsole <: Display end
 
 import Base: display, writemime
-
-type HTML
-  content::UTF8String
-end
-
-writemime(io::IO, ::MIME"text/html", h::HTML) = print(io, h.content)
 
 # Should use CSS for width
 html_image(img) = HTML("""<img width="500px" src="data:image/png;base64,$(stringmime("image/png", img))" />""")
