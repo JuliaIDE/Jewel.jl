@@ -11,6 +11,7 @@ end
 # ----
 
 # Shoud be split into eval and eval.all
+# TODO: rewrite completely
 handle("editor.eval.julia") do req, data
   info = get_code(data)
   all = get(data, "all", false)
