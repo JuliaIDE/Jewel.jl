@@ -37,6 +37,6 @@ handle("editor.eval.julia") do req, data
     file = path == nothing ? "file" : splitdir(path)[2]
     notify("✓ Evaluated $file in module $mod")
   else
-    display_result(req, val, info[:lines])
+    displayinline!(req, val, info[:lines])
   end
 end

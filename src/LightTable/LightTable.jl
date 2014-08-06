@@ -117,11 +117,11 @@ function best_mime(val)
   error("Cannot display $val.")
 end
 
-function display_result(req, val, bounds)
+function displayinline!(req, val, bounds)
   mime = best_mime(val)
   is(val, nothing)     ? result(req, "✓", bounds) :
   mime == MIME"text/plain"() ? result(req, sprint(writemime, mime, val), bounds) :
-  mime == MIME"image/png"() ? display_result(req, html_image(val), bounds) :
+  mime == MIME"image/png"() ? displayinline!(req, html_image(val), bounds) :
   mime == MIME"text/html"()  ? result(req, sprint(writemime, mime, val), bounds, html=true, under=true) :
   error("Cannot display $val.")
 end
