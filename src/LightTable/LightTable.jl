@@ -105,6 +105,7 @@ include("parse.jl")
 include("eval.jl")
 include("completions.jl")
 include("doc.jl")
+include("profile.jl")
 
 # ------------
 # Display Code

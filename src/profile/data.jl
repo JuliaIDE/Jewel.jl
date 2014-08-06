@@ -100,5 +100,5 @@ flatlines(tree::ProfileTree; total = tree.data.count) =
 function fetch()
   data = Profile.fetch()
   isempty(data) && error("You need to do some profiling first.")
-  data |> traces |> tree
+  data |> traces |> tree |> trimroot
 end

@@ -8,6 +8,7 @@ include("module.jl")
 include("errorshow.jl")
 include("completions.jl")
 include("doc.jl")
+include("profile/profile.jl")
 
 # Shim for now
 server(args...) = Main.LightTable.server(args...)
