@@ -1,6 +1,6 @@
 # Editor commands
 
-function result(req, value::String, bounds::(Int, Int); under = false, html = false)
+function showresult(req, value::String, bounds::(Int, Int); under = false, html = false)
   raise(req, "julia.result",
         {"value" => value,
          "start" => bounds[1],
@@ -9,7 +9,7 @@ function result(req, value::String, bounds::(Int, Int); under = false, html = fa
          "html"  => html})
 end
 
-function show_exception(req, value::String, bounds::(Int, Int))
+function showexception(req, value::String, bounds::(Int, Int))
   raise(req, "julia.error",
         {"value" => value,
          "start" => bounds[1],
@@ -18,7 +18,7 @@ end
 
 # Display infrastructure
 
-function best_mime(val)
+function bestmime(val)
   for mime in ("text/html", "image/png", "text/plain")
     mimewritable(mime, val) && return MIME(symbol(mime))
   end
@@ -26,11 +26,11 @@ function best_mime(val)
 end
 
 function displayinline!(req, val, bounds)
-  mime = best_mime(val)
-  is(val, nothing)     ? result(req, "✓", bounds) :
-  mime == MIME"text/plain"() ? result(req, sprint(writemime, mime, val), bounds) :
+  mime = bestmime(val)
+  is(val, nothing)     ? showresult(req, "✓", bounds) :
+  mime == MIME"text/plain"() ? showresult(req, sprint(writemime, mime, val), bounds) :
   mime == MIME"image/png"() ? displayinline!(req, html_image(val), bounds) :
-  mime == MIME"text/html"()  ? result(req, sprint(writemime, mime, val), bounds, html=true, under=true) :
+  mime == MIME"text/html"()  ? showresult(req, sprint(writemime, mime, val), bounds, html=true, under=true) :
   error("Cannot display $val.")
 end
 
@@ -53,4 +53,4 @@ end
 
 display(d::LTConsole, m::MIME"image/png", x) = display(d, html_image(x))
 
-display(d::LTConsole, x) = display(d, best_mime(x), x)
+display(d::LTConsole, x) = display(d, bestmime(x), x)
