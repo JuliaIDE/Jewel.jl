@@ -165,5 +165,3 @@ for f in (Pkg.checkout, Pkg.free, Pkg.rm, Pkg.publish, Pkg.build, Pkg.test)
     pkg_completions(packages())
   end
 end
-
-# What about completing `using`?
