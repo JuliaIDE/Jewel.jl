@@ -6,11 +6,18 @@ include("javascript.jl")
 include("css.jl")
 include("data.jl")
 
+githuburl(file, line) = "https://github.com/JuliaLang/julia/tree/$(Base.GIT_VERSION_INFO.commit)/base/$file#L$line"
+
 maprange(x1, x2, y1, y2, p) = (p-x1)/(x2-x1)*(y2-y1)+y1
 
 fixedscale(node::ProfileTree) = ones(length(node.children))
 # widthscale(node::ProfileTree) = childwidths(node)
 widthscale(node::ProfileTree) = map(w -> maprange(0, 1, 1/5, 1, w), childwidths(node))
+
+fileattribute(li) =
+  isabspath(li.file) ?
+    svgattribute("data-file", "$(li.file):$(li.line)") :
+    svgattribute("data-url", githuburl(li.file, li.line))
 
 function render_(tree::ProfileTree; childscale = fixedscale, count = 0)
   widths = childwidths(tree)
@@ -22,7 +29,7 @@ function render_(tree::ProfileTree; childscale = fixedscale, count = 0)
            JS.framedata(li, tree.data.count/count),
            JS.frametooltip,
            svgclass("file-link"),
-           svgattribute("data-file", "$(li.file):$(li.line)")),
+           fileattribute(li)),
           [compose(context(offsets[i], 1, widths[i], scale[i]),
                    render_(tree.children[i], childscale=childscale, count=count))
            for i = 1:length(tree.children)]...)
