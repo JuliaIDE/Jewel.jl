@@ -102,6 +102,4 @@ const tooltip =
     }
   """)
 
-nothing
-
 end
