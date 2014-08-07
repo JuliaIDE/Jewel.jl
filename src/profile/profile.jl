@@ -40,7 +40,8 @@ render(tree::ProfileTree; childscale = widthscale) =
            render_(tree,childscale = childscale, count = tree.data.count),
            svgclass("tree")),
           (context(), rectangle(), fill("white")),
-          JS.mapzoom, JS.mapdrag, JS.nonscalingstroke, JS.tooltip, JS.settooltip)
+          JS.mapzoom, JS.mapdrag, JS.nonscalingstroke, JS.tooltip, JS.settooltip,
+          svgclass("root"))
 
 function Base.writemime(io::IO, ::MIME"text/html", tree::ProfileTree)
   write(io, CSS.css)
