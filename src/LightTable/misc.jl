@@ -28,7 +28,7 @@ end
   function addtopath!()
     rmfrompath!()
     path = joinpath(Base.JULIA_HOME, "julia")
-    @assert isfile(path)
+    isfile(path) || error("Couldn't find Julia at $path")
     run(`ln -s $path /usr/local/bin/julia`)
   end
 
