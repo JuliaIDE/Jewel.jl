@@ -21,3 +21,19 @@ function displayinline!(req, tree::Jewel.ProfileView.ProfileTree, bounds)
                       :line => li.line,
                       :percent => p} for (li, p) in Jewel.ProfileView.fetch() |> Jewel.ProfileView.flatlines]})
 end
+
+# Add Julia to the path
+
+@unix_only begin
+  function addtopath!()
+    rmfrompath!()
+    path = joinpath(Base.JULIA_HOME, "julia")
+    @assert isfile(path)
+    run(`ln -s $path /usr/local/bin/julia`)
+  end
+
+  function rmfrompath!()
+    path = "/usr/local/bin/julia"
+    isfile(path) && rm(path)
+  end
+end
