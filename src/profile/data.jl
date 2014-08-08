@@ -83,6 +83,11 @@ function trimroot(tree::ProfileTree)
   length(validchildren) == 1 ? trimroot(validchildren[1]) : tree
 end
 
+function sortchildren!(tree::ProfileTree)
+  sort!(map!(sortchildren!,tree.children), by = node->node.data.line.line)
+  tree
+end
+
 # Flatten the tree
 
 function addmerge!(a::Associative, b::Associative)
@@ -100,5 +105,5 @@ flatlines(tree::ProfileTree; total = tree.data.count) =
 function fetch()
   data = Profile.fetch()
   isempty(data) && error("You need to do some profiling first.")
-  data |> traces |> tree |> trimroot
+  @> data traces tree trimroot sortchildren!
 end
