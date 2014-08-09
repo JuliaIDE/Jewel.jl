@@ -15,6 +15,7 @@ function index_of(s, line, char)
   chars = 0
   for i = 1:endof(s)
     isvalid(s, i) || continue
+    char == 0 && (lines == line - 1) && s[i] == '\n' && return i-1
     lines == line && char == chars+1 && return i
     if s[i] == '\n'
       lines += 1
@@ -73,7 +74,7 @@ end
 function get_code(s, start, stop)
   i, j = index_of(s, start[1], start[2]), index_of(s, stop[1], stop[2]-1) # Selection is in front of cursor
   {:code   => s[i:j],
-   :lines  => (start[1], stop[1]),
+   :lines  => (start[1], stop[2] == 1 ? stop[1] - 1 : stop[1]),
    :module => getthing(get_module_name(lines(s), start[1]))}
 end
 
