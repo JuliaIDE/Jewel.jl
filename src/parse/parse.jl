@@ -45,17 +45,3 @@ end
 
 # could be more efficient
 getqualifiedname(str::String, cursor) = getqualifiedname(lines(str)[cursor[1]], cursor[2])
-
-# some utils, not essential any more
-
-function withoutstr(f::Function)
-  orig_stdout = STDOUT
-  rd, wr = redirect_stdout()
-  f()
-  redirect_stdout(orig_stdout)
-  return readavailable(rd)
-end
-
-macro withoutstr(expr)
-  :(withoutstr(()->$expr)) |> esc
-end
