@@ -16,7 +16,7 @@ Base.eof(r::LineNumberingReader) = eof(r.io)
 Base.position(r::LineNumberingReader) = position(r.io)
 Base.peek(r::LineNumberingReader) = Base.peek(r.io)
 
-scannedindex(r::LineNumberingReader, i) = i ≤ r.lines[end]
+scannedindex(r::LineNumberingReader, i) = i < r.lines[end]
 
 function Base.read(r::LineNumberingReader, ::Type{Uint8})
   c = read(r.io, Uint8)
@@ -46,6 +46,7 @@ function line(s::LineNumberingReader)
   return length(s.lines)
 end
 
+# This won't handle unicode properly
 column(s::LineNumberingReader) = position(s)+1 - (s.lines[line(s)]-1)
 
 immutable Cursor
