@@ -1,8 +1,8 @@
 module LightTable
 
-using JSON, Lazy, Jewel
+using JSON, Lazy, Jewel, LNR
 
-import Jewel: lines, helpstr
+import Jewel: lines
 
 export server, ltprint, popup, notify
 
@@ -81,7 +81,6 @@ end
 # ------
 
 include("commands.jl")
-include("parse.jl")
 include("eval.jl")
 include("completions.jl")
 include("doc.jl")
