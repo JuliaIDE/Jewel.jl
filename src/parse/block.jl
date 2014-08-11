@@ -30,28 +30,3 @@ function getblock(s, line)
   i, j = walkback(c, line), walkforward(c, line)
   join(c[i:j], "\n"), (i, j)
 end
-
-# Extract a selection
-
-# TODO: rewrite to use LineNumberingReader
-function indexof(s, line, char)
-  lines = 1
-  chars = 0
-  for i = 1:endof(s)
-    isvalid(s, i) || continue
-    lines == line && char == chars+1 && return i
-    if s[i] == '\n'
-      lines += 1
-      chars =  0
-      i == length(s) && return i-1
-    else
-      chars += 1
-    end
-  end
-  error("Position $line:$char not found in string.")
-end
-
-function getcode(s, start, stop)
-  i, j = indexof(s, start[1], start[2]), indexof(s, stop[1], stop[2]-1) # Selection is in front of cursor
-  s[i:j], (start[1], stop[1])
-end
