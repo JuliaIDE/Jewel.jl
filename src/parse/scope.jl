@@ -70,20 +70,20 @@ scope_pass(s::String; kws...) = scope_pass(LineNumberingReader(s); kws...)
 
 # Pretty much just a port of the CodeMirror mode
 # I'm going to be upfront on this one: this is not my prettiest code.
-function scope_pass(stream::LineNumberingReader; stop = false, collect = true, target = (0, 0))
-  isa(target, Integer) && (target = (target, 1))
+function scope_pass(stream::LineNumberingReader; stop = false, collect = true, target = cursor(0,0))
+  isa(target, Integer) && (target = cursor(target, 1))
   collect && (tokens = Set{UTF8String}())
   scopes = Dict[{:type => :toplevel}]
 
   tokenstart = cursor(1, 1)
-  crossedcursor() = tokenstart <= cursor(target...) <= cursor(stream)
+  crossedcursor() = tokenstart <= target <= cursor(stream)
 
   cur_scope() = scopes[end][:type]
   cur_scope(ts...) = cur_scope() in ts
   leaving_expr() = cur_scope() == :binary && pop!(scopes)
   pushtoken(t) = collect && !crossedcursor() && push!(tokens, t)
   function pushscope(scope)
-    if !(stop && cursor(stream) > cursor(target...))
+    if !(stop && cursor(stream) > target)
       push!(scopes, scope)
     end
   end
@@ -173,7 +173,7 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
     else
       read(stream, Char)
     end
-    if stop && (line(stream) > target[1] || (line(stream) == target[1] && column(stream) >= target[2]))
+    if stop && (line(stream) > target.line || (line(stream) == target.line && column(stream) >= target.column))
       return scopes
     end
   end
