@@ -1,57 +1,60 @@
+# module LNR
+
+export LineNumberingReader, line, column, cursor
+
 immutable LineNumberingReader{T<:IO} <: IO
   io::T
-  lines::Vector{Int}
+  lines::Vector{Int} # The byte index of the first char in each line
 end
-LineNumberingReader(io::IO) = LineNumberingReader(io, [0])
+
+LineNumberingReader(io::IO) = LineNumberingReader(io, [1])
 LineNumberingReader(s::String) = LineNumberingReader(IOBuffer(s))
 
 Base.eof(r::LineNumberingReader) = eof(r.io)
 Base.position(r::LineNumberingReader) = position(r.io)
 Base.peek(r::LineNumberingReader) = Base.peek(r.io)
 
+scannedindex(r::LineNumberingReader, i) = i ≤ r.lines[end]
+
+function Base.read(r::LineNumberingReader, ::Type{Uint8})
+  c = read(r.io, Uint8)
+  c == '\n' && !scannedindex(r, position(r)) && !eof(r) &&
+     push!(r.lines, position(r)+1)
+  return c
+end
+
 function Base.skip(r::LineNumberingReader, n::Integer)
-  # Could be more efficient
-  if n > 0 && position(r) + n > r.lines[end]
+  if n > 0 && !scannedindex(r, position(r) + n)
     @dotimes n read(r, Uint8)
   else
     skip(r.io, n)
   end
 end
 
-Base.seek(io::LineNumberingReader, pos) =
-  pos <= io.lines[end] ? seek(io.io, pos) : skip(io, pos-position(io))
+Base.seek(r::LineNumberingReader, pos) =
+  scannedindex(r, pos) ? seek(r.io, pos) : skip(r, pos-position(r))
 
-function Base.read(r::LineNumberingReader, ::Type{Uint8})
-  c = read(r.io, Uint8)
-  c == '\n' && position(r.io) > last(r.lines) &&
-    push!(r.lines, position(r.io))
-  return c
-end
+# Cursor finding
 
-function Base.read(r::LineNumberingReader, ::Type{Char})
-  c = read(r.io, Char)
-  c == '\n' && position(r.io) > last(r.lines) &&
-    push!(r.lines, position(r.io))
-  return c
-end
-
-# The line / column number of the next character
 function line(s::LineNumberingReader)
-  p = position(s)
+  p = position(s)+1 # after the cursor
   for i = 1:length(s.lines)
     s.lines[i] > p && return i - 1
   end
   return length(s.lines)
 end
 
-column(s::LineNumberingReader) = position(s) - s.lines[line(s)] + 1
+column(s::LineNumberingReader) = position(s)+1 - (s.lines[line(s)]-1)
 
-linecol(s::LineNumberingReader) = LineCol(line(s), column(s))
-
-immutable LineCol
+immutable Cursor
   line::Int
   column::Int
 end
 
-Base.isless(x::LineCol, y::LineCol) =
+cursor(s::LineNumberingReader) = Cursor(line(s), column(s))
+cursor(l, c) = Cursor(l, c)
+
+Base.isless(x::Cursor, y::Cursor) =
   x.line < y.line || (x.line == y.line && x.column < y.column)
+
+# end
