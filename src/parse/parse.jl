@@ -59,5 +59,3 @@ end
 macro withoutstr(expr)
   :(withoutstr(()->$expr)) |> esc
 end
-
-helpstr(x) = @withoutstr help(x)
