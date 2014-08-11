@@ -75,21 +75,21 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
   collect && (tokens = Set{UTF8String}())
   scopes = Dict[{:type => :toplevel}]
 
-  tokenstart = LineCol(1, 1)
-  crossedcursor() = tokenstart <= LineCol(target...) <= linecol(stream)
+  tokenstart = cursor(1, 1)
+  crossedcursor() = tokenstart <= cursor(target...) <= cursor(stream)
 
   cur_scope() = scopes[end][:type]
   cur_scope(ts...) = cur_scope() in ts
   leaving_expr() = cur_scope() == :binary && pop!(scopes)
   pushtoken(t) = collect && !crossedcursor() && push!(tokens, t)
   function pushscope(scope)
-    if !(stop && linecol(stream) > LineCol(target...))
+    if !(stop && cursor(stream) > cursor(target...))
       push!(scopes, scope)
     end
   end
 
   while !eof(stream)
-    tokenstart = linecol(stream)
+    tokenstart = cursor(stream)
 
     # Comments
     if startswith(stream, "\n")

@@ -2,7 +2,7 @@ module LNR
 
 using Lazy
 
-export LineNumberingReader, line, column, cursor
+export LineNumberingReader, line, column, Cursor, cursor
 
 immutable LineNumberingReader{T<:IO} <: IO
   io::T
