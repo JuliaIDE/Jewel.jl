@@ -1,6 +1,8 @@
+include("LNR.jl")
+
 module Jewel
 
-using Lazy
+using LNR, Lazy
 
 include("base.jl")
 include("parse/parse.jl")

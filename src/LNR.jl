@@ -1,4 +1,6 @@
-# module LNR
+module LNR
+
+using Lazy
 
 export LineNumberingReader, line, column, cursor
 
@@ -57,4 +59,4 @@ cursor(l, c) = Cursor(l, c)
 Base.isless(x::Cursor, y::Cursor) =
   x.line < y.line || (x.line == y.line && x.column < y.column)
 
-# end
+end

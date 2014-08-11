@@ -2,7 +2,7 @@
 
 # stream utils
 
-include("LineNumberingReader.jl")
+using LNR
 
 import Base: peek
 
