@@ -68,7 +68,6 @@ const macro_start = Regex("^"*macros.pattern)
 
 scope_pass(s::String; kws...) = scope_pass(LineNumberingReader(s); kws...)
 
-# Pretty much just a port of the CodeMirror mode
 # I'm going to be upfront on this one: this is not my prettiest code.
 function scope_pass(stream::LineNumberingReader; stop = false, collect = true, target = cursor(0,0))
   isa(target, Integer) && (target = cursor(target, 1))
