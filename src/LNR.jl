@@ -1,8 +1,9 @@
 module LNR
 
 using Lazy
+import Base: seek
 
-export LineNumberingReader, line, column, Cursor, cursor, seekline
+export LineNumberingReader, line, column, Cursor, cursor, seekline, seekcol
 
 immutable Cursor
   line::Int
@@ -40,18 +41,33 @@ end
 
 # Seeking
 
-Base.seek(r::LineNumberingReader, pos) =
+function seek(r::LineNumberingReader, pos)
   scannedindex(r, pos) ? seek(r.io, pos) : skip(r, pos-position(r))
+  return r
+end
 
-function seekline(r::LineNumberingReader, line::Int)
+function seekline(r::LineNumberingReader, line::Integer)
   line ≤ length(r.lines) && return seek(r, r.lines[line]-1)
-  while r.lines[end] < line
+  while r.lines[end] < line && !eof(r)
     readline(r)
   end
   return r
 end
 
 seekline(r::LineNumberingReader) = seekline(r, line(r))
+
+function seekcol(r::LineNumberingReader, col::Integer)
+  seekline(r)
+  c = 1
+  while c < col && !eof(r)
+    read(r, Char) == '\n' && return skip(r,-1)
+    c += 1
+  end
+  return r
+end
+
+seek(r::LineNumberingReader, c::Cursor) =
+  @> r seekline(c.line) seekcol(c.column)
 
 # Cursor finding
 
@@ -66,7 +82,7 @@ end
 function column(r::LineNumberingReader)
   pos = position(r)
   col = 1
-  seekstartofline(r)
+  seekline(r)
   while position(r) < pos
     read(r, Char)
     col += 1
