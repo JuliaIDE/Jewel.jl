@@ -34,6 +34,10 @@ function notify(message; class = "")
            :class => class})
 end
 
+function notify_error(message)
+  notify(message, class = "error")
+end
+
 function console(value::String; html = false)
   command("console",
           {"value" => value,
