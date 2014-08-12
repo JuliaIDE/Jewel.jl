@@ -4,6 +4,11 @@ using Lazy
 
 export LineNumberingReader, line, column, Cursor, cursor, seekline
 
+immutable Cursor
+  line::Int
+  column::Int
+end
+
 immutable LineNumberingReader{T<:IO} <: IO
   io::T
   lines::Vector{Int} # The byte index of the first char in each line
@@ -67,13 +72,6 @@ function column(r::LineNumberingReader)
     col += 1
   end
   return col
-end
-
-# Cursor Type
-
-immutable Cursor
-  line::Int
-  column::Int
 end
 
 cursor(s::LineNumberingReader) = Cursor(line(s), column(s))
