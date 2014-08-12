@@ -23,6 +23,9 @@ getthing(mod::Module, name::String, default = nothing) =
 getthing(name::String, default = nothing) =
   getthing(Main, name, default)
 
+getthing(::Nothing, default) = default
+getthing(mod, ::Nothing, default) = default
+
 # include_string with line numbers
 
 function Base.include_string(s::String, fname::String, line::Integer)
@@ -35,10 +38,9 @@ end
 
 # Get the current module for a file/pos
 
-function getmodule(file::String, code::String, pos)
-  filem = filemodule(file)
+function getmodule(code, pos; filemod = nothing)
   codem = codemodule(code, pos)
-  modstr = (codem != "" && filem != "") ? "$filem.$codem" :
-           codem == "" ? filem : codem
+  modstr = (codem != "" && filemod != nothing) ? "$filemod.$codem" :
+           codem == "" ? filemod : codem
   getthing(modstr, Main)
 end
