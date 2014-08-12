@@ -1,7 +1,5 @@
 # Extract blocks of code from a file
 
-# TODO: Rewrite to use the pseudo-parser, LineNumberingReader
-
 isblank(s) = ismatch(r"^\s*(#.*)?$", s)
 isend(s) = ismatch(r"^end", s)
 isstart(s) = !(ismatch(r"^\s", s) || isblank(s) || isend(s))
@@ -29,4 +27,11 @@ function getblock(s, line)
   c = lines(s)
   i, j = walkback(c, line), walkforward(c, line)
   join(c[i:j], "\n"), (i, j)
+end
+
+function getblock(s, start::Cursor, stop::Cursor)
+  io = LineNumberingReader(s)
+  i = LNR.index(io, start)
+  j = LNR.index(io, stop)-1
+  s[i:j], (start.line, stop.line)
 end

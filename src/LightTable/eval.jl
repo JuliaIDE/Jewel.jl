@@ -8,9 +8,16 @@ function eval(editor, mod, code, file, bounds)
   end
 end
 
+hasselection(data) = data["start"] == data["end"]
+
+LNR.cursor(data::Dict) = cursor(data["line"], data["col"])
+
 handle("editor.eval.julia") do editor, data
   file = @or data["path"] "REPL"
-  code, bounds = Jewel.getblock(data["code"], data["start"]["line"])
+  code, bounds =
+    hasselection(data) ?
+      Jewel.getblock(data["code"], data["start"]["line"]) :
+      Jewel.getblock(data["code"], cursor(data["start"]), cursor(data["end"]))
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
   eval(editor, mod, code, file, bounds)
 end
