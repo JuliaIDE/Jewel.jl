@@ -1,4 +1,6 @@
 function eval(editor, mod, code, file, bounds)
+  task_local_storage()[:SOURCE_PATH] = file
+  file == nothing && (file = "REPL")
   try
     result = include_string(mod, code, file, bounds[1])
     Jewel.isdefinition(code) && (result = nothing)
@@ -13,13 +15,12 @@ hasselection(data) = data["start"] == data["end"]
 LNR.cursor(data::Dict) = cursor(data["line"], data["col"])
 
 handle("editor.eval.julia") do editor, data
-  file = @or data["path"] "REPL"
   code, bounds =
     hasselection(data) ?
       Jewel.getblock(data["code"], data["start"]["line"]) :
       Jewel.getblock(data["code"], cursor(data["start"]), cursor(data["end"]))
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
-  eval(editor, mod, code, file, bounds)
+  eval(editor, mod, code, data["path"], bounds)
 end
 
 handle("editor.eval.julia.all") do editor, data
