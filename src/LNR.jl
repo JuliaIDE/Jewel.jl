@@ -46,8 +46,16 @@ function line(s::LineNumberingReader)
   return length(s.lines)
 end
 
-# This won't handle unicode properly
-column(s::LineNumberingReader) = position(s)+1 - (s.lines[line(s)]-1)
+function column(r::LineNumberingReader)
+  pos = position(r)
+  col = 1
+  seekstartofline(r)
+  while position(r) < pos
+    read(r, Char)
+    col += 1
+  end
+  return col
+end
 
 immutable Cursor
   line::Int
