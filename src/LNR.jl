@@ -5,10 +5,17 @@ import Base: seek
 
 export LineNumberingReader, line, column, Cursor, cursor, seekline, seekcol
 
+# Cursor Type
+
 immutable Cursor
   line::Int
   column::Int
 end
+
+Base.isless(x::Cursor, y::Cursor) =
+  x.line < y.line || (x.line == y.line && x.column < y.column)
+
+# LNR
 
 immutable LineNumberingReader{T<:IO} <: IO
   io::T
@@ -92,9 +99,6 @@ end
 
 cursor(s::LineNumberingReader) = Cursor(line(s), column(s))
 cursor(l, c) = Cursor(l, c)
-
-Base.isless(x::Cursor, y::Cursor) =
-  x.line < y.line || (x.line == y.line && x.column < y.column)
 
 # Util
 
