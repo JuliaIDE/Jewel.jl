@@ -2,7 +2,7 @@ module LNR
 
 using Lazy
 
-export LineNumberingReader, line, column, Cursor, cursor
+export LineNumberingReader, line, column, Cursor, cursor, seekline
 
 immutable LineNumberingReader{T<:IO} <: IO
   io::T
@@ -33,8 +33,20 @@ function Base.skip(r::LineNumberingReader, n::Integer)
   end
 end
 
+# Seeking
+
 Base.seek(r::LineNumberingReader, pos) =
   scannedindex(r, pos) ? seek(r.io, pos) : skip(r, pos-position(r))
+
+function seekline(r::LineNumberingReader, line::Int)
+  line ≤ length(r.lines) && return seek(r, r.lines[line]-1)
+  while r.lines[end] < line
+    readline(r)
+  end
+  return r
+end
+
+seekline(r::LineNumberingReader) = seekline(r, line(r))
 
 # Cursor finding
 
