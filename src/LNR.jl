@@ -100,14 +100,21 @@ end
 cursor(s::LineNumberingReader) = Cursor(line(s), column(s))
 cursor(l, c) = Cursor(l, c)
 
+function position(r::LineNumberingReader, p::Cursor)
+  withstream(r) do
+    seek(r, p)
+    position(r)
+  end
+end
+
 # Util
 
 function withstream(f, io)
-  pos = position(stream)
+  pos = position(io)
   try
     f()
   finally
-    seek(stream, pos)
+    seek(io, pos)
   end
 end
 
