@@ -1,6 +1,7 @@
 function eval(editor, mod, code, file, bounds)
   try
     result = include_string(mod, code, file, bounds[1])
+    Jewel.isdefinition(code) && (result = nothing)
     displayinline!(editor, result, bounds)
   catch e
     showexception(editor, e.error, catch_backtrace(), bounds)

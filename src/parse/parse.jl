@@ -45,3 +45,12 @@ end
 
 # could be more efficient
 getqualifiedname(str::String, cursor) = getqualifiedname(lines(str)[cursor[1]], cursor[2])
+
+function isdefinition(code::String)
+  try
+    code = parse(code)
+    return isexpr(code, :function, :(=), :const)
+  catch e
+    return false
+  end
+end
