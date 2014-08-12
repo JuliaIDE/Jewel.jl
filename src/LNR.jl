@@ -55,7 +55,7 @@ end
 
 function seekline(r::LineNumberingReader, line::Integer)
   line ≤ length(r.lines) && return seek(r, r.lines[line]-1)
-  while r.lines[end] < line && !eof(r)
+  while length(r.lines) < line && !eof(r)
     readline(r)
   end
   return r
