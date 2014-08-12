@@ -107,6 +107,9 @@ function position(r::LineNumberingReader, p::Cursor)
   end
 end
 
+# Position is 0-based
+index(r::LineNumberingReader, p::Cursor) = position(r, p) + 1
+
 # Util
 
 function withstream(f, io)
