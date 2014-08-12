@@ -1,5 +1,3 @@
-export getthing
-
 # Qualified names → objects
 
 function getthing(mod::Module, name::Vector{Symbol}, default = nothing)
@@ -40,7 +38,7 @@ end
 function getmodule(file::String, code::String, pos)
   filem = filemodule(file)
   codem = codemodule(code, pos)
-  modstr = (codem != "" && filem != "") ? "$codem.$filem" :
+  modstr = (codem != "" && filem != "") ? "$filem.$codem" :
            codem == "" ? filem : codem
   getthing(modstr, Main)
 end
