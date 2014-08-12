@@ -1,7 +1,7 @@
 module LNR
 
 using Lazy
-import Base: seek
+import Base: seek, position, eof, peek
 
 export LineNumberingReader, line, column, Cursor, cursor, seekline, seekcol
 
@@ -25,9 +25,9 @@ end
 LineNumberingReader(io::IO) = LineNumberingReader(io, [1])
 LineNumberingReader(s::String) = LineNumberingReader(IOBuffer(s))
 
-Base.eof(r::LineNumberingReader) = eof(r.io)
-Base.position(r::LineNumberingReader) = position(r.io)
-Base.peek(r::LineNumberingReader) = Base.peek(r.io)
+eof(r::LineNumberingReader) = eof(r.io)
+position(r::LineNumberingReader) = position(r.io)
+peek(r::LineNumberingReader) = Base.peek(r.io)
 
 scannedindex(r::LineNumberingReader, i) = i < r.lines[end]
 
