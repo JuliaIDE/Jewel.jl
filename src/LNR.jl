@@ -69,6 +69,8 @@ function column(r::LineNumberingReader)
   return col
 end
 
+# Cursor Type
+
 immutable Cursor
   line::Int
   column::Int
@@ -79,5 +81,16 @@ cursor(l, c) = Cursor(l, c)
 
 Base.isless(x::Cursor, y::Cursor) =
   x.line < y.line || (x.line == y.line && x.column < y.column)
+
+# Util
+
+function withstream(f, io)
+  pos = position(stream)
+  try
+    f()
+  finally
+    seek(stream, pos)
+  end
+end
 
 end
