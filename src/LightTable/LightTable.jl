@@ -21,7 +21,7 @@ function server(port, id)
     try
       handle_next()
     catch e
-      warn("Jewel: "sprint(showerror, e, catch_backtrace()))
+      warn("LightTable.jl: "sprint(showerror, e, catch_backtrace()))
     end
   end
 end
