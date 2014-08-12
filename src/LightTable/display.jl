@@ -16,6 +16,14 @@ function showexception(req, value::String, bounds::(Int, Int))
          "end"   => bounds[2]})
 end
 
+function showexception(editor, e, bt, bounds::(Int, Int))
+  notify_error(sprint(showerror, e))
+  showexception(
+    editor,
+    sprint(showerror_html, e, bt, :include_string),
+    bounds)
+end
+
 # Display infrastructure
 
 function bestmime(val)
