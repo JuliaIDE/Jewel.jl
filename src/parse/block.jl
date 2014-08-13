@@ -13,20 +13,28 @@ function walkback(code::Vector, line)
   return line
 end
 
+closed(code::String) = scope(code) == {:type=>:toplevel}
+
 # Scan to the start of the next block, find the end of
 # this one.
-function walkforward(code::Vector, line)
-  l = line
-  while l < length(code) && (l == line || !isstart(code[l]))
-    l += 1
-    !(isblank(code[l]) || isstart(code[l])) && (line = l)
+function walkforward(code::Vector, line, i=1)
+  j = line
+  while j < length(code) && (j == line || !isstart(code[j]))
+    j += 1
+    l = code[j]
+    if isend(l)
+      !closed(join(code[i:j-1], "\n")) && (line = j)
+    elseif !(isblank(l) || isstart(l))
+      line = j
+    end
   end
   return line
 end
 
 function getblock(s, line)
   c = lines(s)
-  i, j = walkback(c, line), walkforward(c, line)
+  i = walkback(c, line)
+  j = walkforward(c, line, i)
   join(c[i:j], "\n"), (i, j)
 end
 
