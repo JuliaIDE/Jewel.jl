@@ -8,16 +8,27 @@ include("data.jl")
 
 githuburl(file, line) = "https://github.com/JuliaLang/julia/tree/$(Base.GIT_VERSION_INFO.commit)/base/$file#L$line"
 
+function basepath(file)
+  path = joinpath(JULIA_HOME,"..","share","julia","base",file) |> normpath
+  isfile(path) || (path = nothing)
+  return path
+end
+
 maprange(x1, x2, y1, y2, p) = (p-x1)/(x2-x1)*(y2-y1)+y1
 
 fixedscale(node::ProfileTree) = ones(length(node.children))
 # widthscale(node::ProfileTree) = childwidths(node)
 widthscale(node::ProfileTree) = map(w -> maprange(0, 1, 1/5, 1, w), childwidths(node))
 
-fileattribute(li) =
-  isabspath(li.file) ?
-    svgattribute("data-file", "$(li.file):$(li.line)") :
-    svgattribute("data-url", githuburl(li.file, li.line))
+function fileattribute(li)
+  if isabspath(li.file)
+    svgattribute("data-file", "$(li.file):$(li.line)")
+  else
+    path = basepath(li.file)
+    svgattribute("data-file", "$path:$(li.line)")
+#     svgattribute("data-url", githuburl(li.file, li.line))
+  end
+end
 
 function render_(tree::ProfileTree; childscale = fixedscale, count = 0)
   widths = childwidths(tree)
