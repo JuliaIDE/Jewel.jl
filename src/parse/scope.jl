@@ -143,7 +143,7 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
     # Tokens
     elseif (token = startswith(stream, identifier_start)) != ""
       if token == "end"
-        pop!(scopes)
+        cur_scope() == :block && pop!(scopes)
         leaving_expr()
       elseif token == "module"
         skipwhitespace(stream, newlines = false)
