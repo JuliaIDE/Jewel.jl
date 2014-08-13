@@ -28,12 +28,12 @@ handle("editor.eval.julia.all") do editor, data
   code = data["code"]
   mod = Jewel.getthing(data["module"], Main)
   try
+    task_local_storage()[:SOURCE_PATH] = data["path"]
     include_string(mod, code, file)
   catch e
     println(STDERR, "Error evaluating $file:")
     showerror(STDERR, e.error, catch_backtrace())
     println(STDERR)
-
     notify_error(sprint(showerror, e.error))
   end
   notify_done()
