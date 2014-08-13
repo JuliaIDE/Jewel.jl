@@ -35,7 +35,11 @@ function getblock(s, line)
   c = lines(s)
   i = walkback(c, line)
   j = walkforward(c, line, i)
-  join(c[i:j], "\n"), (i, j)
+  code = join(c[i:j], '\n')
+  s = scope(code, line-i+1)[:type]
+  ((s == :toplevel && isblank(c[line])) || s == :multiline_comment) &&
+    (code = "")
+  code, (i, j)
 end
 
 function getblock(s, start::Cursor, stop::Cursor)

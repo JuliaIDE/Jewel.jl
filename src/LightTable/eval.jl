@@ -19,6 +19,7 @@ handle("editor.eval.julia") do editor, data
     hasselection(data) ?
       Jewel.getblock(data["code"], data["start"]["line"]) :
       Jewel.getblock(data["code"], cursor(data["start"]), cursor(data["end"]))
+  code == "" && return notify_done()
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
   eval(editor, mod, code, data["path"], bounds)
 end
