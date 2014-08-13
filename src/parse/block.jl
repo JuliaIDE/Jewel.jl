@@ -16,7 +16,7 @@ end
 # this one.
 function walkforward(code::Vector, line)
   l = line
-  while l < length(code) && (!isstart(code[l]) || l == line)
+  while l < length(code) && (l == line || !isstart(code[l]))
     l += 1
     !(isblank(code[l]) || isstart(code[l])) && (line = l)
   end
