@@ -1,8 +1,8 @@
 # Extract blocks of code from a file
 
 isblank(s) = ismatch(r"^\s*(#.*)?$", s)
-isend(s) = ismatch(r"^end", s)
 isstart(s) = !(ismatch(r"^\s", s) || isblank(s) || isend(s))
+isend(s) = ismatch(r"^end\b", s)
 
 # Find to the start of this block.
 function walkback(code::Vector, line)
