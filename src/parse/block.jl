@@ -49,11 +49,11 @@ function getblock(s, start::Cursor, stop::Cursor)
   # As a convienience, trim blank lines
   code = lines(s[i:j])
   i, j = start.line, stop.line
-  while isblank(code[1])
+  while !isempty(code) && isblank(code[1])
     shift!(code)
     i += 1
   end
-  while isblank(code[end])
+  while !isempty(code) && isblank(code[end])
     pop!(code)
     j -= 1
   end
