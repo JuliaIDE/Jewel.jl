@@ -42,5 +42,21 @@ function getblock(s, start::Cursor, stop::Cursor)
   io = LineNumberingReader(s)
   i = LNR.index(io, start)
   j = LNR.index(io, stop)-1
-  s[i:j], (start.line, stop.line)
+
+  # The cursor could be on the n+1th line
+  stop.line > length(io.lines) && (j = endof(s))
+
+  # As a convienience, trim blank lines
+  code = lines(s[i:j])
+  i, j = start.line, stop.line
+  while isblank(code[1])
+    shift!(code)
+    i += 1
+  end
+  while isblank(code[end])
+    pop!(code)
+    j -= 1
+  end
+
+  join(code, "\n"), (i,j)
 end
