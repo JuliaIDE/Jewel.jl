@@ -12,12 +12,18 @@ end
 
 # Profile tree display
 
+function toabspath(file)
+  isabspath(file) && file
+  path = Jewel.basepath(file)
+  return path == nothing ? file : path
+end
+
 function displayinline!(req, tree::Jewel.ProfileView.ProfileTree, bounds)
   raise(req, "julia.profile-result",
         {"value" => stringmime("text/html", tree),
          "start" => bounds[1],
          "end"   => bounds[2],
-         "lines" => [{:file => li.file,
+         "lines" => [{:file => toabspath(li.file),
                       :line => li.line,
                       :percent => p} for (li, p) in Jewel.ProfileView.fetch() |> Jewel.ProfileView.flatlines]})
 end

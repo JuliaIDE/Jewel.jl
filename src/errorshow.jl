@@ -7,9 +7,23 @@ const abspathpattern =
 const relpathpattern =
   @windows? r"([a-zA-Z_\./\\0-9]+\.jl)(?::([0-9]*))?$" : r"([a-zA-Z_\./0-9]+\.jl)(?::([0-9]*))?$"
 
+function basepath(file)
+  path = joinpath(JULIA_HOME,"..","share","julia","base",file) |> normpath
+  isfile(path) || (path = nothing)
+  return path
+end
+
 function githublink(path)
   file, line = match(relpathpattern, path).captures
   """<a href="https://github.com/JuliaLang/julia/tree/$(Base.GIT_VERSION_INFO.commit)/base/$file#L$line">$path</a>"""
+end
+
+function baselink(path)
+  file, line = match(relpathpattern, path).captures
+  link = basepath(file)
+  link == nothing && return githublink(path)
+  line == nothing || (link *= ":$line")
+  """<a class="file-link" data-file="$link">$link</a>"""
 end
 
 function filelink(path)
@@ -47,7 +61,7 @@ function showbacktrace_html(io::IO, top_function::Symbol, t, set = 1:typemax(Int
     if ismatch(abspathpattern, ls[i])
       print(io, replace(ls[i], abspathpattern, filelink))
     elseif ismatch(relpathpattern, ls[i])
-      print(io, replace(ls[i], relpathpattern, githublink))
+      print(io, replace(ls[i], relpathpattern, baselink))
     else
       println(io, ls[i])
     end
