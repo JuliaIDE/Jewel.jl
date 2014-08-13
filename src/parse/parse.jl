@@ -13,14 +13,14 @@ codemodule(code, pos) =
 precursor(s::String, i) = join(collect(s)[1:(i-1 <= length(s) ? i-1 : end)])
 postcursor(s::String, i) = join(collect(s)[i:end])
 
-function getblockcursor(code, line, cursor)
+function getblockcursor(code, line, c)
   code, bounds = getblock(code, line)
-  code, bounds, (cursor[1]-bounds[1]+1, cursor[2])
+  code, bounds, cursor(c.line-bounds[1]+1, c.column)
 end
 
-getblockcursor(code, cursor) = getblockcursor(code, cursor[1], cursor)
+getblockcursor(code, cursor) = getblockcursor(code, cursor.line, cursor)
 
-charundercursor(code, cursor) = get(collect(lines(code)[cursor[1]]), cursor[2], ' ')
+charundercursor(code, cursor) = get(collect(lines(code)[cursor.line]), cursor.column, ' ')
 
 function matchorempty(args...)
   result = match(args...)
@@ -44,7 +44,7 @@ function getqualifiedname(str::String, index::Integer)
 end
 
 # could be more efficient
-getqualifiedname(str::String, cursor) = getqualifiedname(lines(str)[cursor[1]], cursor[2])
+getqualifiedname(str::String, cursor) = getqualifiedname(lines(str)[cursor.line], cursor.column)
 
 function isdefinition(code::String)
   try

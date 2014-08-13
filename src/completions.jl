@@ -25,7 +25,7 @@ end
 Takes a block of code and a cursor and returns autocomplete data.
 """
 function completions(code, cursor; mod = Main, file = nothing)
-  line = precursor(lines(code)[cursor[1]], cursor[2])
+  line = precursor(lines(code)[cursor.line], cursor.column)
   scs = scopes(code, cursor)
   sc = scs[end]
   call = lastcall(scs)
@@ -42,7 +42,7 @@ function completions(code, cursor; mod = Main, file = nothing)
       haskey(fncompletions, f) || break
       return fncompletions[f]({:mod => mod,
                                :file => file,
-                               :input => precursor(line, cursor[2])})
+                               :input => precursor(line, cursor.column)})
     elseif sc[:type] in (:string, :multiline_string, :comment, :multiline_comment)
       return nothing
     elseif (q = qualifier(line)) != nothing
