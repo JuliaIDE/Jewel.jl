@@ -154,7 +154,7 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
     # Tokens
     elseif (token = startswith(stream, identifier_start)) != ""
       if token == "end"
-        cur_scope() == :block && peekbehind(stream, -length(token)) ≠ ':' && pop!(scopes)
+        cur_scope() in [:block, :module] && peekbehind(stream, -length(token)) ≠ ':' && pop!(scopes)
         leaving_expr()
       elseif token == "module"
         skipwhitespace(stream, newlines = false)
@@ -164,7 +164,7 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
         pushscope({:type => :using})
       else
         keyword = false
-        token in blockclosers && (pop!(scopes); keyword = true)
+        token in blockclosers && (cur_scope() == :block && pop!(scopes); keyword = true)
         token in blockopeners && (pushscope({:type => :block,
                                              :name => token});
                                   keyword = true)
