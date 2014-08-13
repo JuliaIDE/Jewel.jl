@@ -8,7 +8,7 @@ function doc(code, cursor, mod = Main)
   name = getqualifiedname(code, cursor)
 
   thing = thingorfunc(code, cursor, mod; name = name)
-  thing == nothing || push!(docs, helpstr(thing))
+  thing == nothing || push!(docs, sprint(Base.help, thing))
 
   texcmds = texcommands(name, code, cursor)
   texcmds == nothing || push!(docs, texcmds)
