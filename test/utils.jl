@@ -1,8 +1,10 @@
+using LNR
+
 function get_cursor(s)
   ls = Jewel.lines(s)
   for (i, l) in enumerate(ls)
     m = match(r".*?\|", l)
-    m == nothing || return (i, length(m.match))
+    m == nothing || return LNR.cursor(i, length(m.match))
   end
   error("no cursor found")
 end
