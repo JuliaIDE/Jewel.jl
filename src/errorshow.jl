@@ -23,12 +23,11 @@ function baselink(path)
   link = basepath(file)
   link == nothing && return githublink(path)
   line == nothing || (link *= ":$line")
-  """<a class="file-link" data-file="$link">$link</a>"""
+  """<a class="file-link" data-file="$link">$path</a>"""
 end
 
 function filelink(path)
-  file, line = match(abspathpattern, path).captures
-  """<a href="file://$file">$path</a>"""
+  """<a class="file-link" data-file="$path">$(splitdir(path)[2])</a>"""
 end
 
 function showerror_html(io, e)
