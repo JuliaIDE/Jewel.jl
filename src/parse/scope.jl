@@ -80,7 +80,7 @@ const macro_start = Regex("^"*macros.pattern)
 scope_pass(s::String; kws...) = scope_pass(LineNumberingReader(s); kws...)
 
 # I'm going to be upfront on this one: this is not my prettiest code.
-function scope_pass(stream::LineNumberingReader; stop = false, collect = true, target = cursor(0,0))
+function scope_pass(stream::LineNumberingReader; stop = false, collect = true, target::Union(Cursor, Integer) = cursor(0,0))
   isa(target, Integer) && (target = cursor(target, 1))
   collect && (tokens = Set{UTF8String}())
   scopes = Dict[{:type => :toplevel}]
