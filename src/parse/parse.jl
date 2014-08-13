@@ -3,9 +3,12 @@ include("block.jl")
 
 lines(s) = split(s, "\n")
 
-tokens(code, cursor = (0, 0)) = scope_pass(code, target = cursor)
-scopes(code, cursor) = scope_pass(code, collect = false, stop = true, target = cursor)
-scope(code, cursor) = scopes(code, cursor)[end]
+tokens(code, c = cursor(0, 0)) = scope_pass(code, target = c)
+scopes(code, c = cursor(0,0)) = scope_pass(code,
+                                           collect = false,
+                                           stop = (c ≠ cursor(0,0)),
+                                           target = c)
+scope(code, c = cursor(0,0)) = scopes(code, c)[end]
 
 codemodule(code, pos) =
   @as _ code scopes(_, pos) filter(s->s[:type]==:module, _) map(s->s[:name], _) join(_, ".")
