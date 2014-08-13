@@ -172,7 +172,7 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
     else
       read(stream, Char)
     end
-    if stop && (line(stream) > target.line || (line(stream) == target.line && column(stream) >= target.column))
+    if stop && cursor(stream) ≥ target
       return scopes
     end
   end
