@@ -156,7 +156,7 @@ function scope_pass(stream::LineNumberingReader; stop = false, collect = true, t
       if token == "end"
         cur_scope() in [:block, :module] && peekbehind(stream, -length(token)) ≠ ':' && pop!(scopes)
         leaving_expr()
-      elseif token == "module"
+      elseif token in ("module", "baremodule")
         skipwhitespace(stream, newlines = false)
         pushscope({:type => :module,
                    :name => startswith(stream, identifier_start)})
