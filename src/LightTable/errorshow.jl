@@ -1,5 +1,3 @@
-export showerror_html, showbacktrace_html
-
 const abspathpattern =
   @windows? r"([a-zA-Z]+:[\\/][a-zA-Z_\./\\ 0-9]+\.jl)(?::([0-9]*))?" : r"(/[a-zA-Z_\./ 0-9]+\.jl)(?::([0-9]*))?"
 
