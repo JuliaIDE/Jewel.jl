@@ -1,7 +1,7 @@
 handle("editor.julia.hints") do editor, data
   cur = cursor(data["cursor"]["line"], data["cursor"]["col"])
   code = data["code"]
-  mod = data["module"] == nothing ? Main : Jewel.getthing(data["module"])
+  mod = Jewel.getmodule(code, cur, filemod = data["module"])
   completions = allcompletions(code, cur, mod = mod, file = data["path"])
   if completions == nothing
     raise(editor, "editor.julia.hints.update",

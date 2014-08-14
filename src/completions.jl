@@ -65,7 +65,7 @@ Takes a file of code and a cursor and returns autocomplete data.
 """
 function allcompletions(code, cursor; mod = Main, file = nothing)
   block, _, cursor′ = getblockcursor(code, cursor)
-  cs = completions(block, cursor′, mod = mod, file = file) # need to take into account codemodule
+  cs = completions(block, cursor′, mod = mod, file = file)
   cs == nothing && return nothing
   if !haskey(cs, :textual) || cs[:textual]
     ts = tokens(code, cursor)
