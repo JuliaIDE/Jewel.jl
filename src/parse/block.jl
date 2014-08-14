@@ -38,7 +38,7 @@ function getblock(s, line)
   code = join(c[i:j], '\n')
   s = scope(code, line-i+1)[:type]
   ((s == :toplevel && isblank(c[line])) || s == :multiline_comment) &&
-    (code = "")
+    (return "", (line, line))
   code, (i, j)
 end
 
