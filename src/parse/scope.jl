@@ -8,10 +8,10 @@ const identifier = Regex("(?![!0-9])$(identifier_inner.pattern)+")
 const identifier_start = Regex("^$(identifier.pattern)")
 
 const blockopeners = Set(["begin", "function", "type", "immutable",
-                         "let", "macro", "for", "while",
-                         "quote", "if", "else", "elseif",
-                         "try", "finally", "catch", "do",
-                         "module"])
+                          "let", "macro", "for", "while",
+                          "quote", "if", "else", "elseif",
+                          "try", "finally", "catch", "do",
+                          "module"])
 
 const blockclosers = Set(["end", "else", "elseif", "catch", "finally"])
 
