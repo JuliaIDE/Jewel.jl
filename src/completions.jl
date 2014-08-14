@@ -26,6 +26,7 @@ Takes a block of code and a cursor and returns autocomplete data.
 """
 function completions(code, cursor; mod = Main, file = nothing)
   line = precursor(lines(code)[cursor.line], cursor.column)
+  @show
   scs = scopes(code, cursor)
   sc = scs[end]
   call = lastcall(scs)
@@ -51,6 +52,8 @@ function completions(code, cursor; mod = Main, file = nothing)
       identifier_completions((@> thing names filtervalid),
                              textual = false)
     end
+  elseif isnum(line)
+    nothing
   else
     identifier_completions(accessible(mod))
   end
@@ -89,6 +92,8 @@ function qualifier(s)
   m = match(Regex("((?:$(identifier.pattern)\\.)+)(?:$(identifier.pattern))?\$"), s)
   m == nothing ? m : m.captures[1]
 end
+
+isnum(s) = ismatch(r"(0x[0-9a-zA-Z]*|[0-9]+)$", s)
 
 # Latex completions
 # –––––––––––––––––
