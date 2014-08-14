@@ -1,63 +1,7 @@
 # A pseudo-parser which extracts information from Julia code
 
-# stream utils
-
 using LNR
-
-import Base: peek
-
-const whitespace = " \t"
-
-function skipwhitespace(io::IO; newlines = true)
-  while !eof(io) && (peek(io) in whitespace || (newlines && peek(io) == '\n'))
-    read(io, Char)
-  end
-  return io
-end
-
-function startswith(stream::IO, s::String; eat = true, padding = false)
-  start = position(stream)
-  padding && skipwhitespace(stream)
-  result = true
-  for char in s
-    !eof(stream) && read(stream, Char) == char ||
-      (result = false; break)
-  end
-  !(result && eat) && seek(stream, start)
-  return result
-end
-
-function startswith{T<:String}(stream::IO, ss::Vector{T}; eat = true)
-  for s in ss
-    startswith(stream, s, eat = eat) && return true
-  end
-  return false
-end
-
-function startswith(stream::IO, r::Regex; eat = true, padding = false)
-  @assert beginswith(r.pattern, "^")
-  start = position(stream)
-  padding && skipwhitespace(stream)
-  line = chomp(readline(stream))
-  seek(stream, start)
-  m = match(r, line)
-  m == nothing && return ""
-  eat && @dotimes length(m.match) read(stream, Char)
-  return m.match
-end
-
-function peekbehind(stream::IO, offset = 0)
-  c = '\0'
-  skip(stream, offset)
-  if position(stream) > 0
-    skip(stream, -1)
-    c = read(stream, Char)
-  end
-  skip(stream, -offset)
-  return c
-end
-
-# the parser
+include("streams.jl")
 
 const identifier_inner = r"[^,⊶⩃↣⩄≗≦⥥∓≨⊘×≥≫⥘⪚⋼⭂⥩⩾⥓∝⤞⇼⥍⭈∽⩁⥎⟑⟉∊∷≳≠⩧⫏⇿⬵≬⩗⥭⦾⥖→∪⫑⪀⩠⥢⤌⋝⊕⪪≈⪏≤⨤⪿⟰≼⫂≹⪣⋴≧∸≐⭋∨⨳⭁∺⋥⟽⊷⟱≡\]⤅⪃⩋⩊⋣⋎⥗⨮⬻⪻≢∙⪕⩓⫺∧⧻⨭⊵≓⥬⥛⋿⭃⫒⫕⩡⬺⧷⥄⊱⨰⊇≊⨬≖>⤕⬴⟿⋘⪇≯⋕⤏⟶⥚⥜⨼∥⪠⥝⬷∘⊴⪈⤔⪍⫄?⊰⪌⋩≟⋜⫀\)⫎⩦⋏⫷⊋⪱⤀⩯⤘⫌⩱≜↓⋗↑≛⋌⪢⫖⋖⩰⊏⊗⪡⋆⟈⤂⥆⧁⊻⤋⤖⩹↦⪳⩸⥅∔⨺⋐≶⟵\}⪙⪧⇺%≭≕⥔⥐⊆⋸⅋⋒≃≝≿⇴⩌⋠⇽≰/⫙⊠⪼⇔\[⟾+≩⊟⨶⥰⪉≎≷⩣⭄&⨲⧣⩭≑⊐⫗⩬⩢⬽⪯⪓⪒≪∈⪘⬿⫸⇹⊅⨥⨩≚⋹⊃⊂⪞⋺⨹⋦∦≮⋧⋛⋾⊁≉￪≔±\{⩒⩑⋫￩⥤⨽⬲⪄⫓⪑∩⧡⩮⪟⪛⋽⪦⇒≁⪝⬳⩝⩳≴⪰⟻≣⦼⩷⇶⋳⪺⪜⩕⥦∛≽⋑⤓⟼⩏≲⊲≸⟺⇷⟹∌⩪⊞⫉⨴⪤⪸⥡⩔⭊⪆⩲⫈⥒⫋⬶⫁⪵∗⫊⩖≙⩐≍⨫⦸⋚⊄⫐⥇⥣⪲↔⪷⨈⧺⭌⨨≄⤟^≵⋭⋊⟷⩅∤⫆⊽\(⬸⤒⪾⩞⥫⥙⋙⨱⬹<⊎⤊⤁⇏≺⋵⥏⩴⋶⪂⥕⪨⋇⊊⫅⊖⪶⋬≻⋍⋓⩍≱⇻⩵↮⋋⪖⨢↠⤎⊈⊮⋪⊓⪔\⨧⩜⥞⫇⪫⬾⋷⤃⧥⫃⨷⥈⤄⩼⋤⥠⬼⤠⩛≂↚⥧|∍⨻⊙⨪∋⪋⋲⤍.\"⊑⩟⇎*:￬⭉⤉⥯⬱⇾⋡÷⥟⥋∉⬰≞≾⫍⨵⩚⩫≅⩿⪎⪴⊒⪽≀⫹⤇⋅⩀⊡⤆∜⤈⨣↛⊩⫔⦷⩺≋\-≇⋨⊜~⫛≌⥉√⋢⊛⤗⋟⧶≏⊔⪗⋞ ⩎⊳∾⥨￫⩘⥌⪹⪩⩻=⨸⪊⨇⧤⇸⊉⥑⥮⭀⧀⊚⊬≒\$⊀⋻⦿⭇⥊≆←⤐≘⋉⊼⥪⧴⪅⩽⪬⪁⋄⤑⨦⩶⇵⪥⊍⫘⩂⪐⟒⪭⪮⤝∻\"\n]"
 const identifier = Regex("(?![!0-9])$(identifier_inner.pattern)+")
