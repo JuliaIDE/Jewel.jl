@@ -38,7 +38,6 @@ function lexstring(stream::IO)
   return token(multi ? :multistring : :string)
 end
 
-# Similar to Lexer.next_token, but treats comments and whitespace as tokens
 function nexttoken(ts)
   Lexer.skipws(ts) == true && return token(:whitepace)
   c = Lexer.peekchar(ts)
@@ -50,19 +49,49 @@ function nexttoken(ts)
   return t
 end
 
-# Scope passing
+function peektoken(ts)
+  LNR.withstream(ts.io) do
+    nexttoken(ts)
+  end
+end
+
+# Scope parsing
 
 immutable Scope
   kind::Symbol
   name::UTF8String
 end
 
-typealias Scopes Vector{Scope}
+Scope(kind) = Scope(kind, "")
+Scope(kind::Symbol, name::String) = Scope(kind, convert(UTF8String, name))
+Scope(kind, name) = Scope(symbol(kind), string(name))
 
-# ts = Lexer.TokenStream(IOBuffer("""
-#   function foo()
-#     \"""Hello World\"""
-#   end
-#   """))
+const blockopeners = Set(map(symbol, ["begin", "function", "type", "immutable",
+                                      "let", "macro", "for", "while",
+                                      "quote", "if", "else", "elseif",
+                                      "try", "finally", "catch", "do",
+                                      "module"]))
 
-# nexttoken(ts)
+const blockclosers = Set(map(symbol, ["end", "else", "elseif", "catch", "finally"]))
+
+function nextscope!(scopes, ts)
+  t = nexttoken(ts)
+  if t in blockopeners
+    push!(scopes, Scope(:block, t))
+  elseif t in ('(', '[', '{')
+    push!(scopes, Scope(:array, t))
+  elseif last(scopes).kind == :array && t in (')', ']', '}')
+    pop!(scopes)
+  end
+  return t
+end
+
+ts = Lexer.TokenStream(IOBuffer("""
+  function.foo foo()
+    \"""Hello World\"""
+  end
+  """))
+
+# scs = [Scope(:toplevel)]
+# nextscope!(scs, ts)
+# scs
