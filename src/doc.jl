@@ -38,7 +38,7 @@ end
 function methodsorwith(code, cursor, mod = Main)
   thing = thingorfunc(code, cursor, mod)
   thing == nothing && return
-  return (isa(thing, Function) && isgeneric(thing)) || isleaftype(thing) ?
-    methods(thing) :
-    eval(Main, :(methodswith($(typeof(thing)), true))) # I have no idea why I thought this was necessary
+  return thing == Module ? methodswith(Module) :
+         (isa(thing, Function) && isgeneric(thing)) || isleaftype(thing) ? methods(thing) :
+         eval(Main, :(methodswith($(typeof(thing)), true))) # I have no idea why I thought this was necessary
 end
