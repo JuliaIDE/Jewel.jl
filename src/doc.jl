@@ -20,8 +20,8 @@ end
 function texcommands(name, code, cursor)
   chars = collect(name)
   if isempty(chars) # fallback if getqualifiedname failed
-    line = collect(lines(code)[cursor[1]])
-    c = cursor[2]
+    line = collect(lines(code)[cursor.line])
+    c = cursor.column
     chars = line[max(c - 1, 1):min(c, length(line))]
   end
 
