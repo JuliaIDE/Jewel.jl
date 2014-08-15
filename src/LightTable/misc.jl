@@ -14,7 +14,7 @@ end
 
 function toabspath(file)
   isabspath(file) && file
-  path = Jewel.basepath(file)
+  path = basepath(file)
   return path == nothing ? file : path
 end
 
