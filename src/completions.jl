@@ -17,7 +17,7 @@ identifier_completions(; textual = true) =
 
 function lastcall(scopes)
   for i = length(scopes):-1:1
-    scopes[i][:type] == :call && return scopes[i][:name]
+    scopes[i].kind == :call && return scopes[i].name
   end
 end
 
@@ -26,7 +26,6 @@ Takes a block of code and a cursor and returns autocomplete data.
 """
 function completions(code, cursor; mod = Main, file = nothing)
   line = precursor(lines(code)[cursor.line], cursor.column)
-  @show
   scs = scopes(code, cursor)
   sc = scs[end]
   call = lastcall(scs)
@@ -35,20 +34,20 @@ function completions(code, cursor; mod = Main, file = nothing)
     {:hints => latex_completions,
      :pattern => r"\\[a-zA-Z0-9^_]*",
      :textual => false}
-  elseif sc[:type] == :using
+  elseif sc.kind == :using
     pkg_completions(packages())
   elseif call != nothing && (f = getthing(call, mod); haskey(fncompletions, f))
     fncompletions[f]({:mod => mod,
                       :file => file,
                       :input => precursor(line, cursor.column)})
-  elseif sc[:type] in (:string, :multiline_string, :comment, :multiline_comment)
+  elseif sc.kind in (:string, :multiline_string, :comment, :multiline_comment)
     nothing
   elseif (q = qualifier(line)) != nothing
     thing = getthing(mod, q, nothing)
     if isa(thing, Module)
       identifier_completions((@> thing names(true) filtervalid),
                              textual = false)
-    elseif thing != nothing && sc[:type] == :toplevel
+    elseif thing != nothing && sc.kind == :toplevel
       identifier_completions((@> thing names filtervalid),
                              textual = false)
     end
