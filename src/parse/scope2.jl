@@ -1,16 +1,20 @@
 using LNR, Lazy
 import JuliaParser.Lexer
-import JuliaParser.Lexer: next_token, peekchar, readchar
 
 include("streams.jl")
 
-type Token{T} end
+@defonce type Token{T} end
 
 token(T) = Token{T}()
 
+Base.symbol{T}(t::Token{T}) = T
+
+Lexer.peekchar(r::LineNumberingReader) =
+  eof(r)? Lexer.EOF : LNR.peekchar(r)
+
 function lexcomment(ts)
-  readchar(ts)
-  if peekchar(ts) == '='
+  Lexer.readchar(ts)
+  if !eof(ts.io) && Lexer.peekchar(ts) == '='
     Lexer.skip_multiline_comment(ts, 1)
     return token(:multicomment)
   else
@@ -38,14 +42,16 @@ function lexstring(stream::IO)
   return token(multi ? :multistring : :string)
 end
 
+# rename readtoken
 function nexttoken(ts)
-  Lexer.skipws(ts) == true && return token(:whitepace)
+  Lexer.skipws(ts)
   c = Lexer.peekchar(ts)
 
-  c == '#' && return lexcomment(ts)
-  c == '"' && return lexstring(ts.io)
+  t = c == '#' ? lexcomment(ts) :
+      c == '"' ? lexstring(ts.io) :
+      Lexer.next_token(ts)
 
-  t = next_token(ts)
+  ts.lasttoken = t
   return t
 end
 
@@ -76,22 +82,78 @@ const blockclosers = Set(map(symbol, ["end", "else", "elseif", "catch", "finally
 
 function nextscope!(scopes, ts)
   t = nexttoken(ts)
-  if t in blockopeners
+  if t in (:module, :baremodule) && isa(peektoken(ts), Symbol)
+    push!(scopes, Scope(:module, nexttoken(ts)))
+  elseif t in blockopeners
     push!(scopes, Scope(:block, t))
   elseif t in ('(', '[', '{')
     push!(scopes, Scope(:array, t))
-  elseif last(scopes).kind == :array && t in (')', ']', '}')
+  elseif last(scopes).kind in (:array, :call) && t in (')', ']', '}')
     pop!(scopes)
+  elseif t == symbol("end")
+    last(scopes).kind in (:block, :module) && ts.lasttoken ≠ :(:) && pop!(scopes)
+  elseif t == :using
+    push!(scopes, Scope(:using))
+  elseif t == '\n'
+    last(scopes).kind == :using && pop!(scopes)
+  elseif isa(t, Symbol)
+    if peektoken(ts) == '('
+      nexttoken(ts)
+      push!(scopes, Scope(:call, t))
+    end
   end
   return t
 end
 
-ts = Lexer.TokenStream(IOBuffer("""
-  function.foo foo()
-    \"""Hello World\"""
-  end
-  """))
+# API functions
 
-# scs = [Scope(:toplevel)]
-# nextscope!(scs, ts)
-# scs
+Optional(T) = Union(T, Nothing)
+
+function scopes(code::LineNumberingReader, cur::Optional(Cursor) = nothing)
+  ts = Lexer.TokenStream(code)
+  scs = [Scope(:toplevel)]
+  while !eof(code) && (cur == nothing || cursor(code) < cur)
+    nextscope!(scs, ts)
+  end
+  t = ts.lasttoken
+  if isa(t, Token) && symbol(t) ≠ :whitespace && (cur == nothing ||
+                                                  cur < cursor(code))
+    push!(scs, Scope(t))
+  elseif last(scs).kind == :call && !(cur == nothing ||
+                                      cur >= cursor(code))
+    # (only in a :call scope if past the last bracket)
+    pop!(scs)
+  end
+  return scs
+end
+
+scope(code, cur=nothing) = last(scopes(code, cur))
+
+isidentifier(x::Symbol) = !(x in Lexer.syntactic_ops)
+isidentifier(x) = false
+
+function qualifiedname(ts, name = nexttoken(ts))
+  n = string(name)
+  while peektoken(ts) == :(.)
+    nexttoken(ts)
+    t = peektoken(ts)
+    if isidentifier(t)
+      nexttoken(ts)
+      n *= "." * string(t)
+    end
+  end
+  return n
+end
+
+function tokens(code::LineNumberingReader, cur::Optional(Cursor) = nothing)
+  ts = Lexer.TokenStream(code)
+  words = Set{UTF8String}()
+  while !eof(code)
+    Lexer.skipws(ts); start = cursor(code)
+    t = nexttoken(ts)
+    isidentifier(t) && (t = qualifiedname(ts, t))
+    (cur == nothing || start ≤ cur < cursor(code)) && continue
+    isa(t, String) && push!(words, t)
+  end
+  return words
+end

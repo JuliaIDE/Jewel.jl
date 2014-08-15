@@ -110,6 +110,12 @@ end
 # Position is 0-based
 index(r::LineNumberingReader, p::Cursor) = position(r, p) + 1
 
+function peekchar(r::LineNumberingReader)
+  withstream(r) do
+    read(r, Char)
+  end
+end
+
 # Util
 
 function withstream(f, io)
