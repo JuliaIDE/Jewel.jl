@@ -13,7 +13,7 @@ function walkback(code::Vector, line)
   return line
 end
 
-closed(code::String) = scope(code) == {:type=>:toplevel}
+closed(code::String) = scope(code).kind == :toplevel
 
 # Scan to the start of the next block, find the end of
 # this one.
@@ -36,7 +36,7 @@ function getblock(s, line)
   i = walkback(c, line)
   j = walkforward(c, line, i)
   code = join(c[i:j], '\n')
-  s = scope(code, line-i+1)[:type]
+  s = scope(code, line-i+1).kind
   ((s == :toplevel && isblank(c[line])) || s == :multiline_comment) &&
     (return "", (line, line))
   code, (i, j)
