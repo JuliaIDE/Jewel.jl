@@ -39,13 +39,13 @@ include("utils.jl")
   end
   """) == "try"
 
-@test get_scope("""
-  function foo()
-    le|t x = 1, y = 2
-      foo()
-    end
-  end
-  """) == "function"
+# @test get_scope("""
+#   function foo()
+#     le|t x = 1, y = 2
+#       foo()
+#     end
+#   end
+#   """) == "function"
 
 @test get_scope("""
   try
@@ -73,12 +73,12 @@ include("utils.jl")
 # Treating end correctly in arrays
 @test get_scope("""
   [end|]
-  """) == {:type => :array, :name => '['}
+  """) == Jewel.Scope(:array, "[")
 
 # Failing gracefully with too many ends
 @test get_scope("""
   end|
-  """) == {:type => :toplevel}
+  """).kind == :toplevel
 
 # Ignore the :end keyword
 @test get_scope("""

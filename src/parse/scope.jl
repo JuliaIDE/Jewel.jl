@@ -48,6 +48,9 @@ function lexstring(stream::IO)
   return token(multi ? :multistring : :string)
 end
 
+isidentifier(x::Symbol) = !(x in Lexer.syntactic_ops) && !(x in (:(:),))
+isidentifier(x) = false
+
 function qualifiedname(ts, name = nexttoken(ts))
   n = [name]
   pos = 0
@@ -55,7 +58,7 @@ function qualifiedname(ts, name = nexttoken(ts))
     pos = position(ts.io)
     Lexer.next_token(ts) == :(.) || break
     t = Lexer.next_token(ts)
-    isa(t, Symbol) || break
+    isidentifier(t) || break
     push!(n, t)
   end
   seek(ts.io, pos)
@@ -70,16 +73,32 @@ function nexttoken(ts)
       c == '"' ? lexstring(ts.io) :
       Lexer.next_token(ts)
 
-  isa(t, Symbol) && (t = qualifiedname(ts, t))
+  isidentifier(t) && (t = qualifiedname(ts, t))
 
   ts.lasttoken = t
   return t
 end
 
+# begin
+#   code = Lexer.TokenStream(LineNumberingReader("""
+#     :end
+#   """))
+# end
+
+# scs = [Scope(:toplevel)]
+# scs
+
+# nextscope!(scs, code)
+# peektoken(code)
+# code.lasttoken
+
 function peektoken(ts)
+  t = last = ts.lasttoken
   LNR.withstream(ts.io) do
-    nexttoken(ts)
+    t = nexttoken(ts)
   end
+  ts.lasttoken = last
+  return t
 end
 
 # Scope parsing
@@ -104,6 +123,7 @@ const blockopeners = Set(map(symbol, ["begin", "function", "type", "immutable",
 const blockclosers = Set(map(symbol, ["end", "else", "elseif", "catch", "finally"]))
 
 function nextscope!(scopes, ts)
+  lasttoken = ts.lasttoken
   t = nexttoken(ts)
   if t in (:module, :baremodule) && isa(peektoken(ts), Symbol)
     push!(scopes, Scope(:module, nexttoken(ts)))
@@ -114,12 +134,12 @@ function nextscope!(scopes, ts)
   elseif last(scopes).kind in (:array, :call) && t in (')', ']', '}')
     pop!(scopes)
   elseif t == symbol("end")
-    last(scopes).kind in (:block, :module) && ts.lasttoken ≠ :(:) && pop!(scopes)
+    last(scopes).kind in (:block, :module) && lasttoken ≠ :(:) && pop!(scopes)
   elseif t == :using
     push!(scopes, Scope(:using))
   elseif t == '\n'
     last(scopes).kind == :using && pop!(scopes)
-  elseif isa(t, Symbol) || isa(t, Vector{Symbol})
+  elseif isidentifier(t) || isa(t, Vector{Symbol})
     if peektoken(ts) == '('
       nexttoken(ts)
       push!(scopes, Scope(:call, join([t], ".")))
@@ -160,9 +180,6 @@ toCursor(::Nothing) = nothing
 scopes(code, cur=nothing) = scopes(toLNR(code), toCursor(cur))
 
 scope(code, cur=nothing) = last(scopes(code, cur))
-
-isidentifier(x::Symbol) = !(x in Lexer.syntactic_ops)
-isidentifier(x) = false
 
 function tokens(code::LineNumberingReader, cur::Optional(Cursor) = nothing)
   ts = Lexer.TokenStream(code)
