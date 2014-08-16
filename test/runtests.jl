@@ -5,8 +5,6 @@ using Base.Test, Jewel
 
 @test Jewel.filemodule(Pkg.dir("Jewel", "src", "module.jl")) == "Jewel"
 
-Profile.clear()
-
 include("utils.jl")
 
 @test get_scope("""
@@ -27,7 +25,7 @@ include("utils.jl")
     # |comment
     Pkg.add(x, )
   end
-  """) == {:type => :comment}
+  """).kind == :comment
 
 @test get_scope("""
   for i in 1:10

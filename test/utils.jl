@@ -25,8 +25,8 @@ end
 
 function get_scope(s)
   sc = get_scopes(s)[end]
-  if sc[:type] in (:call, :block)
-    sc[:name]
+  if sc.kind in (:call, :block)
+    sc.name
   else
     sc
   end

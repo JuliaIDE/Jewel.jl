@@ -48,6 +48,20 @@ function lexstring(stream::IO)
   return token(multi ? :multistring : :string)
 end
 
+function qualifiedname(ts, name = nexttoken(ts))
+  n = [name]
+  pos = 0
+  while true
+    pos = position(ts.io)
+    Lexer.next_token(ts) == :(.) || break
+    t = Lexer.next_token(ts)
+    isa(t, Symbol) || break
+    push!(n, t)
+  end
+  seek(ts.io, pos)
+  return length(n) > 1 ? n : n[1]
+end
+
 function nexttoken(ts)
   Lexer.skipws(ts)
   c = Lexer.peekchar(ts)
@@ -55,6 +69,8 @@ function nexttoken(ts)
   t = c == '#' ? lexcomment(ts) :
       c == '"' ? lexstring(ts.io) :
       Lexer.next_token(ts)
+
+  isa(t, Symbol) && (t = qualifiedname(ts, t))
 
   ts.lasttoken = t
   return t
@@ -76,6 +92,8 @@ end
 Scope(kind) = Scope(kind, "")
 Scope(kind::Symbol, name::String) = Scope(kind, convert(UTF8String, name))
 Scope(kind, name) = Scope(symbol(kind), string(name))
+
+==(a::Scope, b::Scope) = a.kind == b.kind && a.name == b.name
 
 const blockopeners = Set(map(symbol, ["begin", "function", "type", "immutable",
                                       "let", "macro", "for", "while",
@@ -101,10 +119,10 @@ function nextscope!(scopes, ts)
     push!(scopes, Scope(:using))
   elseif t == '\n'
     last(scopes).kind == :using && pop!(scopes)
-  elseif isa(t, Symbol)
+  elseif isa(t, Symbol) || isa(t, Vector{Symbol})
     if peektoken(ts) == '('
       nexttoken(ts)
-      push!(scopes, Scope(:call, t))
+      push!(scopes, Scope(:call, join([t], ".")))
     end
   end
   return t
@@ -118,6 +136,7 @@ function scopes(code::LineNumberingReader, cur::Optional(Cursor) = nothing)
   ts = Lexer.TokenStream(code)
   scs = [Scope(:toplevel)]
   while !eof(code) && (cur == nothing || cursor(code) < cur)
+    Lexer.skipws(ts) == true && continue
     nextscope!(scs, ts)
   end
   t = ts.lasttoken
@@ -145,28 +164,15 @@ scope(code, cur=nothing) = last(scopes(code, cur))
 isidentifier(x::Symbol) = !(x in Lexer.syntactic_ops)
 isidentifier(x) = false
 
-function qualifiedname(ts, name = nexttoken(ts))
-  n = string(name)
-  while peektoken(ts) == :(.)
-    nexttoken(ts)
-    t = peektoken(ts)
-    if isidentifier(t)
-      nexttoken(ts)
-      n *= "." * string(t)
-    end
-  end
-  return n
-end
-
 function tokens(code::LineNumberingReader, cur::Optional(Cursor) = nothing)
   ts = Lexer.TokenStream(code)
   words = Set{UTF8String}()
   while !eof(code)
     Lexer.skipws(ts); start = cursor(code)
     t = nexttoken(ts)
-    isidentifier(t) && (t = qualifiedname(ts, t))
     (cur != nothing && start ≤ cur ≤ cursor(code)) && continue
-    isa(t, String) && push!(words, t)
+    isa(t, Symbol) && push!(words, string(t))
+    isa(t, Vector{Symbol}) && push!(words, join(t, "."))
   end
   return words
 end
