@@ -79,19 +79,6 @@ function nexttoken(ts)
   return t
 end
 
-# begin
-#   code = Lexer.TokenStream(LineNumberingReader("""
-#     :end
-#   """))
-# end
-
-# scs = [Scope(:toplevel)]
-# scs
-
-# nextscope!(scs, code)
-# peektoken(code)
-# code.lasttoken
-
 function peektoken(ts)
   t = last = ts.lasttoken
   LNR.withstream(ts.io) do
