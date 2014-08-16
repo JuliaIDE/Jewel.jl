@@ -142,9 +142,9 @@ Optional(T) = Union(T, Nothing)
 function scopes(code::LineNumberingReader, cur::Optional(Cursor) = nothing)
   ts = Lexer.TokenStream(code)
   scs = [Scope(:toplevel)]
-  while !eof(code) && (cur == nothing || cursor(code) < cur)
+  while cur == nothing || cursor(code) < cur
     Lexer.skipws(ts) == true && continue
-    nextscope!(scs, ts)
+    nextscope!(scs, ts) == Lexer.EOF && break
   end
   t = ts.lasttoken
   if isa(t, Token) && symbol(t) ≠ :whitespace && (cur == nothing ||
@@ -171,9 +171,10 @@ scope(code, cur=nothing) = last(scopes(code, cur))
 function tokens(code::LineNumberingReader, cur::Optional(Cursor) = nothing)
   ts = Lexer.TokenStream(code)
   words = Set{UTF8String}()
-  while !eof(code)
+  while true
     Lexer.skipws(ts); start = cursor(code)
     t = nexttoken(ts)
+    t == Lexer.EOF && break
     (cur != nothing && start ≤ cur ≤ cursor(code)) && continue
     isa(t, Symbol) && push!(words, string(t))
     isa(t, Vector{Symbol}) && push!(words, join(t, "."))
