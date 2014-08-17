@@ -18,7 +18,7 @@ getthing(name::Vector{Symbol}, default = nothing) =
 getthing(mod::Module, name::String, default = nothing) =
   name == "" ?
     default :
-    @as _ name split(_, ".", false) map(symbol, _) getthing(mod, _, default)
+    @as _ name split(_, ".") map(symbol, _) getthing(mod, _, default)
 
 getthing(name::String, default = nothing) =
   getthing(Main, name, default)
