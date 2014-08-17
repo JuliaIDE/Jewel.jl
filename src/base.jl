@@ -21,4 +21,20 @@ end
 
   writemime(io::IO, ::MIME"text/plain", t::Text) = print(io, t.content)
 
+  # Add Julia to the path
+
+  @unix_only begin
+    export addtopath!, rmfrompath!
+
+    function addtopath!(target = "/usr/local/bin/julia")
+      source = joinpath(JULIA_HOME, "julia")
+      isfile(target) && error("There is already a file at $target. Please call rmfrompath!() first.")
+      run(`sudo ln -s $source $target`)
+    end
+
+    function rmfrompath!(target = "/usr/local/bin/julia")
+      isfile(target) && run(`sudo rm $target`)
+    end
+  end
+
 end
