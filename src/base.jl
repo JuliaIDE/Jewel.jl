@@ -7,17 +7,27 @@ end
 
   # Display primitives
 
-  export HTML, Text
+  export HTML, Text, Printer
 
-  type HTML
-    content::UTF8String
+  type Printer
+    λ::Function
   end
+
+  print(io::IO, s::Printer) = s.λ(io)
+
+  type HTML{T}
+    content::T
+  end
+
+  HTML(f::Function) = HTML(Printer(f))
 
   writemime(io::IO, ::MIME"text/html", h::HTML) = print(io, h.content)
 
-  type Text
-    content::UTF8String
+  type Text{T}
+    content::T
   end
+
+  Text(f::Function) = Text(Printer(f))
 
   writemime(io::IO, ::MIME"text/plain", t::Text) = print(io, t.content)
 
