@@ -13,7 +13,7 @@ lookup(ips::RawData) = map(lookup, ips)
 pruneC(trace::Trace) = filter(line->!line.fromC, trace)
 
 traces(data::Vector{Uint}) =
-  @>> split(data, 0) map(lookup) map!(pruneC) map!(reverse) filter!(t->!isempty(t))
+  @>> split(data, 0, keep=false) map(lookup) map!(pruneC) map!(reverse) filter!(t->!isempty(t))
 
 # Tree Implementation
 
