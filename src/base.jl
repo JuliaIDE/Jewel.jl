@@ -37,4 +37,10 @@ end
     end
   end
 
+  # Patches for 0.4 changes
+
+  if VERSION < v"0.4-dev"
+    split(xs, x; keep=false) = split(xs, x, false)
+  end
+
 end
