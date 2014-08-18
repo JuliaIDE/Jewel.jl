@@ -85,7 +85,7 @@ include("eval.jl")
 include("completions.jl")
 include("doc.jl")
 include("errorshow.jl")
-include("display.jl")
+include("display/display.jl")
 include("misc.jl")
 
 end
