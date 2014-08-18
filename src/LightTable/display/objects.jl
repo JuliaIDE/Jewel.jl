@@ -1,0 +1,1 @@
+displayinline(::Nothing) = Text("✓")

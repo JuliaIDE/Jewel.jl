@@ -1,4 +1,5 @@
 include("commands.jl")
+include("objects.jl")
 
 # Utils
 
@@ -12,10 +13,6 @@ function htmlimage(img)
 end
 
 # Display infrastructure
-
-# `displayinline` can be overridden to lower an object into something
-# more basic for display. It is applied repeatedly by
-# `applydisplayinline` until it reaches the most basic form possible.
 
 function bestmime(val)
   for mime in ("text/html", "image/png", "text/plain")
@@ -40,20 +37,12 @@ function displayinline(x)
   end
 end
 
-function applydisplayinline(x)
-  while (x′ = displayinline(x)) ≠ x
-    x = x′
-  end
-  return x
-end
+displayinline!(req, x, bounds) =
+  displayinline!(req, displayinline(x), bounds)
 
-displayinline(::Nothing) = Text("✓")
-
-displayinline(x::Text) = x
 displayinline!(req, text::Text, bounds) =
   showresult(req, stringmime("text/plain", text), bounds)
 
-displayinline(x::HTML) = x
 displayinline!(req, html::HTML, bounds) =
   showresult(req, stringmime("text/html", html), bounds, html=true, under=true)
 
