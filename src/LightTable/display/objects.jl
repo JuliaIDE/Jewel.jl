@@ -84,3 +84,7 @@ sizestr(a::Array) = join(size(a), "×")
 displayinline(a::Matrix) =
   Collapsible(HTML("Matrix <span>$(eltype(a)), $(sizestr(a))</span>"),
               Table("array", a))
+
+displayinline(a::Vector) =
+  Collapsible(HTML("Vector <span>$(eltype(a)), $(length(a))</span>"),
+              Table("array", a''))
