@@ -65,6 +65,8 @@ function writemime(io::IO, m::MIME"text/html", x::FloatingPoint)
   print(io, """</span>""")
 end
 
+displayinline(x::FloatingPoint) = Text(x)
+
 # Functions
 
 name(f::Function) =
