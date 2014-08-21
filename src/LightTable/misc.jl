@@ -27,19 +27,3 @@ function displayinline!(req, tree::Jewel.ProfileView.ProfileTree, bounds)
                       :line => li.line,
                       :percent => p} for (li, p) in Jewel.ProfileView.fetch() |> Jewel.ProfileView.flatlines]})
 end
-
-# Function display
-
-function writemime(io::IO, ::MIME"text/html", f::Function)
-  if isgeneric(f)
-    print(io, f.env.name)
-  elseif isdefined(f, :env) && isa(f.env,Symbol)
-    print(io, f.env)
-  else
-    print(io, "λ")
-  end
-end
-
-function displayinline!(editor, f::Function, bounds)
-  showresult(editor, stringmime("text/html", f), bounds, html=true)
-end
