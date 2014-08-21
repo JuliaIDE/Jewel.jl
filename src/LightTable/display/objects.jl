@@ -34,15 +34,21 @@ Table(data::Matrix) = Table("", data)
 
 function Base.writemime(io::IO, m::MIME"text/html", table::Table)
   println(io, """<table class="$(table.class)">""")
-  for i = 1:size(table.data, 1)
+  h, w = size(table.data)
+  max = 50; hmax = max÷2
+  for i = (h ≤ max ? (1:h) : [1:hmax, h-hmax+1:h])
     println(io, """<tr>""")
-    for j = 1:size(table.data, 2)
+    for j = (w ≤ max ? (1:w) : [1:hmax, w-hmax+1:w])
       println(io, """<td>""")
       item = table.data[i, j]
       writemime(io, bestmime(item), item)
       println(io, """</td>""")
+
+      w > max && j == hmax && println(io, """<td>⋯</td>""")
     end
     println(io, """</tr>""")
+
+    h > max && i == hmax && println(io, "<tr>","<td>⋮</td>"^(w≤max?w:max+1),"</tr>")
   end
   println(io, """</table>""")
 end
@@ -78,5 +84,3 @@ sizestr(a::Array) = join(size(a), "×")
 displayinline(a::Matrix) =
   Collapsible(HTML("Matrix <span>$(eltype(a)), $(sizestr(a))</span>"),
               Table("array", a))
-
-rand(100,100)
