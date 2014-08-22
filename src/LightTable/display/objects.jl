@@ -27,10 +27,10 @@ Collapsible(HTML("foo"),
 
 type Table{T}
   class::ASCIIString
-  data::Matrix{T}
+  data::AbstractMatrix{T}
 end
 
-Table(data::Matrix) = Table("", data)
+Table(data::AbstractMatrix) = Table("", data)
 
 function Base.writemime(io::IO, m::MIME"text/html", table::Table)
   println(io, """<table class="$(table.class)">""")
@@ -81,7 +81,7 @@ displayinline(f::Function) =
 
 # Arrays
 
-sizestr(a::Array) = join(size(a), "×")
+sizestr(a::AbstractArray) = join(size(a), "×")
 
 displayinline(a::Matrix) =
   Collapsible(HTML("Matrix <span>$(eltype(a)), $(sizestr(a))</span>"),
@@ -90,3 +90,12 @@ displayinline(a::Matrix) =
 displayinline(a::Vector) =
   Collapsible(HTML("Vector <span>$(eltype(a)), $(length(a))</span>"),
               Table("array", a''))
+
+# Data Frames
+
+using DataFrames
+
+displayinline(f::DataFrame) =
+  Collapsible(HTML("DataFrame <span>($(join(names(f), ", "))), $(size(f,1))</span>"),
+              Table("data-frame", vcat(map(s->HTML(string(s)), names(f))',
+                                       array(f))))
