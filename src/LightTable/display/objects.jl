@@ -32,23 +32,33 @@ end
 
 Table(data::AbstractMatrix) = Table("", data)
 
+const MAX_CELLS = 1000
+
+function getsize(h, w, maxcells)
+  w > h && ((w, h, swap) = (h, w, true))
+  h = min(maxcells ÷ w, h)
+  h > w ?
+    (swap ? (w, h) : (h, w)) :
+    (ifloor(sqrt(maxcells)), ifloor(sqrt(maxcells)))
+end
+
 function Base.writemime(io::IO, m::MIME"text/html", table::Table)
   println(io, """<table class="$(table.class)">""")
   h, w = size(table.data)
-  max = 50; hmax = max÷2
-  for i = (h ≤ max ? (1:h) : [1:hmax, h-hmax+1:h])
+  h′, w′ = getsize(h, w, MAX_CELLS)
+  for i = (h′ ≤ h ? (1:h′) : [1:(h′÷2), h-(h′÷2)+1:h])
     println(io, """<tr>""")
-    for j = (w ≤ max ? (1:w) : [1:hmax, w-hmax+1:w])
+    for j = (w′ ≤ w ? (1:w′) : [1:(w′÷2), w-(w′÷2)+1:w])
       println(io, """<td>""")
       item = table.data[i, j]
       writemime(io, bestmime(item), item)
       println(io, """</td>""")
 
-      w > max && j == hmax && println(io, """<td>⋯</td>""")
+      w > w′ && j == (w′÷2) && println(io, """<td>⋯</td>""")
     end
     println(io, """</tr>""")
 
-    h > max && i == hmax && println(io, "<tr>","<td>⋮</td>"^(w≤max?w:max+1),"</tr>")
+    h > h′ && i == (h′÷2) && println(io, "<tr>","<td>⋮</td>"^(w≤w′?w:w′+1),"</tr>")
   end
   println(io, """</table>""")
 end
