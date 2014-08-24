@@ -35,6 +35,7 @@ Table(data::AbstractMatrix) = Table("", data)
 const MAX_CELLS = 1000
 
 function getsize(h, w, maxcells)
+  swap = false
   w > h && ((w, h, swap) = (h, w, true))
   h = min(maxcells ÷ w, h)
   h > w ?
