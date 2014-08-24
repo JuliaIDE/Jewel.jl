@@ -3,19 +3,31 @@ include("objects.jl")
 
 # Utils
 
+function tohtml(m::MIME"text/html", x)
+  HTML() do io
+    writemime(io, m, x)
+  end
+end
+
 # Should use CSS for width
-function htmlimage(img)
+function tohtml(m::MIME"image/png", img)
   HTML() do io
     print(io, """<img width="500px" src="data:image/png;base64,""")
-    writemime(io, MIME"image/png", img)
+    writemime(io, m, img)
     print(io, "\" />")
+  end
+end
+
+function tohtml(m::MIME"image/svg+xml", img)
+  HTML() do io
+     writemime(io, m, img)
   end
 end
 
 # Display infrastructure
 
 function bestmime(val)
-  for mime in ("text/html", "image/png", "text/plain")
+  for mime in ("text/html", "image/svg+xml", "image/png", "text/plain")
     mimewritable(mime, val) && return MIME(symbol(mime))
   end
   error("Cannot display $val.")
@@ -24,16 +36,11 @@ end
 # Catch-all fallback
 function displayinline(x)
   m = bestmime(x)
-  if m == MIME"text/html"()
-    HTML() do io
-      writemime(io, MIME"text/html"(), x)
-    end
-  elseif m == MIME"image/png"()
-    htmlimage(x)
-  elseif m == MIME"text/plain"()
+  if m == MIME"text/plain"()
     Text() do io
-      writemime(io, MIME"text/plain"(), x)
+      writemime(io, m, x)
     end
+  else tohtml(m, x)
   end
 end
 
