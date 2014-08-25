@@ -3,7 +3,6 @@ module ProfileView
 using Compose, Lazy
 
 include("javascript.jl")
-include("css.jl")
 include("data.jl")
 
 githuburl(file, line) = "https://github.com/JuliaLang/julia/tree/$(Base.GIT_VERSION_INFO.commit)/base/$file#L$line"
@@ -57,12 +56,11 @@ render(tree::ProfileTree; childscale = widthscale) =
           (context(0,0,1,1/maxheight(tree, childscale = childscale)),
            render_(tree,childscale = childscale, count = tree.data.count),
            svgclass("tree")),
-          (context(), rectangle(), fill("white")),
+          (context(), rectangle(), svgclass("background")),
           JS.mapzoom, JS.mapdrag, JS.nonscalingstroke, JS.tooltip, JS.settooltip,
           svgclass("root"))
 
 function Base.writemime(io::IO, ::MIME"text/html", tree::ProfileTree)
-  write(io, CSS.css)
   write(io, """
     <div class="profile">
       <div class="tooltip">
