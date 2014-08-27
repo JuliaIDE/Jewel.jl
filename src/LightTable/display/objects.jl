@@ -102,11 +102,15 @@ displayinline(a::Vector) =
   Collapsible(HTML("Vector <span>$(eltype(a)), $(length(a))</span>"),
               Table("array", a''))
 
+# Others
+
+import Jewel: @require
+
 # Data Frames
 
-using DataFrames
-
-displayinline(f::DataFrame) =
-  Collapsible(HTML("DataFrame <span>($(join(names(f), ", "))), $(size(f,1))</span>"),
-              Table("data-frame", vcat(map(s->HTML(string(s)), names(f))',
-                                       array(f))))
+@require DataFrames begin
+  displayinline(f::DataFrame) =
+    Collapsible(HTML("DataFrame <span>($(join(names(f), ", "))), $(size(f,1))</span>"),
+                Table("data-frame", vcat(map(s->HTML(string(s)), names(f))',
+                                         array(f))))
+end

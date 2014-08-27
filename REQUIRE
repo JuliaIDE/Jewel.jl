@@ -2,4 +2,3 @@ JSON
 Lazy
 Compose
 JuliaParser
-DataFrames # Only for display
