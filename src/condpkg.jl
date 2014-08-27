@@ -1,21 +1,27 @@
 function Base.require(s::ASCIIString)
   invoke(require, (String,), s)
-  loadpkg(symbol(s))
+  loadmod(s)
 end
 
-const pkglisteners = (Symbol=>Vector{Function})[]
+loaded(mod) = getthing(Main, mod) != nothing
 
-loadpkg(pkg::Symbol) =
-  map(f->f(), get(pkglisteners, pkg,[]))
+const modlisteners = (String=>Vector{Function})[]
 
-listenpkg(f, pkg) =
-  pkglisteners[pkg] = push!(get(pkglisteners, pkg, Function[]), f)
+listenmod(f, mod) =
+  loaded(mod) ? f() :
+    modlisteners[mod] = push!(get(modlisteners, mod, Function[]), f)
 
-macro require (pkg, expr)
+loadmod(mod) =
+  map(f->f(), get(modlisteners, mod, []))
+
+usingexpr(mod::Symbol) = Expr(:using, mod)
+usingexpr(mod::Expr) = Expr(:using, map(symbol, split(string(mod), "."))...)
+
+macro require (mod, expr)
   quote
-    listenpkg($(Expr(:quote, pkg))) do
+    listenmod($(string(mod))) do
       $(esc(Expr(:call, :eval, Expr(:quote, Expr(:block,
-                                                 Expr(:using, pkg),
+                                                 usingexpr(mod),
                                                  expr)))))
     end
   end
@@ -27,8 +33,9 @@ macro lazymod (mod, path)
       if !isdefined($(current_module()), $(Expr(:quote, mod)))
         includehere(path) = eval(Expr(:call, :include, path))
         includehere(joinpath(dirname(@__FILE__), $path))
+        loadmod(string($mod))
       end
-      $(mod)
+      $mod
     end
   end |> esc
 end
