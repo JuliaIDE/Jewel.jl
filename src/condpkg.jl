@@ -11,7 +11,7 @@ loadpkg(pkg::Symbol) =
 listenpkg(f, pkg) =
   pkglisteners[pkg] = push!(get(pkglisteners, pkg, Function[]), f)
 
-macro require(pkg, expr)
+macro require (pkg, expr)
   quote
     listenpkg($(Expr(:quote, pkg))) do
       $(esc(Expr(:call, :eval, Expr(:quote, Expr(:block,
@@ -19,4 +19,16 @@ macro require(pkg, expr)
                                                  expr)))))
     end
   end
+end
+
+macro lazymod (mod, path)
+  quote
+    function $(symbol(lowercase(string(mod))))()
+      if !isdefined($(current_module()), $(Expr(:quote, mod)))
+        includehere(path) = eval(Expr(:call, :include, path))
+        includehere(joinpath(dirname(@__FILE__), $path))
+      end
+      $(mod)
+    end
+  end |> esc
 end
