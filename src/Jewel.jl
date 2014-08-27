@@ -11,6 +11,7 @@ include("eval.jl")
 include("module.jl")
 include("completions.jl")
 include("doc.jl")
+
 @lazymod ProfileView "profile/profile.jl"
 
 # Shim for now

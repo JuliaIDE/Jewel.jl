@@ -115,6 +115,18 @@ import Jewel: @require
                                          array(f))))
 end
 
+# Colors
+
+@require Color begin
+  displayinline(c::ColorValue) =
+    Collapsible(HTML("""<span style="color:#$(hex(c));
+                                     font-weight:bold;">#$(hex(c))</span>
+                        <span>$(c)</span>"""),
+                tohtml(MIME"image/svg+xml"(), c))
+
+#   displayinline{C<:ColourValue}(c::Vector)
+end
+
 # Profile tree
 
 function toabspath(file)
