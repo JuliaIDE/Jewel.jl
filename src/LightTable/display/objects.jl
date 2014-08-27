@@ -124,7 +124,7 @@ end
                         <span>$(c)</span>"""),
                 tohtml(MIME"image/svg+xml"(), c))
 
-#   displayinline{C<:ColourValue}(c::Vector)
+  displayinline{C<:ColourValue}(cs::VecOrMat{C}) = tohtml(MIME"image/svg+xml"(), cs)
 end
 
 # Profile tree
