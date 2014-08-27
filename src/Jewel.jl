@@ -4,6 +4,7 @@ module Jewel
 
 using LNR, Lazy
 
+include("condpkg.jl")
 include("base.jl")
 include("parse/parse.jl")
 include("eval.jl")
