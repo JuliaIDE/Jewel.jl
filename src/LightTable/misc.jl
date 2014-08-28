@@ -7,5 +7,5 @@ handle("editor.julia.module.update") do editor, data
     notify("This file's module, `$mod`, isn't loaded yet.", class = "error")
     mod = "Main"
   end
-  raise(editor, "editor.julia.module.update", mod)
+  raise(editor, "julia.set-module", mod)
 end
