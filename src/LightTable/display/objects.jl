@@ -101,9 +101,11 @@ displayinline(a::Matrix) =
   Collapsible(HTML("Matrix <span>$(eltype(a)), $(sizestr(a))</span>"),
               Table("array", a))
 
-displayinline(a::Vector) =
-  Collapsible(HTML("Vector <span>$(eltype(a)), $(length(a))</span>"),
+displayinline(a::Vector, t = "Vector") =
+  Collapsible(HTML("$t <span>$(eltype(a)), $(length(a))</span>"),
               Table("array", a''))
+
+displayinline(s::Set) = displayinline(collect(s), "Set")
 
 # Others
 
