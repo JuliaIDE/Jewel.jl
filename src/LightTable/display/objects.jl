@@ -35,6 +35,7 @@ Table(data::AbstractMatrix) = Table("", data)
 const MAX_CELLS = 1000
 
 function getsize(h, w, maxcells)
+  (h == 0 || w == 0) && return 0, 0
   swap = false
   w > h && ((w, h, swap) = (h, w, true))
   h = min(maxcells ÷ w, h)
@@ -46,6 +47,7 @@ end
 function Base.writemime(io::IO, m::MIME"text/html", table::Table)
   println(io, """<table class="$(table.class)">""")
   h, w = size(table.data)
+  (h == 0 || w == 0) && @goto none
   h′, w′ = getsize(h, w, MAX_CELLS)
   for i = (h′ ≤ h ? (1:h′) : [1:(h′÷2), h-(h′÷2)+1:h])
     println(io, """<tr>""")
@@ -61,6 +63,7 @@ function Base.writemime(io::IO, m::MIME"text/html", table::Table)
 
     h > h′ && i == (h′÷2) && println(io, "<tr>","<td>⋮</td>"^(w≤w′?w:w′+1),"</tr>")
   end
+  @label none
   println(io, """</table>""")
 end
 
