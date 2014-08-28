@@ -95,3 +95,15 @@ function filemodule(path::String)
   end
   return ""
 end
+
+# Get all modules
+
+children(m::Module) =
+  @>> names(m, true) map(x->getthing(m, [x])) filter(x->isa(x, Module) && x ≠ m)
+
+function allchildren(m::Module, cs = Set{Module}())
+  for c in children(m)
+    c in cs || (push!(cs, c); allchildren(c, cs))
+  end
+  return cs
+end
