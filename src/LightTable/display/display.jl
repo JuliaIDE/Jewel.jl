@@ -33,6 +33,9 @@ function bestmime(val)
   error("Cannot display $val.")
 end
 
+displayinline(x::Text) = x
+displayinline(x::HTML) = x
+
 # Catch-all fallback
 function displayinline(x)
   m = bestmime(x)
@@ -42,6 +45,13 @@ function displayinline(x)
     end
   else tohtml(m, x)
   end
+end
+
+function applydisplayinline(x)
+  while (x′ = displayinline(x)) ≠ x
+    x = x′
+  end
+  return x
 end
 
 displayinline!(req, x, bounds) =

@@ -10,3 +10,20 @@ handle("editor.julia.module.update") do editor, data
   raise(editor, "julia.set-module", mod)
   raise(global_client, "julia.set-modules", {:modules => [string(m) for m in Jewel.allchildren(Main)]})
 end
+
+# Browser
+
+objs(mod) =
+  @>> mod begin
+    (m->names(m, true))
+    map(n->{n, Jewel.getthing(mod, [n])})
+    filter(p->!isa(p[2], Module) && p[2] ≠ nothing && !ismatch(r"#", string(p[1])))
+    map(p-> {p[1], applydisplayinline(p[2])})
+    map(p-> {p[1], stringmime(bestmime(p[2]), p[2])})
+    xs->sort(xs, by = first)
+  end
+
+handle("browser.get-objects") do browser, data
+  mod = data["module"] == nothing ? Main : Jewel.getthing(data["module"])
+  raise(browser, "update", {:objs => objs(mod)})
+end
