@@ -108,7 +108,7 @@ displayinline(a::Vector, t = "Vector") =
 displayinline(s::Set) = displayinline(collect(s), "Set")
 
 displayinline(d::Dict) =
-  Collapsible(HTML("Dictionary <span>$(eltype(d)[1])→$(eltype(d)[2]), $(length(d))</span>"),
+  Collapsible(HTML("Dictionary <span>$(eltype(d)[1]) → $(eltype(d)[2]), $(length(d))</span>"),
               HTML() do io
                 println(io, """<table class="array">""")
                 kv = collect(d)
@@ -130,22 +130,22 @@ import Jewel: @require
 # Data Frames
 
 @require DataFrames begin
-  displayinline(f::DataFrame) =
+  displayinline(f::DataFrames.DataFrame) =
     Collapsible(HTML("DataFrame <span>($(join(names(f), ", "))), $(size(f,1))</span>"),
                 Table("data-frame", vcat(map(s->HTML(string(s)), names(f))',
-                                         array(f))))
+                                         DataFrames.array(f))))
 end
 
 # Colors
 
 @require Color begin
-  displayinline(c::ColorValue) =
-    Collapsible(HTML("""<span style="color:#$(hex(c));
-                                     font-weight:bold;">#$(hex(c))</span>
+  displayinline(c::Color.ColourValue) =
+    Collapsible(HTML("""<span style="color:#$(Color.hex(c));
+                                     font-weight:bold;">#$(Color.hex(c))</span>
                         <span>$(c)</span>"""),
                 tohtml(MIME"image/svg+xml"(), c))
 
-  displayinline{C<:ColourValue}(cs::VecOrMat{C}) = tohtml(MIME"image/svg+xml"(), cs)
+  displayinline{C<:Color.ColourValue}(cs::VecOrMat{C}) = tohtml(MIME"image/svg+xml"(), cs)
 end
 
 # Profile tree

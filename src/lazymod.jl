@@ -14,14 +14,14 @@ listenmod(f, mod) =
 loadmod(mod) =
   map(f->f(), get(modlisteners, mod, []))
 
-usingexpr(mod::Symbol) = Expr(:using, mod)
-usingexpr(mod::Expr) = Expr(:using, map(symbol, split(string(mod), "."))...)
+importexpr(mod::Symbol) = Expr(:import, mod)
+importexpr(mod::Expr) = Expr(:import, map(symbol, split(string(mod), "."))...)
 
 macro require (mod, expr)
   quote
     listenmod($(string(mod))) do
       $(esc(Expr(:call, :eval, Expr(:quote, Expr(:block,
-                                                 usingexpr(mod),
+                                                 importexpr(mod),
                                                  expr)))))
     end
   end
