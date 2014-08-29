@@ -39,7 +39,7 @@ function getsize(h, w, maxcells)
   swap = false
   w > h && ((w, h, swap) = (h, w, true))
   h = min(maxcells ÷ w, h)
-  h > w ?
+  h ≥ w ?
     (swap ? (w, h) : (h, w)) :
     (ifloor(sqrt(maxcells)), ifloor(sqrt(maxcells)))
 end
