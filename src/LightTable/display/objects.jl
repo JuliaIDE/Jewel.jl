@@ -107,6 +107,22 @@ displayinline(a::Vector, t = "Vector") =
 
 displayinline(s::Set) = displayinline(collect(s), "Set")
 
+displayinline(d::Dict) =
+  Collapsible(HTML("Dictionary <span>$(eltype(d)[1])→$(eltype(d)[2]), $(length(d))</span>"),
+              HTML() do io
+                println(io, """<table class="array">""")
+                kv = collect(d)
+                for i = 1:(min(length(kv), MAX_CELLS÷2))
+                  print(io, "<tr><td>")
+                  writemime(io, bestmime(kv[i][1]), kv[i][1])
+                  print(io, "</td><td>")
+                  writemime(io, bestmime(kv[i][2]), kv[i][2])
+                  print(io, "</td></tr>")
+                end
+                length(kv) ≥ MAX_CELLS÷2 && println(io, """<td>⋮</td><td>⋮</td>""")
+                println(io, """</table>""")
+              end)
+
 # Others
 
 import Jewel: @require
