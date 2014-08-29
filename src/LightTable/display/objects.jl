@@ -32,7 +32,7 @@ end
 
 Table(data::AbstractMatrix) = Table("", data)
 
-const MAX_CELLS = 1000
+const MAX_CELLS = 500
 
 function getsize(h, w, maxcells)
   (h == 0 || w == 0) && return 0, 0
