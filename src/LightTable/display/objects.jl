@@ -20,9 +20,6 @@ end
 displayinline!(req, html::Collapsible, bounds) =
   showresult(req, stringmime("text/html", html), bounds, html=true)
 
-Collapsible(HTML("foo"),
-            HTML("hello world"))
-
 # Tables
 
 type Table{T}
