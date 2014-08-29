@@ -145,6 +145,17 @@ end
   displayinline{C<:Color.ColourValue}(cs::VecOrMat{C}) = tohtml(MIME"image/svg+xml"(), cs)
 end
 
+# Gadfly
+
+@require Gadfly begin
+  displayinline(p::Gadfly.Plot) =
+    HTML() do io
+      print(io, """<div style="background: white">""")
+      writemime(io, MIME"text/html"(), p)
+      print(io, """</div>""")
+    end
+end
+
 # Profile tree
 
 function toabspath(file)
