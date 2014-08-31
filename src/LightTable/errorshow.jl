@@ -67,3 +67,42 @@ function showbacktrace_html(io::IO, top_function::Symbol, t, set = 1:typemax(Int
 
   println(io, """</ul>""")
 end
+
+# Methods
+
+Jewel.@inmodule Base begin
+
+function writemime(io::IO, ::MIME"text/html", m::Method)
+  print(io, m.func.code.name)
+  tv, decls, file, line = Base.arg_decl_parts(m)
+  if !isempty(tv)
+    print(io,"<i>")
+    Base.show_delim_array(io, tv, '{', ',', '}', false)
+    print(io,"</i>")
+  end
+  print(io, "(")
+  print_joined(io, [isempty(d[2]) ? d[1] : d[1]*"::<b>"*d[2]*"</b>"
+                    for d in decls], ",", ",")
+  print(io, ")")
+  if line > 0
+    file = "$file:$line"
+    print(io, " at ")
+    print(io, isabspath(file) ? Main.LightTable.filelink(file) : Main.LightTable.baselink(file))
+  end
+end
+
+function writemime(io::IO, mime::MIME"text/html", mt::MethodTable)
+  name = mt.name
+  n = length(mt)
+  meths = n==1 ? "method" : "methods"
+  print(io, """$n $meths:<ul class="method-table">""")
+  d = mt.defs
+  while !is(d,())
+    print(io, "<li> ")
+    writemime(io, mime, d)
+    d = d.next
+  end
+  print(io, "</ul>")
+end
+
+end
