@@ -53,4 +53,9 @@ end
     split(xs, x; keep=false) = split(xs, x, false)
   end
 
+  # Profiler
+
+  export profile
+  profile() = Main.Jewel.profileview().fetch()
+
 end
