@@ -2,7 +2,7 @@
 # Some file utils
 # –––––––––––––––
 
-function readdirsafe(dir)
+function readdir′(dir)
   try
     readdir(dir)
   catch e
@@ -10,11 +10,14 @@ function readdirsafe(dir)
   end
 end
 
+isdir′(f) = try isdir(f) end
+isfile′(f) = try isfile(f) end
+
 files(dir) =
-  @>> dir readdirsafe map!(f->joinpath(dir, f)) filter!(isfile)
+  @>> dir readdir′ map!(f->joinpath(dir, f)) filter!(isfile′)
 
 dirs(dir) =
-  @>> dir readdirsafe filter!(f->!beginswith(f, ".")) map!(f->joinpath(dir, f)) filter!(isdir)
+  @>> dir readdir′ filter!(f->!beginswith(f, ".")) map!(f->joinpath(dir, f)) filter!(isdir′)
 
 jl_files(dir::String) = @>> dir files filter!(f->endswith(f, ".jl"))
 
