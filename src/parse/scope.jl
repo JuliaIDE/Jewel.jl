@@ -65,7 +65,7 @@ function qualifiedname(ts, name = nexttoken(ts))
   return length(n) > 1 ? n : n[1]
 end
 
-next_token′(ts) = try Lexer.next_token(ts) catch e :error end
+next_token′(ts) = try Lexer.next_token(ts) catch e return :error end
 
 function nexttoken(ts)
   Lexer.skipws(ts)
