@@ -48,8 +48,7 @@ function ltread()
   JSON.parse(conn)
 end
 
-raise(object::Integer, command, data) = ltwrite([object, command, data])
-raise(req, command, data) = raise(req[1], command, data)
+raise(object::Integer, event, data) = ltwrite({object, event, data})
 
 # ----------------
 # Command Handling
