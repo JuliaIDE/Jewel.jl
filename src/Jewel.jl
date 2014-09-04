@@ -1,5 +1,3 @@
-include("LNR.jl")
-
 module Jewel
 
 using LNR, Lazy
