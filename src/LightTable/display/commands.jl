@@ -1,10 +1,11 @@
-function showresult(req, value::String, bounds::(Int, Int); under = false, html = false)
+function showresult(req, value::String, opts; under = false, html = false)
   raise(req, "julia.result",
         {"value" => value,
-         "start" => bounds[1],
-         "end"   => bounds[2],
+         "start" => opts[:bounds][1],
+         "end"   => opts[:bounds][2],
          "under" => under,
-         "html"  => html})
+         "html"  => html,
+         "id"    => string(opts[:id])})
 end
 
 function showexception(req, value::String, bounds::(Int, Int))
