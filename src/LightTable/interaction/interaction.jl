@@ -7,6 +7,8 @@ type Result{T}
   value::T
 end
 
+Base.string(r::Result) = "\"" * string(r.id) * "\""
+
 const results = (UUID=>Result)[]
 
 handle("result.clear") do _, id
@@ -27,3 +29,9 @@ raise(obj::UUID, event, args...) =
                                 :args => args})
 
 raise(obj::Result, args...) = raise(obj.id, args...)
+
+# Evaluate Julia code
+
+handle("eval.julia") do ed, code
+  include_string(code)
+end
