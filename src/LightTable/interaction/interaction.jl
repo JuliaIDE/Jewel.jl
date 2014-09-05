@@ -18,3 +18,12 @@ function register_result(result)
   results[id] = Result(id, result)
   return id
 end
+
+# Raise on results
+
+raise(obj::UUID, event, args...) =
+  raise(global_client, :raise, {:id => string(obj),
+                                :event => event,
+                                :args => args})
+
+raise(obj::Result, args...) = raise(obj.id, args...)
