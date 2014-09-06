@@ -2,10 +2,13 @@
 
 import Base.Random: uuid4, UUID
 
-type Result{T}
+type Result
   id::UUID
-  value::T
+  value
+  data
 end
+
+Result(id, value) = Result(id, value, Dict())
 
 Base.string(r::Result) = "\"" * string(r.id) * "\""
 
