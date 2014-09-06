@@ -1,12 +1,27 @@
 # Eval
 
+_currentresult_ = nothing
+
+function withcurrentresult(f, r)
+  global _currentresult_ = r
+  try
+    f()
+  finally
+    _currentresult_ = nothing
+  end
+end
+
 function eval(editor, mod, code, file, bounds)
   task_local_storage()[:SOURCE_PATH] = file
   file == nothing && (file = "REPL")
   try
     result = include_string(mod, code, file, bounds[1])
     Jewel.isdefinition(code) && (result = nothing)
-    displayinline!(result, {:editor => editor, :bounds => bounds, :id => register_result(result)})
+    withcurrentresult(register_result(result)) do
+      displayinline!(result, {:editor => editor,
+                              :bounds => bounds,
+                              :id => _currentresult_.id})
+    end
   catch e
     showexception(editor, isa(e, LoadError)?e.error:e, catch_backtrace(), bounds)
   end

@@ -21,7 +21,6 @@ end
 function register_result(result)
   id = uuid4()
   results[id] = Result(id, result)
-  return id
 end
 
 # Raise on results
