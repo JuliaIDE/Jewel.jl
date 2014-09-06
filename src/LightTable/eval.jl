@@ -12,13 +12,13 @@ function eval(editor, mod, code, file, bounds)
   end
 end
 
-hasselection(data) = data["start"] == data["end"]
+noselection(data) = data["start"] == data["end"]
 
 LNR.cursor(data::Dict) = cursor(data["line"], data["col"])
 
 handle("editor.eval.julia") do editor, data
   code, bounds =
-    hasselection(data) ?
+    noselection(data) ?
       Jewel.getblock(data["code"], data["start"]["line"]) :
       Jewel.getblock(data["code"], cursor(data["start"]), cursor(data["end"]))
   code == "" && return notify_done()
