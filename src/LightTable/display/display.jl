@@ -54,14 +54,14 @@ function applydisplayinline(x)
   return x
 end
 
-displayinline!(req, x, bounds) =
-  displayinline!(req, displayinline(x), bounds)
+displayinline!(x, opts) =
+  displayinline!(displayinline(x), opts)
 
-displayinline!(req, text::Text, bounds) =
-  showresult(req, stringmime("text/plain", text), bounds)
+displayinline!(text::Text, opts) =
+  showresult(stringmime("text/plain", text), opts)
 
-displayinline!(req, html::HTML, bounds) =
-  showresult(req, stringmime("text/html", html), bounds, html=true, under=true)
+displayinline!(html::HTML, opts) =
+  showresult(stringmime("text/html", html), opts, html=true, under=true)
 
 # Light Table's Console as a display
 

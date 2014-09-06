@@ -145,8 +145,8 @@ function toabspath(file)
 end
 
 @require Jewel.ProfileView begin
-  function displayinline!(req, tree::Jewel.ProfileView.ProfileTree, opts)
-    raise(req, "julia.profile-result",
+  function displayinline!(tree::Jewel.ProfileView.ProfileTree, opts)
+    raise(opts[:editor], "julia.profile-result",
           {"value" => stringmime("text/html", tree),
            "start" => opts[:bounds][1],
            "end"   => opts[:bounds][2],
