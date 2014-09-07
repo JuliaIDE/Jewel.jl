@@ -10,8 +10,6 @@ end
 
 Result(id, value) = Result(id, value, Dict())
 
-Base.string(r::Result) = "\"" * string(r.id) * "\""
-
 const results = (UUID=>Result)[]
 
 handle("result.clear") do _, id
@@ -37,3 +35,8 @@ raise(obj::Result, args...) = raise(obj.id, args...)
 handle("eval.julia") do ed, code
   include_string(code)
 end
+
+jlcall(code) = """jlcall('$(_currentresult_.id)', '$(escape_string(code))');"""
+
+htmlescape(s::String) =
+    @> s replace(r"&(?!(\w+|\#\d+);)", "&amp;") replace("<", "&lt;") replace(">", "&gt;") replace("\"", "&quot;")
