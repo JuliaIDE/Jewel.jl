@@ -30,7 +30,7 @@ function Base.writemime(io::IO, m::MIME"text/html", table::Table)
     println(io, """<tr>""")
     for j = (w′ ≤ w ? (1:w′) : [1:(w′÷2), w-(w′÷2)+1:w])
       println(io, """<td>""")
-      item = table.data[i, j]
+      item = applydisplayinline(table.data[i, j])
       writemime(io, bestmime(item), item)
       println(io, """</td>""")
 
@@ -91,9 +91,11 @@ displayinline(d::Dict) =
                 kv = collect(d)
                 for i = 1:(min(length(kv), MAX_CELLS÷2))
                   print(io, "<tr><td>")
-                  writemime(io, bestmime(kv[i][1]), kv[i][1])
+                  item = displayinline(kv[i][1])
+                  writemime(io, bestmime(item), item)
                   print(io, "</td><td>")
-                  writemime(io, bestmime(kv[i][2]), kv[i][2])
+                  item = displayinline(kv[i][2])
+                  writemime(io, bestmime(item), item)
                   print(io, "</td></tr>")
                 end
                 length(kv) ≥ MAX_CELLS÷2 && println(io, """<td>⋮</td><td>⋮</td>""")
