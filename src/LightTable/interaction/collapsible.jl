@@ -3,44 +3,47 @@ type Collapsible
   content
 end
 
-function Base.writemime(io::IO, m::MIME"text/html", c::Collapsible)
-  println(io, """<div class="collapsible">""")
-  println(io, """<span class="collapsible-header">""")
-  writemime(io, m, c.header)
-  println(io, """</span>""")
-  println(io, """<div class="collapsible-content">""")
-  writemime(io, m, c.content)
-  println(io, """</div></div>""")
-end
-
-displayinline!(content::Collapsible, opts) =
-  showresult(render(content), opts, html=true)
-
 function register_collapsible(c)
   id = uuid4()
-  _currentresult_.data[id] = Result(id, c)
+  _currentresult_.data[id] = c
+  return id
 end
 
-collapsibleclick(r::Result) = """
+collapsibleclickjs(id) = """
     var content = this.parentNode.querySelector('.collapsible-content');
     if (content.classList.contains('lazy')) {
-      $(jlcall("""LightTable.collapsibleclick("$(_currentresult_.id)", "$(r.id)") """ |> htmlescape))
+      $(jlcall(""" LightTable.collapsibleclick("$id") """))
     } else {
       \$(content).toggle(200);
     }
   """
 
-collapsibleclick(result, collapsible) = @show result collapsible
+collapsibleclick(id) = jscall("""
+  node = document.getElementById('$(id)');
+  node.innerHTML = '$(jsescapestring(stringmime("text/html", _currentresult_.data[UUID(id)].content)))';
+  node.classList.remove('lazy');
+  \$(node).hide()
+  \$(node).show(200)
+  """)
 
-function render(c::Collapsible)
-  _currentresult_ == nothing && return stringmime("text/html", c)
-  io = IOBuffer()
-  result = register_result(c)
+function Base.writemime(io::IO, m::MIME"text/html", c::Collapsible)
+  id = register_collapsible(c)
 
-  println(io, """<span class="collapsible-header" id="$(result.id)" onclick="$(collapsibleclick(result))">""")
+  println(io, """<div class="collapsible">""")
+
+  println(io, """<span class="collapsible-header" onclick="$(collapsibleclickjs(id))">""")
   writemime(io, MIME"text/html"(), c.header)
   println(io, """</span>""")
-  println(io, """<div class="collapsible-content lazy"></div>""")
+  if _currentresult_ != nothing
+    println(io, """<div id="$id" class="collapsible-content lazy"></div>""")
+  else
+    println(io, """<div class="collapsible-content">""")
+    writemime(io, m, c.content)
+    println(io, """</div>""")
+  end
 
-  return takebuf_string(io)
+  println(io, """</div>""")
 end
+
+displayinline!(content::Collapsible, opts) =
+  showresult(stringmime("text/html", content), opts, html=true)

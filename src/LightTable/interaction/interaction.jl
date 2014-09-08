@@ -30,13 +30,20 @@ raise(obj::UUID, event, args...) =
 
 raise(obj::Result, args...) = raise(obj.id, args...)
 
-# Evaluate Julia code
-
-handle("eval.julia") do ed, code
-  include_string(code)
-end
-
-jlcall(code) = """jlcall('$(_currentresult_.id)', '$(escape_string(code))');"""
+jscall(code) = raise(_currentresult_, :eval, code)
 
 htmlescape(s::String) =
     @> s replace(r"&(?!(\w+|\#\d+);)", "&amp;") replace("<", "&lt;") replace(">", "&gt;") replace("\"", "&quot;")
+
+jsescapestring(s::String) = @> s escape_string replace("'", "\\'")
+
+# Evaluate Julia code
+
+handle("eval.julia") do ed, data
+  result = isa(data["id"], String) ? results[UUID(data["id"])] : nothing
+  withcurrentresult(result) do
+    include_string(data["code"])
+  end
+end
+
+jlcall(code) = """jlcall('$(_currentresult_.id)', '$(htmlescape(code))');"""
