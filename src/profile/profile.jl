@@ -25,7 +25,6 @@ function fileattribute(li)
   else
     path = basepath(li.file)
     svgattribute("data-file", "$path:$(li.line)")
-#     svgattribute("data-url", githuburl(li.file, li.line))
   end
 end
 

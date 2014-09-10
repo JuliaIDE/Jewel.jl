@@ -80,7 +80,7 @@ displayinline(a::Matrix) =
 
 displayinline(a::Vector, t = "Vector") =
   Collapsible(HTML("$t <span>$(eltype(a)), $(length(a))</span>"),
-              Table("array", a''))
+              Table("array", reshape(a, (length(a), 1))))
 
 displayinline(s::Set) = displayinline(collect(s), "Set")
 
