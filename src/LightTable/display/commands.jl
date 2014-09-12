@@ -9,14 +9,14 @@ function showresult(value::String, opts; under = false, html = false)
          "scales" => opts[:scales]})
 end
 
-function showexception(req, value::String, bounds::(Int, Int))
+function showexception(req, value::String, bounds)
   raise(req, "julia.error",
         {"value" => value,
          "start" => bounds[1],
          "end"   => bounds[2]})
 end
 
-function showexception(editor, e, bt, bounds::(Int, Int))
+function showexception(editor, e, bt, bounds)
   notify_error(sprint(showerror, e))
   showexception(
     editor,
