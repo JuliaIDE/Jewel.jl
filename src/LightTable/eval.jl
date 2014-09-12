@@ -31,7 +31,7 @@ noselection(data) = data["start"] == data["end"]
 
 LNR.cursor(data::Dict) = cursor(data["line"], data["col"])
 
-handle("editor.eval.julia") do editor, data
+handle("eval.selection") do editor, data
   code, bounds =
     noselection(data) ?
       Jewel.getblock(data["code"], data["start"]["line"]) :
@@ -41,7 +41,14 @@ handle("editor.eval.julia") do editor, data
   eval(editor, mod, code, data["path"], bounds)
 end
 
-handle("editor.eval.julia.all") do editor, data
+handle("eval.block") do editor, data
+  code = data["code"]
+  bounds = data["bounds"]
+  mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
+  eval(editor, mod, code, data["path"], bounds)
+end
+
+handle("eval.all") do editor, data
   file = @or data["path"] "REPL"
   code = data["code"]
   mod = Jewel.getthing(data["module"], Main)
