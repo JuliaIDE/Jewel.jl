@@ -5,7 +5,8 @@ function showresult(value::String, opts; under = false, html = false)
          "end"   => opts[:bounds][2],
          "under" => under,
          "html"  => html,
-         "id"    => string(opts[:id])})
+         "id"    => string(opts[:id]),
+         "scales" => opts[:scales]})
 end
 
 function showexception(req, value::String, bounds::(Int, Int))

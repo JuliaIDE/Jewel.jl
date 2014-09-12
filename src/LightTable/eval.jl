@@ -11,7 +11,7 @@ function withcurrentresult(f, r)
   end
 end
 
-function eval(editor, mod, code, file, bounds)
+function eval(editor, mod, code, file, bounds, scales = nothing)
   task_local_storage()[:SOURCE_PATH] = file
   file == nothing && (file = "REPL")
   try
@@ -20,7 +20,8 @@ function eval(editor, mod, code, file, bounds)
     withcurrentresult(register_result(result)) do
       displayinline!(result, {:editor => editor,
                               :bounds => bounds,
-                              :id => _currentresult_.id})
+                              :id => _currentresult_.id,
+                              :scales => scales})
     end
   catch e
     showexception(editor, isa(e, LoadError)?e.error:e, catch_backtrace(), bounds)
@@ -45,7 +46,7 @@ handle("eval.block") do editor, data
   code = data["code"]
   bounds = data["bounds"]
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
-  eval(editor, mod, code, data["path"], bounds)
+  eval(editor, mod, code, data["path"], bounds, data["scales"])
 end
 
 handle("eval.all") do editor, data
