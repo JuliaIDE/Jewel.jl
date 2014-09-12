@@ -65,7 +65,7 @@ handle("eval.all") do editor, data
 end
 
 handle("editor.block") do editor, data
-  block, bounds = Jewel.getblock(data["code"], data["cursor"]["line"])
+  block, bounds = Jewel.getblock(data["code"], data["line"])
   raise(editor, "return-block",
         {"block" => block,
          "bounds" => bounds,
