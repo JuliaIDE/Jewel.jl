@@ -56,3 +56,11 @@ handle("editor.eval.julia.all") do editor, data
   end
   notify_done()
 end
+
+handle("editor.block") do editor, data
+  block, bounds = Jewel.getblock(data["code"], data["cursor"]["line"])
+  raise(editor, "return-block",
+        {"block" => block,
+         "bounds" => bounds,
+         "id" => data["id"]})
+end
