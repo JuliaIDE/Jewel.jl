@@ -16,9 +16,9 @@ handle("result.clear") do _, id
   delete!(results, UUID(id))
 end
 
-function register_result(result)
+function register_result(result, dict...)
   id = uuid4()
-  results[id] = Result(id, result)
+  results[id] = Result(id, result, dict...)
 end
 
 # Raise on results

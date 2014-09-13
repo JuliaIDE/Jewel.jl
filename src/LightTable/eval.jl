@@ -11,13 +11,13 @@ function withcurrentresult(f, r)
   end
 end
 
-function eval(editor, mod, code, file, bounds, scales = nothing)
+function eval(editor, mod, code, file, bounds; scales = nothing, data = Dict())
   task_local_storage()[:SOURCE_PATH] = file
   file == nothing && (file = "REPL")
   try
     result = include_string(mod, code, file, bounds[1])
     Jewel.isdefinition(code) && (result = nothing)
-    withcurrentresult(register_result(result)) do
+    withcurrentresult(register_result(result, data)) do
       displayinline!(result, {:editor => editor,
                               :bounds => bounds,
                               :id => _currentresult_.id,
@@ -43,10 +43,13 @@ handle("eval.selection") do editor, data
 end
 
 handle("eval.block") do editor, data
-  code = data["code"]
+  code = data["block"]
   bounds = data["bounds"]
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
-  eval(editor, mod, code, data["path"], bounds, data["scales"])
+  eval(editor, mod, code, data["path"], bounds,
+       scales = data["scales"]["id"], data = {:mod => mod,
+                                              :code => code,
+                                              :path => data["path"]})
 end
 
 handle("eval.all") do editor, data
