@@ -1,8 +1,7 @@
 function showresult(value::String, opts; under = false, html = false)
   raise(opts[:editor], "julia.result",
         {"value" => value,
-         "start" => opts[:bounds][1],
-         "end"   => opts[:bounds][2],
+         "bounds" => opts[:bounds],
          "under" => under,
          "html"  => html,
          "info"    => opts[:info]})
