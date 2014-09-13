@@ -11,7 +11,9 @@ function withcurrentresult(f, r)
   end
 end
 
-function eval(editor, mod, code, file, bounds; scales = nothing, data = Dict())
+# Data gets attached to the result in Julia
+# Info gets attached to the result in LT
+function eval(editor, mod, code, file, bounds; data = Dict(), info = Dict())
   task_local_storage()[:SOURCE_PATH] = file
   file == nothing && (file = "REPL")
   try
@@ -20,8 +22,7 @@ function eval(editor, mod, code, file, bounds; scales = nothing, data = Dict())
     withcurrentresult(register_result(result, data)) do
       displayinline!(result, {:editor => editor,
                               :bounds => bounds,
-                              :id => _currentresult_.id,
-                              :scales => scales})
+                              :info => merge(info, {:id => string(_currentresult_.id)})})
     end
   catch e
     showexception(editor, isa(e, LoadError)?e.error:e, catch_backtrace(), bounds)
@@ -47,9 +48,10 @@ handle("eval.block") do editor, data
   bounds = data["bounds"]
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
   eval(editor, mod, code, data["path"], bounds,
-       scales = data["scales"]["id"], data = {:mod => mod,
-                                              :code => code,
-                                              :path => data["path"]})
+       data = {:mod => mod,
+               :code => code,
+               :path => data["path"]},
+       info = {:scales => bounds})
 end
 
 handle("eval.all") do editor, data
