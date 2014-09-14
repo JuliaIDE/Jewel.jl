@@ -11,21 +11,34 @@ function withcurrentresult(f, r)
   end
 end
 
+const evalerr = :secret_lighttable_eval_err_keyword
+
 # Data gets attached to the result in Julia
 # Info gets attached to the result in LT
-function eval(editor, mod, code, file, bounds; data = Dict(), info = Dict())
+function eval(editor, mod, code, file, bounds)
   task_local_storage()[:SOURCE_PATH] = file
   file == nothing && (file = "REPL")
   try
     result = include_string(mod, code, file, bounds[1])
     Jewel.isdefinition(code) && (result = nothing)
+    return result
+  catch e
+    showexception(editor, isa(e, LoadError)?e.error:e, catch_backtrace(), bounds)
+    return evalerr
+  end
+end
+
+function evaldisplay(editor, mod, code, file, bounds; data = Dict(), info = Dict())
+  try
+    result = eval(editor, mod, code, file, bounds)
+    result == evalerr && return
     withcurrentresult(register_result(result, data)) do
       displayinline!(result, {:editor => editor,
                               :bounds => bounds,
                               :info => merge(info, {:id => string(_currentresult_.id)})})
     end
   catch e
-    showexception(editor, isa(e, LoadError)?e.error:e, catch_backtrace(), bounds)
+    showexception(editor, e, catch_backtrace(), bounds)
   end
 end
 
@@ -40,7 +53,7 @@ handle("eval.selection") do editor, data
       Jewel.getblock(data["code"], cursor(data["start"]), cursor(data["end"]))
   code == "" && return notify_done()
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
-  eval(editor, mod, code, data["path"], bounds)
+  evaldisplay(editor, mod, code, data["path"], bounds)
 end
 
 handle("eval.block") do editor, data
