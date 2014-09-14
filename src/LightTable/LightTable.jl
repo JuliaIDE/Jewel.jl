@@ -82,6 +82,7 @@ end
 include("commands.jl")
 include("interaction/interaction.jl")
 include("interaction/collapsible.jl")
+include("interaction/scales.jl")
 include("eval.jl")
 include("completions.jl")
 include("doc.jl")

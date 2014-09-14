@@ -11,6 +11,9 @@ function withcurrentresult(f, r)
   end
 end
 
+withcurrentresult(f, r::String) =
+  withcurrentresult(f, results[UUID(r)])
+
 const evalerr = :secret_lighttable_eval_err_keyword
 
 # Data gets attached to the result in Julia
@@ -60,8 +63,11 @@ handle("eval.block") do editor, data
   code = data["block"]
   bounds = data["bounds"]
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
-  eval(editor, mod, code, data["path"], bounds,
-       data = {:mod => mod,
+  # We need some custom data to enable reevaluation
+  evaldisplay(editor, mod, code, data["path"], bounds,
+       data = {:editor => editor,
+               :mod => mod,
+               :bounds => bounds,
                :code => code,
                :path => data["path"]},
        info = {:scales => bounds})
@@ -89,4 +95,28 @@ handle("editor.block") do editor, data
         {"block" => block,
          "bounds" => bounds,
          "id" => data["id"]})
+end
+
+# Reevaluation
+
+handle("result.reval") do _, data
+  withcurrentresult(data["id"]) do
+    code = fillranges(_currentresult_.data[:code],
+                      data["vals"],
+                      data["locs"],
+                      _currentresult_.data[:bounds][1])
+    result = eval(_currentresult_.data[:editor],
+                  _currentresult_.data[:mod],
+                  code,
+                  _currentresult_.data[:path],
+                  _currentresult_.data[:bounds])
+
+    html = #try
+      stringmime(MIME"text/html"(), displayinline(result))
+#     catch e
+#       println("error")
+#     end
+
+    jscall("this.querySelector('.julia.result').innerHTML = '$(jsescapestring(html))'")
+  end
 end
