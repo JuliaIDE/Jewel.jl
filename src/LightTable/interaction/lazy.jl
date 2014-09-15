@@ -8,6 +8,6 @@ displayinline(xs::List) =
                   writemime(io, bestmime(x), x)
                   print(io, "</td></tr>")
                 end
-                !isempty(drop(MAX_CELLS, xs)) && println(io, """<td>⋮</td><td>⋮</td>""")
+                !isempty(drop(MAX_CELLS, xs)) && println(io, """<tr><td>⋮</td></tr>""")
                 println(io, """</table>""")
               end)
