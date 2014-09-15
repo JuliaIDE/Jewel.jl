@@ -34,7 +34,7 @@ end
 function evaldisplay(editor, mod, code, file, bounds; data = Dict(), info = Dict())
   try
     result = eval(editor, mod, code, file, bounds)
-    result == evalerr && return
+    result === evalerr && return
     withcurrentresult(register_result(result, data)) do
       displayinline!(result, {:editor => editor,
                               :bounds => bounds,

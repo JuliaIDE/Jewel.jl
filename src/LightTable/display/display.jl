@@ -48,7 +48,7 @@ function displayinline(x)
 end
 
 function applydisplayinline(x)
-  while (x′ = displayinline(x)) ≠ x
+  while (x′ = displayinline(x)) !== x
     x = x′
   end
   return x
