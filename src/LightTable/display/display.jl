@@ -76,6 +76,6 @@ function display(d::LTConsole, m::MIME"text/html", x)
   console(stringmime(m, x), html = true)
 end
 
-display(d::LTConsole, m::MIME"image/png", x) = display(d, htmlimage(x))
+display(d::LTConsole, m::MIME"image/png", x) = display(d, tohtml(m, x))
 
 display(d::LTConsole, x) = display(d, bestmime(x), x)
