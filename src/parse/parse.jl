@@ -45,8 +45,10 @@ getqualifiedname(str::String, cursor) = getqualifiedname(lines(str)[cursor.line]
 function isdefinition(code::String)
   try
     code = parse(code)
-    return isexpr(code, :function, :(=), :const)
+    return isexpr(code, :function) || (isexpr(code, :(=)) && isexpr(code.args[1], :call))
   catch e
     return false
   end
 end
+
+:(a() = b).args[1].head
