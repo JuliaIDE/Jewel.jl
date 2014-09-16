@@ -22,7 +22,6 @@ collapsibleclick(id) = jscall("""
   node = document.getElementById('$(id)');
   node.innerHTML = '$(jsescapestring(stringmime("text/html", _currentresult_.data[UUID(id)].content)))';
   node.classList.remove('lazy');
-  \$(node).hide()
   \$(node).show(200)
   """)
 
@@ -35,7 +34,7 @@ function Base.writemime(io::IO, m::MIME"text/html", c::Collapsible)
   writemime(io, MIME"text/html"(), c.header)
   println(io, """</span>""")
   if _currentresult_ != nothing
-    println(io, """<div id="$id" class="collapsible-content lazy"></div>""")
+    println(io, """<div id="$id" style="display:none;" class="collapsible-content lazy"></div>""")
   else
     println(io, """<div class="collapsible-content">""")
     writemime(io, m, c.content)
