@@ -9,10 +9,9 @@ function tohtml(m::MIME"text/html", x)
   end
 end
 
-# Should use CSS for width
 function tohtml(m::MIME"image/png", img)
   HTML() do io
-    print(io, """<img width="500px" src="data:image/png;base64,""")
+    print(io, """<img src="data:image/png;base64,""")
     print(io, stringmime(m, img))
     print(io, "\" />")
   end
