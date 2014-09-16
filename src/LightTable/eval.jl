@@ -119,7 +119,7 @@ handle("result.reval") do _, data
 
     jscall("""
       this.querySelector('.julia.result').innerHTML = '$(jsescapestring(html))';
-      lt.objs.notifos.done_working();
+      //lt.objs.notifos.done_working();
     """)
   end
 end
