@@ -117,6 +117,9 @@ handle("result.reval") do _, data
 #       println("error")
 #     end
 
-    jscall("this.querySelector('.julia.result').innerHTML = '$(jsescapestring(html))'")
+    jscall("""
+      this.querySelector('.julia.result').innerHTML = '$(jsescapestring(html))';
+      lt.objs.notifos.done_working();
+    """)
   end
 end
