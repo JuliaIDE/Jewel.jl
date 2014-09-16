@@ -111,11 +111,12 @@ handle("result.reval") do _, data
                   _currentresult_.data[:path],
                   _currentresult_.data[:bounds])
 
-    html = #try
-      stringmime(MIME"text/html"(), displayinline(result))
-#     catch e
-#       println("error")
-#     end
+    local html
+    try
+      html = stringmime(MIME"text/html"(), applydisplayinline(result))
+    catch e
+      return showexception(_currentresult_.data[:editor], e, catch_backtrace(), _currentresult_.data[:bounds])
+    end
 
     jscall("""
       this.querySelector('.julia.result').innerHTML = '$(jsescapestring(html))';
