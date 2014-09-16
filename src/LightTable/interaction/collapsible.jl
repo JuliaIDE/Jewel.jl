@@ -12,6 +12,7 @@ end
 collapsibleclickjs(id) = """
     var content = this.parentNode.querySelector('.collapsible-content');
     if (content.classList.contains('lazy')) {
+      lt.objs.notifos.working();
       $(jlcall(""" LightTable.collapsibleclick("$id") """))
     } else {
       \$(content).toggle(200);
@@ -22,6 +23,7 @@ collapsibleclick(id) = jscall("""
   node = document.getElementById('$(id)');
   node.innerHTML = '$(jsescapestring(stringmime("text/html", _currentresult_.data[UUID(id)].content)))';
   node.classList.remove('lazy');
+  lt.objs.notifos.done_working();
   \$(node).show(200)
   """)
 
