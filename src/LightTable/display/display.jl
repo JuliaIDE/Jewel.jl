@@ -13,7 +13,7 @@ end
 function tohtml(m::MIME"image/png", img)
   HTML() do io
     print(io, """<img width="500px" src="data:image/png;base64,""")
-    writemime(io, m, img)
+    print(io, stringmime(m, img))
     print(io, "\" />")
   end
 end
