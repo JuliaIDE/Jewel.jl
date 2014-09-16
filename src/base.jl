@@ -7,29 +7,29 @@ end
 
   # Display primitives
 
-  export HTML, Text, Printer
-
-  type Printer
-    λ::Function
-  end
-
-  print(io::IO, s::Printer) = s.λ(io)
+  export HTML, Text
 
   type HTML{T}
     content::T
   end
 
-  HTML(f::Function) = HTML(Printer(f))
+  function HTML(xs...)
+    HTML() do io
+      for x in xs
+        writemime(io, MIME"text/html"(), x)
+      end
+    end
+  end
 
   writemime(io::IO, ::MIME"text/html", h::HTML) = print(io, h.content)
+  writemime(io::IO, ::MIME"text/html", h::HTML{Function}) = h.content(io)
 
   type Text{T}
     content::T
   end
 
-  Text(f::Function) = Text(Printer(f))
-
   writemime(io::IO, ::MIME"text/plain", t::Text) = print(io, t.content)
+  writemime(io::IO, ::MIME"text/plain", t::Text{Function}) = t.content(io)
 
   # Add Julia to the path
 
