@@ -72,37 +72,47 @@ end
 
 Jewel.@inmodule Base begin
 
+stripparams(t) = replace(t, r"\{([A-Za-z, ]*?)\}", "")
+
 function writemime(io::IO, ::MIME"text/html", m::Method)
+  print(io, "<tr><td>")
   print(io, m.func.code.name)
   tv, decls, file, line = Base.arg_decl_parts(m)
   if !isempty(tv)
     print(io,"<i>")
-#     Base.show_delim_array(io, tv, '{', ',', '}', false)
+    # Redundant, since type parameters appear in the parameter list
+    #Base.show_delim_array(io, tv, '{', ',', '}', false)
     print(io,"</i>")
   end
   print(io, "(")
-  print_joined(io, [isempty(d[2]) ? d[1] : d[1]*"::<b>"*d[2]*"</b>"
+  print_joined(io, [isempty(d[2]) ? d[1] : d[1]*"::<b>"*stripparams(d[2])*"</b>"
                     for d in decls], ",", ",")
   print(io, ")")
   if line > 0
     file = "$file:$line"
-    print(io, " at ")
+    print(io, "</td><td>")
     print(io, isabspath(file) ? Main.LightTable.filelink(file) : Main.LightTable.baselink(file))
+    print(io, "</tr>")
   end
 end
 
-function writemime(io::IO, mime::MIME"text/html", mt::MethodTable)
+function writemime(io::IO, m::MIME"text/html", mt::MethodTable)
   name = mt.name
   n = length(mt)
-  meths = n==1 ? "method" : "methods"
-  print(io, """$n $meths:<ul class="method-table">""")
+  print(io, """<div class="julia"><table class="data-frame">""")
+  defs = {}
   d = mt.defs
   while !is(d,())
-    print(io, "<li> ")
-    writemime(io, mime, d)
+    push!(defs, d)
     d = d.next
   end
-  print(io, "</ul>")
+  file(m) = m.func.code.file |> string |> basename
+  line(m) = m.func.code.line
+  map(d->writemime(io, m, d), sort!(defs, lt = (a, b) -> file(a) == file(b) ?
+                                      line(a) < line(b) :
+                                      file(a) < file(b)))
+  print(io, """</table>""")
+  print(io, """</div>""")
 end
 
 end
