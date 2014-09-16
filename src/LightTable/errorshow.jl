@@ -97,18 +97,20 @@ function writemime(io::IO, ::MIME"text/html", m::Method)
 end
 
 function writemime(io::IO, m::MIME"text/html", mt::MethodTable)
-  name = mt.name
-  n = length(mt)
-  print(io, """<div class="julia"><table class="data-frame">""")
-  defs = {}
+  defs = Method[]
   d = mt.defs
   while !is(d,())
     push!(defs, d)
     d = d.next
   end
+  writemime(io, m, defs)
+end
+
+function writemime(io::IO, m::MIME"text/html", mt::Vector{Method})
+  print(io, """<div class="julia"><table class="data-frame">""")
   file(m) = m.func.code.file |> string |> basename
   line(m) = m.func.code.line
-  map(d->writemime(io, m, d), sort!(defs, lt = (a, b) -> file(a) == file(b) ?
+  map(d->writemime(io, m, d), sort!(mt, lt = (a, b) -> file(a) == file(b) ?
                                       line(a) < line(b) :
                                       file(a) < file(b)))
   print(io, """</table>""")
