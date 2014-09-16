@@ -77,7 +77,7 @@ function writemime(io::IO, ::MIME"text/html", m::Method)
   tv, decls, file, line = Base.arg_decl_parts(m)
   if !isempty(tv)
     print(io,"<i>")
-    Base.show_delim_array(io, tv, '{', ',', '}', false)
+#     Base.show_delim_array(io, tv, '{', ',', '}', false)
     print(io,"</i>")
   end
   print(io, "(")
