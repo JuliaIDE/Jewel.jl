@@ -139,6 +139,14 @@ end
     end
 end
 
+# Images
+
+@require Images begin
+  displayinline{T,N,A}(img::Images.Image{T,N,A}) =
+    Collapsible(HTML("""Image <span>$(sizestr(img)), $T</span>"""),
+                HTML(applydisplayinline(img.properties),tohtml(MIME"image/png"(), img)))
+end
+
 # Profile tree
 
 function toabspath(file)
