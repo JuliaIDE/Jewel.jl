@@ -139,6 +139,12 @@ end
     end
 end
 
+# PyPlot
+
+@require PyPlot begin
+  PyPlot.pygui(true)
+end
+
 # Images
 
 @require Images begin
