@@ -101,6 +101,9 @@ end
 
 handle("result.reval") do _, data
   withcurrentresult(data["id"]) do
+
+    jscall("lt.plugins.reptile.working();")
+
     code = fillranges(_currentresult_.data[:code],
                       data["vals"],
                       data["locs"],
@@ -120,7 +123,7 @@ handle("result.reval") do _, data
 
     jscall("""
       this.querySelector('.julia.result').innerHTML = '$(jsescapestring(html))';
-      //lt.objs.notifos.done_working();
+      lt.plugins.reptile.done_working();
     """)
   end
 end
