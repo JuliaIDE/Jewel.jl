@@ -19,7 +19,7 @@ function server(port, id)
   pushdisplay(LTConsole())
   while isopen(conn)
     try
-      handle_next()
+      handlenext()
     catch e
       warn("LightTable.jl: "sprint(showerror, e, catch_backtrace()))
     end
@@ -45,7 +45,9 @@ end
 
 function ltread()
   @assert isopen(conn)
-  JSON.parse(conn)
+  data = JSON.parse(conn)
+  read(conn, Char) # newline
+  return data
 end
 
 raise(object::Integer, event, data) = ltwrite({object, event, data})
@@ -54,22 +56,30 @@ raise(object::Integer, event, data) = ltwrite({object, event, data})
 # Command Handling
 # ----------------
 
-const cmd_handlers = Dict{String, Function}()
+const cmdhandlers = Dict{String, Function}()
 
-function handle_cmd(data)
+function handlecmd(data)
   data == nothing && return
   global last_data = data[3]
   cmd = data[2]
-  if haskey(cmd_handlers, cmd)
-    cmd_handlers[cmd](data[1], data[3])
+  if haskey(cmdhandlers, cmd)
+    cmdhandlers[cmd](data[1], data[3])
   else
     warn("Can't handle command $cmd")
   end
 end
 
-handle(f, cmd) = (cmd_handlers[cmd] = f)
+handle(f, cmd) = (cmdhandlers[cmd] = f)
 
-handle_next() = handle_cmd(ltread())
+const cmdqueue = {}
+
+function queuecmds()
+  while nb_available(conn) > 0
+    push!(cmdqueue, ltread())
+  end
+end
+
+handlenext() = handlecmd(!isempty(cmdqueue) ? shift!(cmdqueue) : ltread())
 
 handle("client.close") do req, data
   close(conn)
