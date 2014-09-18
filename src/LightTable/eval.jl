@@ -125,5 +125,10 @@ handle("result.reval") do _, data
       this.querySelector('.julia.result').innerHTML = '$(jsescapestring(html))';
       lt.plugins.reptile.done_working();
     """)
+
+    queuecmds()
+    while length(cmdqueue) > 1 && cmdqueue[1][2] == cmdqueue[2][2] == "result.reval"
+      shift!(cmdqueue)
+    end
   end
 end
