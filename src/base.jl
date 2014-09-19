@@ -28,8 +28,9 @@ end
     content::T
   end
 
-  writemime(io::IO, ::MIME"text/plain", t::Text) = print(io, t.content)
-  writemime(io::IO, ::MIME"text/plain", t::Text{Function}) = t.content(io)
+  print(io::IO, t::Text) = print(io, t.content)
+  print(io::IO, t::Text{Function}) = t.content(io)
+  writemime(io::IO, ::MIME"text/plain", t::Text) = print(io, t)
 
   # Add Julia to the path
 
