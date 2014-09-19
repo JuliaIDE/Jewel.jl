@@ -17,7 +17,9 @@ function githublink(path)
 end
 
 function baselink(path)
-  file, line = match(relpathpattern, path).captures
+  m = match(relpathpattern, path)
+  m == nothing && return path
+  file, line = m.captures
   link = basepath(file)
   link == nothing && return githublink(path)
   line == nothing || (link *= ":$line")
@@ -25,7 +27,7 @@ function baselink(path)
 end
 
 function filelink(path)
-  """<a class="file-link" data-file="$path">$(splitdir(path)[2])</a>"""
+  """<a class="file-link" data-file="$path">$(basename(path))</a>"""
 end
 
 function showerror_html(io, e)
