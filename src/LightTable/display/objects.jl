@@ -123,9 +123,10 @@ import Jewel: @require
 
 @require DataFrames begin
   displayinline(f::DataFrames.DataFrame) =
-    Collapsible(HTML("DataFrame <span>($(join(names(f), ", "))), $(size(f,1))</span>"),
-                Table("data-frame", vcat(map(s->HTML(string(s)), names(f))',
-                                         DataFrames.array(f))))
+    isempty(f) ? Collapsible("DataFrame <span>Empty</span>") :
+      Collapsible(HTML("DataFrame <span>($(join(names(f), ", "))), $(size(f,1))</span>"),
+                  Table("data-frame", vcat(map(s->HTML(string(s)), names(f))',
+                                           DataFrames.array(f))))
 end
 
 # Colors
