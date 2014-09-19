@@ -46,4 +46,7 @@ handle("eval.julia") do ed, data
   end
 end
 
-jlcall(code) = """jlcall('$(_currentresult_.id)', '$(htmlescape(code))');"""
+jlcall(code) =
+  _currentresult_ == nothing ?
+    """jlcall('$(htmlescape(code))')""" :
+    """jlcall('$(_currentresult_.id)', '$(htmlescape(code))');"""

@@ -4,6 +4,7 @@ type Collapsible
 end
 
 function register_collapsible(c)
+  _currentresult_ == nothing && return
   id = uuid4()
   _currentresult_.data[id] = c
   return id
