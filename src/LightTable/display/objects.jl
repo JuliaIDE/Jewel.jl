@@ -30,8 +30,12 @@ function Base.writemime(io::IO, m::MIME"text/html", table::Table)
     println(io, """<tr>""")
     for j = (w′ == w ? (1:w′) : [1:(w′÷2), w-(w′÷2)+1:w])
       println(io, """<td>""")
-      item = applydisplayinline(table.data[i, j])
-      writemime(io, bestmime(item), item)
+      if isdefined(table.data, i, j)
+        item = applydisplayinline(table.data[i, j])
+        writemime(io, bestmime(item), item)
+      else
+        print(io, "#undef")
+      end
       println(io, """</td>""")
 
       w > w′ && j == (w′÷2) && println(io, """<td>⋯</td>""")
