@@ -1,5 +1,13 @@
 import Base: writemime
 
+# Text
+
+function displayinline(t::Text)
+  lines = split(t.content, "\n")
+  Collapsible(htmlescape(lines[1]),
+              """<span class="text">$(htmlescape(join(lines[2:end], "\n")))</span>""")
+end
+
 # Tables
 
 type Table{T}

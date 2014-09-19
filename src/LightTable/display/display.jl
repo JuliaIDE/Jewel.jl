@@ -9,6 +9,15 @@ function tohtml(m::MIME"text/html", x)
   end
 end
 
+function tohtml(m::MIME"text/plain", x)
+  rep = stringmime(m, x)
+  lines = split(rep, "\n")
+  html = """<span class="text">$(htmlescape(rep))</span>"""
+  length(lines) == 1 && length(lines[1]) ≤ 50 ?
+    Collapsible(html) :
+    Collapsible(summary(x), html)
+end
+
 function tohtml(m::MIME"image/png", img)
   HTML() do io
     print(io, """<img src="data:image/png;base64,""")
@@ -32,19 +41,10 @@ function bestmime(val)
   error("Cannot display $val.")
 end
 
-displayinline(x::Text) = x
 displayinline(x::HTML) = x
 
 # Catch-all fallback
-function displayinline(x)
-  m = bestmime(x)
-  if m == MIME"text/plain"()
-    Text() do io
-      writemime(io, m, x)
-    end
-  else tohtml(m, x)
-  end
-end
+displayinline(x) = tohtml(bestmime(x), x)
 
 function applydisplayinline(x)
   while (x′ = displayinline(x)) !== x
@@ -55,9 +55,6 @@ end
 
 displayinline!(x, opts) =
   displayinline!(displayinline(x), opts)
-
-displayinline!(text::Text, opts) =
-  showresult(stringmime("text/plain", text), opts)
 
 displayinline!(html::HTML, opts) =
   showresult(stringmime("text/html", html), opts, html=true, under=true)
