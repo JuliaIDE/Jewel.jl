@@ -3,6 +3,8 @@ type Collapsible
   content
 end
 
+Collapsible(a::String, b::String = "") = Collapsible(HTML(a), HTML(b))
+
 function register_collapsible(c)
   _currentresult_ == nothing && return
   id = uuid4()
