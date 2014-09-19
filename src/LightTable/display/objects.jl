@@ -83,9 +83,17 @@ displayinline(a::Matrix) =
   Collapsible(HTML("Matrix <span>$(eltype(a)), $(sizestr(a))</span>"),
               Table("array", a))
 
+function copytranspose(xs::Vector)
+  result = similar(xs, length(xs), 1)
+  for i = 1:length(xs)
+    isdefined(xs, i) && (result[i] = xs[i])
+  end
+  return result
+end
+
 displayinline(a::Vector, t = "Vector") =
   Collapsible(HTML("$t <span>$(eltype(a)), $(length(a))</span>"),
-              Table("array", reshape(a, (length(a), 1))))
+              Table("array", copytranspose(a)))
 
 displayinline(s::Set) = displayinline(collect(s), "Set")
 
