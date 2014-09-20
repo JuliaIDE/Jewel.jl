@@ -1,11 +1,17 @@
 import Base: writemime
 
+# HTML utils
+
+using .DOM
+
+fade(x) = span(".fade", x)
+
 # Text
 
 function displayinline(t::Text)
   lines = split(t.content, "\n")
-  Collapsible(htmlescape(lines[1]),
-              """<span class="text">$(htmlescape(join(lines[2:end], "\n")))</span>""")
+  Collapsible(span(".text", lines[1]),
+              span(".text", join(lines[2:end], "\n")))
 end
 
 # Tables
@@ -80,7 +86,7 @@ name(f::Function) =
 
 displayinline(f::Function) =
   isgeneric(f) ?
-    Collapsible(HTML(name(f)), methods(f)) :
+    Collapsible(strong(name(f)), methods(f)) :
     Text(name(f))
 
 # Arrays
@@ -88,7 +94,7 @@ displayinline(f::Function) =
 sizestr(a::AbstractArray) = join(size(a), "×")
 
 displayinline(a::Matrix) =
-  Collapsible(HTML("""Matrix <span class="fade">$(eltype(a)), $(sizestr(a))</span>"""),
+  Collapsible(span(strong("Matrix "), fade("$(eltype(a)), $(sizestr(a))")),
               Table("array", a))
 
 function copytranspose(xs::Vector)
@@ -100,13 +106,13 @@ function copytranspose(xs::Vector)
 end
 
 displayinline(a::Vector, t = "Vector") =
-  Collapsible(HTML("""$t <span class="fade">$(eltype(a)), $(length(a))</span>"""),
+  Collapsible(span(strong(t), fade(" $(eltype(a)), $(length(a))")),
               Table("array", copytranspose(a)))
 
 displayinline(s::Set) = displayinline(collect(s), "Set")
 
 displayinline(d::Dict) =
-  Collapsible(HTML("""Dictionary <span class="fade">$(eltype(d)[1]) → $(eltype(d)[2]), $(length(d))</span>"""),
+  Collapsible(span(strong("Dictionary "), fade("$(eltype(d)[1]) → $(eltype(d)[2]), $(length(d))")),
               HTML() do io
                 println(io, """<table class="array">""")
                 kv = collect(d)
@@ -131,8 +137,8 @@ import Jewel: @require
 
 @require DataFrames begin
   displayinline(f::DataFrames.DataFrame) =
-    isempty(f) ? Collapsible("""DataFrame <span class="fade">Empty</span>""") :
-      Collapsible(HTML("DataFrame <span class="fade">($(join(names(f), ", "))), $(size(f,1))</span>"),
+    isempty(f) ? Collapsible(span(strong("DataFrame "), fade("Empty"))) :
+      Collapsible(span(strong("DataFrame "), fade("($(join(names(f), ", "))), $(size(f,1))")),
                   Table("data-frame", vcat(map(s->HTML(string(s)), names(f))',
                                            DataFrames.array(f))))
 end
@@ -141,9 +147,9 @@ end
 
 @require Color begin
   displayinline(c::Color.ColourValue) =
-    Collapsible(HTML("""<span style="color:#$(Color.hex(c));
-                                     font-weight:bold;">#$(Color.hex(c))</span>
-                        <span class="fade">$(c)</span>"""),
+    Collapsible(span(strong({:style => "color: #$(Color.hex(c))"},
+                            "#$(Color.hex(c)) "),
+                     fade(string(c))),
                 tohtml(MIME"image/svg+xml"(), c))
 
   displayinline{C<:Color.ColourValue}(cs::VecOrMat{C}) = tohtml(MIME"image/svg+xml"(), cs)
@@ -152,12 +158,7 @@ end
 # Gadfly
 
 @require Gadfly begin
-  displayinline(p::Gadfly.Plot) =
-    HTML() do io
-      print(io, """<div style="background: white">""")
-      writemime(io, MIME"text/html"(), p)
-      print(io, """</div>""")
-    end
+  displayinline(p::Gadfly.Plot) = div(p, style = "background: white")
 end
 
 # PyPlot
@@ -170,7 +171,7 @@ end
 
 @require Images begin
   displayinline{T,N,A}(img::Images.Image{T,N,A}) =
-    Collapsible(HTML("""Image <span class="fade">$(sizestr(img)), $T</span>"""),
+    Collapsible(HTML("""$(strong("Image")) <span class="fade">$(sizestr(img)), $T</span>"""),
                 HTML(applydisplayinline(img.properties),tohtml(MIME"image/png"(), img)))
 end
 

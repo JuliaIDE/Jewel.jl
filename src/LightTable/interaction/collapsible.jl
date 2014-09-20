@@ -4,6 +4,7 @@ type Collapsible
 end
 
 Collapsible(a::String, b::String = "") = Collapsible(HTML(a), HTML(b))
+Collapsible(a) = Collapsible(a, HTML(""))
 
 function register_collapsible(c)
   _currentresult_ == nothing && return

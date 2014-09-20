@@ -23,6 +23,8 @@ Node(tag::Symbol, attrs::Dict, content; kws...) =
 Node(tag::Symbol, content; kws...) =
   Node(tag, Dict(), content; kws...)
 
+Node(tag::Symbol, content::Node...) = Node(tag, collect(content))
+
 # CSS selector parsing
 
 function cssparse(s)
@@ -72,7 +74,7 @@ render(io::IO, x) = writemime(io, MIME"text/html"(), x)
 
 Base.writemime(io::IO, ::MIME"text/html", node::Node) = render(io, node)
 
-Base.string(node::Node) = sprint(render, node)
+Base.show(io::IO, node::Node) = render(io, node)
 
 Node(tag::Symbol, io::IO, args...) = render(io, Node(tag, args...))
 

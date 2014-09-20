@@ -15,10 +15,10 @@ end
 function tohtml(m::MIME"text/plain", x)
   rep = stringmime(m, x)
   lines = split(rep, "\n")
-  html = """<span class="text">$(htmlescape(rep))</span>"""
+  html = span(".text", rep)
   length(lines) == 1 && length(lines[1]) ≤ 50 ?
     Collapsible(html) :
-    Collapsible(summary(x), html)
+    Collapsible(strong(summary(x)), html)
 end
 
 function tohtml(m::MIME"image/png", img)
