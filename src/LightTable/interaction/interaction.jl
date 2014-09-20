@@ -32,9 +32,6 @@ raise(obj::Result, args...) = raise(obj.id, args...)
 
 jscall(code) = raise(_currentresult_, :eval, code)
 
-htmlescape(s::String) =
-    @> s replace(r"&(?!(\w+|\#\d+);)", "&amp;") replace("<", "&lt;") replace(">", "&gt;") replace("\"", "&quot;")
-
 jsescapestring(s::String) = @> s escape_string replace("'", "\\'")
 
 # Evaluate Julia code

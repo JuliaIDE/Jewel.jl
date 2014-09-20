@@ -1,3 +1,6 @@
+include("DOM.jl")
+using .DOM
+
 include("commands.jl")
 include("objects.jl")
 
