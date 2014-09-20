@@ -48,13 +48,14 @@ function withcurrentresult(f, r)
 end
 
 withcurrentresult(f, r::String) =
-  withcurrentresult(f, results[UUID(r)])
+  withcurrentresult(f, get(results, UUID(r), nothing))
+
+withcurrentresult(f, r) = nothing
 
 # Evaluate Julia code
 
 handle("eval.julia") do ed, data
-  result = isa(data["id"], String) ? results[UUID(data["id"])] : nothing
-  withcurrentresult(result) do
+  withcurrentresult(data["id"]) do
     include_string(data["code"])
   end
 end
