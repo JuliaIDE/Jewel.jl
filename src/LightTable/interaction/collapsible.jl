@@ -20,6 +20,9 @@ collapsibleclickjs(id) = """
       $(jlcall(""" LightTable.collapsibleclick("$id") """))
     } else {
       \$(content).toggle(200);
+      setTimeout(function () {
+        lt.objs.editor.refresh(lt.objs.editor.pool.last_active());
+      }, 210);
     }
   """
 
