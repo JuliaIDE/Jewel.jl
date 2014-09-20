@@ -34,6 +34,22 @@ jscall(code) = raise(_currentresult_, :eval, code)
 
 jsescapestring(s::String) = @> s escape_string replace("'", "\\'")
 
+# Current result
+
+_currentresult_ = nothing
+
+function withcurrentresult(f, r)
+  global _currentresult_ = r
+  try
+    f()
+  finally
+    _currentresult_ = nothing
+  end
+end
+
+withcurrentresult(f, r::String) =
+  withcurrentresult(f, results[UUID(r)])
+
 # Evaluate Julia code
 
 handle("eval.julia") do ed, data

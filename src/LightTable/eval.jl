@@ -1,19 +1,5 @@
 # Eval
 
-_currentresult_ = nothing
-
-function withcurrentresult(f, r)
-  global _currentresult_ = r
-  try
-    f()
-  finally
-    _currentresult_ = nothing
-  end
-end
-
-withcurrentresult(f, r::String) =
-  withcurrentresult(f, results[UUID(r)])
-
 const evalerr = :secret_lighttable_eval_err_keyword
 
 # Data gets attached to the result in Julia
