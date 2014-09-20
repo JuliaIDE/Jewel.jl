@@ -88,7 +88,7 @@ displayinline(f::Function) =
 sizestr(a::AbstractArray) = join(size(a), "×")
 
 displayinline(a::Matrix) =
-  Collapsible(HTML("Matrix <span>$(eltype(a)), $(sizestr(a))</span>"),
+  Collapsible(HTML("""Matrix <span class="fade">$(eltype(a)), $(sizestr(a))</span>"""),
               Table("array", a))
 
 function copytranspose(xs::Vector)
@@ -100,13 +100,13 @@ function copytranspose(xs::Vector)
 end
 
 displayinline(a::Vector, t = "Vector") =
-  Collapsible(HTML("$t <span>$(eltype(a)), $(length(a))</span>"),
+  Collapsible(HTML("""$t <span class="fade">$(eltype(a)), $(length(a))</span>"""),
               Table("array", copytranspose(a)))
 
 displayinline(s::Set) = displayinline(collect(s), "Set")
 
 displayinline(d::Dict) =
-  Collapsible(HTML("Dictionary <span>$(eltype(d)[1]) → $(eltype(d)[2]), $(length(d))</span>"),
+  Collapsible(HTML("""Dictionary <span class="fade">$(eltype(d)[1]) → $(eltype(d)[2]), $(length(d))</span>"""),
               HTML() do io
                 println(io, """<table class="array">""")
                 kv = collect(d)
@@ -131,8 +131,8 @@ import Jewel: @require
 
 @require DataFrames begin
   displayinline(f::DataFrames.DataFrame) =
-    isempty(f) ? Collapsible("DataFrame <span>Empty</span>") :
-      Collapsible(HTML("DataFrame <span>($(join(names(f), ", "))), $(size(f,1))</span>"),
+    isempty(f) ? Collapsible("""DataFrame <span class="fade">Empty</span>""") :
+      Collapsible(HTML("DataFrame <span class="fade">($(join(names(f), ", "))), $(size(f,1))</span>"),
                   Table("data-frame", vcat(map(s->HTML(string(s)), names(f))',
                                            DataFrames.array(f))))
 end
@@ -143,7 +143,7 @@ end
   displayinline(c::Color.ColourValue) =
     Collapsible(HTML("""<span style="color:#$(Color.hex(c));
                                      font-weight:bold;">#$(Color.hex(c))</span>
-                        <span>$(c)</span>"""),
+                        <span class="fade">$(c)</span>"""),
                 tohtml(MIME"image/svg+xml"(), c))
 
   displayinline{C<:Color.ColourValue}(cs::VecOrMat{C}) = tohtml(MIME"image/svg+xml"(), cs)
@@ -170,7 +170,7 @@ end
 
 @require Images begin
   displayinline{T,N,A}(img::Images.Image{T,N,A}) =
-    Collapsible(HTML("""Image <span>$(sizestr(img)), $T</span>"""),
+    Collapsible(HTML("""Image <span class="fade">$(sizestr(img)), $T</span>"""),
                 HTML(applydisplayinline(img.properties),tohtml(MIME"image/png"(), img)))
 end
 
