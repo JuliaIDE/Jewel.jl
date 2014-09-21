@@ -38,7 +38,7 @@ jsescapestring(s::String) = @> s escape_string replace("'", "\\'")
 
 _currentresult_ = nothing
 
-function withcurrentresult(f, r)
+function withcurrentresult(f, r::Result)
   global _currentresult_ = r
   try
     f()
