@@ -60,7 +60,6 @@ const cmdhandlers = Dict{String, Function}()
 
 function handlecmd(data)
   data == nothing && return
-  global last_data = data[3]
   cmd = data[2]
   if haskey(cmdhandlers, cmd)
     cmdhandlers[cmd](data[1], data[3])
