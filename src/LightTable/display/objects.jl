@@ -175,6 +175,21 @@ end
                 HTML(applydisplayinline(img.properties),tohtml(MIME"image/png"(), img)))
 end
 
+# Expressions
+
+fixsyms(x) = x
+fixsyms(x::Symbol) = @> x string replace(r"#", "_") symbol
+fixsyms(ex::Expr) = Expr(ex.head, map(fixsyms, ex.args)...)
+
+function displayinline(x::Expr)
+  rep = stringmime(MIME"text/plain"(), x |> fixsyms)
+  lines = split(rep, "\n")
+  html = span(".code.text", {"data-lang" => "julia2"}, rep)
+  length(lines) == 1 && length(lines[1]) ≤ 50 ?
+    Collapsible(html) :
+    Collapsible(strong("Julia Code"), html)
+end
+
 # Profile tree
 
 function toabspath(file)

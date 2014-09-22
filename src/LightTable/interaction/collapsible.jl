@@ -29,6 +29,7 @@ collapsibleclickjs(id) = """
 collapsibleclick(id) = jscall("""
   node = document.getElementById('$(id)');
   node.innerHTML = '$(jsescapestring(stringmime("text/html", _currentresult_.data[UUID(id)].content)))';
+  lt.objs.langs.julia.process(node);
   node.classList.remove('lazy');
   lt.objs.notifos.done_working();
   \$(node).show(200)
