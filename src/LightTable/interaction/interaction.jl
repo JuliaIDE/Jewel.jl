@@ -32,7 +32,7 @@ raise(obj::Result, args...) = raise(obj.id, args...)
 
 jscall(code) = raise(_currentresult_, :eval, code)
 
-jsescapestring(s::String) = @> s escape_string replace("'", "\\'")
+jsescapestring(s::String) = @> s replace("\\", "\\\\") replace("\"", "\\\"") replace("\n", "\\n") replace("'", "\\'")
 
 # Current result
 
