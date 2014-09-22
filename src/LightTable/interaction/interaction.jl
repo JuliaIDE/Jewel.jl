@@ -10,6 +10,10 @@ end
 
 Result(id, value) = Result(id, value, Dict())
 
+displayinline(r::Result) =
+  Collapsible(span(strong("Result "), fade(string(r.id))),
+              div([applydisplayinline(r.value), applydisplayinline(r.data)]))
+
 const results = (UUID=>Result)[]
 
 handle("result.clear") do _, id
