@@ -1,10 +1,11 @@
 # Modules
 
 handle("editor.julia.module.update") do editor, data
+  file = data["path"] == nothing ? "This file" : basename(data["path"])
   mod = data["path"] == nothing ? "Main" : Jewel.filemodule(data["path"])
   mod == "" && (mod = "Main")
   if Jewel.getthing(mod) == nothing
-    notify("This file's module, `$mod`, isn't loaded yet.", class = "error")
+    notify("$file's module, `$mod`, isn't loaded yet.", class = "error")
     mod = "Main"
   end
   raise(editor, "julia.set-module", mod)
