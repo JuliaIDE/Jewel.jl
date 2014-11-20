@@ -147,7 +147,7 @@ end
 
 @require Color begin
   displayinline(c::Color.ColourValue) =
-    Collapsible(span(strong({:style => "color: #$(Color.hex(c))"},
+  Collapsible(span(strong(@compat Dict(:style => "color: #$(Color.hex(c))"),
                             "#$(Color.hex(c)) "),
                      fade(string(c))),
                 tohtml(MIME"image/svg+xml"(), c))
@@ -184,7 +184,7 @@ fixsyms(ex::Expr) = Expr(ex.head, map(fixsyms, ex.args)...)
 function displayinline(x::Expr)
   rep = stringmime(MIME"text/plain"(), x |> fixsyms)
   lines = split(rep, "\n")
-  html = span(".code.text", {"data-lang" => "julia2"}, rep)
+  html = span(".code.text", @compat Dict("data-lang" => "julia2"), rep)
   length(lines) == 1 && length(lines[1]) ≤ 50 ?
     Collapsible(html) :
     Collapsible(strong("Julia Code"), html)
@@ -201,10 +201,10 @@ end
 @require Jewel.ProfileView begin
   function displayinline!(tree::Jewel.ProfileView.ProfileTree, opts)
     raise(opts[:editor], "julia.profile-result",
-          {"value" => stringmime("text/html", tree),
+    @compat Dict("value" => stringmime("text/html", tree),
            "bounds" => opts[:bounds],
-           "lines" => [{:file => toabspath(li.file),
+           "lines" => [@compat Dict(:file => toabspath(li.file),
                         :line => li.line,
-                        :percent => p} for (li, p) in Jewel.ProfileView.fetch() |> Jewel.ProfileView.flatlines]})
+                        :percent => p) for (li, p) in Jewel.ProfileView.fetch() |> Jewel.ProfileView.flatlines]))
   end
 end
