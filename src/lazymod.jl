@@ -1,3 +1,5 @@
+using Compat
+
 function Base.require(s::ASCIIString)
   invoke(require, (String,), s)
   loadmod(s)
@@ -5,7 +7,7 @@ end
 
 loaded(mod) = getthing(Main, mod) != nothing
 
-const modlisteners = (String=>Vector{Function})[]
+const modlisteners = @compat Dict{String,Vector{Function}}()
 
 listenmod(f, mod) =
   loaded(mod) ? f() :
