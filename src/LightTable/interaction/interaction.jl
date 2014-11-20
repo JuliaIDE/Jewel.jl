@@ -1,5 +1,5 @@
 # Result tracking
-
+using Compat
 import Base.Random: uuid4, UUID
 
 type Result
@@ -14,7 +14,7 @@ displayinline(r::Result) =
   Collapsible(span(strong("Result "), fade(string(r.id))),
               div([applydisplayinline(r.value), applydisplayinline(r.data)]))
 
-const results = (UUID=>Result)[]
+const results = @compat Dict{UUID,Result}()
 
 handle("result.clear") do _, id
   delete!(results, UUID(id))
@@ -26,11 +26,10 @@ function register_result(result, dict...)
 end
 
 # Raise on results
-
 raise(obj::UUID, event, args...) =
-  raise(global_client, :raise, {:id => string(obj),
+  raise(global_client, :raise, @compat Dict(:id => string(obj),
                                 :event => event,
-                                :args => args})
+                                :args => args))
 
 raise(obj::Result, args...) = raise(obj.id, args...)
 
