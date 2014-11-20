@@ -8,9 +8,9 @@ const builtins = ["abstract", "baremodule", "begin", "bitstype", "break",
                   "typealias", "using", "while"]
 
 identifier_completions(hints; textual = true) =
-  {:hints => hints,
-   :pattern => identifier,
-   :textual => textual}
+  @d(:hints => hints,
+     :pattern => identifier,
+     :textual => textual)
 
 identifier_completions(; textual = true) =
   identifier_completions(UTF8String[], textual)
@@ -31,15 +31,15 @@ function completions(code, cursor; mod = Main, file = nothing)
   call = lastcall(scs)
 
   if islatexinput(line)
-    {:hints => latex_completions,
-     :pattern => r"\\[a-zA-Z0-9^_]*",
-     :textual => false}
+    @d(:hints => latex_completions,
+       :pattern => r"\\[a-zA-Z0-9^_]*",
+       :textual => false)
   elseif sc.kind == :using
     pkg_completions(packages())
   elseif call != nothing && (f = getthing(call, mod); haskey(fncompletions, f))
-    fncompletions[f]({:mod => mod,
-                      :file => file,
-                      :input => precursor(line, cursor.column)})
+    fncompletions[f](@d(:mod => mod,
+                        :file => file,
+                        :input => precursor(line, cursor.column)))
   elseif sc.kind in (:string, :multiline_string, :comment, :multiline_comment)
     nothing
   elseif (q = qualifier(line)) != nothing
@@ -102,8 +102,8 @@ const tab_length = 8
 tabpad(s, ts) = s * "\t"^max((ts - length(s)÷tab_length), 1)
 
 const latex_completions =
-  [{:completion => completion, :text => tabpad(text, 2) * completion}
-   for (text, completion) in Base.REPLCompletions.latex_symbols]
+   [@d(:completion => completion, :text => tabpad(text, 2) * completion)
+        for (text, completion) in Base.REPLCompletions.latex_symbols]
 
 const reverse_latex_commands =
   [first(v) => k for (k, v) in Base.REPLCompletions.latex_symbols]
@@ -132,9 +132,9 @@ includepaths(Pkg.dir("Jewel", "src"))
 complete(include) do info
   file = info[:file]
   dir = file == nothing ? pwd() : dirname(file)
-  {:hints => includepaths(dir),
-   :pattern => pathpattern,
-   :textual => false}
+  @d(:hints => includepaths(dir),
+     :pattern => pathpattern,
+     :textual => false)
 end
 
 # Package manager completions
@@ -150,9 +150,9 @@ required_packages() =
 unused_packages() = setdiff(all_packages(), required_packages())
 
 pkg_completions(hints) =
-  {:hints => hints,
-   :pattern => r"[a-zA-Z0-9]*",
-   :textual => false}
+  @d(:hints => hints,
+     :pattern => r"[a-zA-Z0-9]*",
+     :textual => false)
 
 for f in (Pkg.add, Pkg.clone)
   complete(f) do _
