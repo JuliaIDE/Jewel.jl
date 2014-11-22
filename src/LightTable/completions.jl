@@ -5,7 +5,7 @@ handle("editor.julia.hints") do editor, data
   completions = allcompletions(code, cur, mod = mod, file = data["path"])
   if completions == nothing
     raise(editor, "editor.julia.hints.update",
-            @d(:hints => []))
+          @d(:hints => c()))
   else
     raise(editor, "editor.julia.hints.update",
           @d(:hints => completions[:hints],

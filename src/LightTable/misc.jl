@@ -9,7 +9,7 @@ handle("editor.julia.module.update") do editor, data
     mod = "Main"
   end
   raise(editor, "julia.set-module", mod)
-raise(global_client, "julia.set-modules", @d(:modules => [string(m) for m in Jewel.allchildren(Main)]))
+  raise(global_client, "julia.set-modules", @d(:modules => [string(m) for m in Jewel.allchildren(Main)]))
 end
 
 # Browser

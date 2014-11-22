@@ -147,7 +147,7 @@ end
 
 @require Color begin
   displayinline(c::Color.ColourValue) =
-  Collapsible(span(strong(@d(:style => "color: #$(Color.hex(c))"),
+    Collapsible(span(strong(@d(:style => "color: #$(Color.hex(c))"),
                             "#$(Color.hex(c)) "),
                      fade(string(c))),
                 tohtml(MIME"image/svg+xml"(), c))
@@ -201,10 +201,10 @@ end
 @require Jewel.ProfileView begin
   function displayinline!(tree::Jewel.ProfileView.ProfileTree, opts)
     raise(opts[:editor], "julia.profile-result",
-            @d("value" => stringmime("text/html", tree),
-               "bounds" => opts[:bounds],
-               "lines" => [@d(:file => toabspath(li.file),
-                             :line => li.line,
-                             :percent => p) for (li, p) in Jewel.ProfileView.fetch() |> Jewel.ProfileView.flatlines]))
+          @d("value" => stringmime("text/html", tree),
+             "bounds" => opts[:bounds],
+             "lines" => [@d(:file => toabspath(li.file),
+                            :line => li.line,
+                            :percent => p) for (li, p) in Jewel.ProfileView.fetch() |> Jewel.ProfileView.flatlines]))
   end
 end

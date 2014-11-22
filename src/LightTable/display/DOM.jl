@@ -18,7 +18,7 @@ Node(tag::Symbol, attrs::Dict = Dict(), content::AbstractVector = c(); kws...) =
             content)
 
 Node(tag::Symbol, attrs::Dict, content; kws...) =
-Node(tag, attrs, c(content); kws...)
+  Node(tag, attrs, c(content); kws...)
 
 Node(tag::Symbol, content; kws...) =
   Node(tag, Dict(), content; kws...)

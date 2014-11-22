@@ -102,8 +102,8 @@ const tab_length = 8
 tabpad(s, ts) = s * "\t"^max((ts - length(s)÷tab_length), 1)
 
 const latex_completions =
-   [@d(:completion => completion, :text => tabpad(text, 2) * completion)
-        for (text, completion) in Base.REPLCompletions.latex_symbols]
+  [@d(:completion => completion, :text => tabpad(text, 2) * completion)
+   for (text, completion) in Base.REPLCompletions.latex_symbols]
 
 const reverse_latex_commands =
   [first(v) => k for (k, v) in Base.REPLCompletions.latex_symbols]

@@ -1,4 +1,5 @@
 # Eval
+
 const evalerr = :secret_lighttable_eval_err_keyword
 
 # Data gets attached to the result in Julia
@@ -49,12 +50,12 @@ handle("eval.block") do editor, data
   bounds = data["bounds"]
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
   # We need some custom data to enable reevaluation
-  evaldisplay(editor, mod, code, data["path"], bounds, 
+  evaldisplay(editor, mod, code, data["path"], bounds,
               data = @d(:editor => editor,
                         :mod => mod,
                         :bounds => bounds,
                         :code => code,
-                        :path => data["path"]), 
+                        :path => data["path"]),
               info = @d(:scales => bounds))
 end
 

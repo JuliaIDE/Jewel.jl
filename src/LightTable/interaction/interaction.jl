@@ -1,4 +1,5 @@
 # Result tracking
+
 import Base.Random: uuid4, UUID
 
 type Result
@@ -25,6 +26,7 @@ function register_result(result, dict...)
 end
 
 # Raise on results
+
 raise(obj::UUID, event, args...) =
   raise(global_client, :raise, @d(:id => string(obj),
                                   :event => event,
