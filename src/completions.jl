@@ -8,9 +8,9 @@ const builtins = ["abstract", "baremodule", "begin", "bitstype", "break",
                   "typealias", "using", "while"]
 
 identifier_completions(hints; textual = true) =
-@d(:hints => hints,
-   :pattern => identifier,
-   :textual => textual)
+  @d(:hints => hints,
+     :pattern => identifier,
+     :textual => textual)
 
 identifier_completions(; textual = true) =
   identifier_completions(UTF8String[], textual)
