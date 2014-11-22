@@ -29,9 +29,9 @@ end
 function ltconnect(port, id)
   global conn = connect(port)
   ltwrite(@compat Dict("type" => "julia",
-           "name" => "Julia",
-           "commands" => ["editor.eval.julia", "editor.julia.hints", "editor.julia.doc"],
-           "client-id" => id))
+                      "name" => "Julia",
+                      "commands" => ["editor.eval.julia", "editor.julia.hints", "editor.julia.doc"],
+                      "client-id" => id))
 end
 
 function ltclose()
