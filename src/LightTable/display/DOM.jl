@@ -13,12 +13,12 @@ tag{T}(node::Node{T}) = T
 attrs(node::Node) = node.attrs
 children(node::Node) = node.children
 
-Node(tag::Symbol, attrs::Dict = Dict(), content::AbstractVector = Any[]; kws...) =
+Node(tag::Symbol, attrs::Dict = Dict(), content::AbstractVector = c(); kws...) =
   Node{tag}(isempty(kws) ? attrs : merge(attrs, Dict([kws...])),
             content)
 
 Node(tag::Symbol, attrs::Dict, content; kws...) =
-Node(tag, attrs, Any[content]; kws...)
+Node(tag, attrs, c(content); kws...)
 
 Node(tag::Symbol, content; kws...) =
   Node(tag, Dict(), content; kws...)
