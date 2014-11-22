@@ -1,6 +1,6 @@
 module Jewel
 
-using LNR, Lazy
+using LNR, Lazy, Compat
 
 include("lazymod.jl")
 include("base.jl")
