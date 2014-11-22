@@ -1,5 +1,4 @@
 # Eval
-
 const evalerr = :secret_lighttable_eval_err_keyword
 
 # Data gets attached to the result in Julia
@@ -22,9 +21,9 @@ function evaldisplay(editor, mod, code, file, bounds; data = Dict(), info = Dict
     result = eval(editor, mod, code, file, bounds)
     result === evalerr && return
     withcurrentresult(register_result(result, data)) do
-      displayinline!(result, {:editor => editor,
-                              :bounds => bounds,
-                              :info => merge(info, {:id => string(_currentresult_.id)})})
+      displayinline!(result, @d(:editor => editor,
+                                :bounds => bounds,
+                                :info => merge(info, @d(:id => string(_currentresult_.id)))))
     end
   catch e
     showexception(editor, e, catch_backtrace(), bounds)
@@ -50,13 +49,13 @@ handle("eval.block") do editor, data
   bounds = data["bounds"]
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
   # We need some custom data to enable reevaluation
-  evaldisplay(editor, mod, code, data["path"], bounds,
-       data = {:editor => editor,
-               :mod => mod,
-               :bounds => bounds,
-               :code => code,
-               :path => data["path"]},
-       info = {:scales => bounds})
+  evaldisplay(editor, mod, code, data["path"], bounds, 
+              data = @d(:editor => editor,
+                        :mod => mod,
+                        :bounds => bounds,
+                        :code => code,
+                        :path => data["path"]), 
+              info = @d(:scales => bounds))
 end
 
 handle("eval.all") do editor, data
@@ -77,10 +76,9 @@ end
 
 handle("editor.block") do editor, data
   block, bounds = Jewel.getblock(data["code"], data["line"])
-  raise(editor, "return-block",
-        {"block" => block,
-         "bounds" => bounds,
-         "id" => data["id"]})
+  raise(editor, "return-block", @d("block" => block,
+                                   "bounds" => bounds,
+                                   "id" => data["id"]))
 end
 
 # Reevaluation

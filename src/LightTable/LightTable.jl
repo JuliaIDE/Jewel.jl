@@ -28,10 +28,10 @@ end
 
 function ltconnect(port, id)
   global conn = connect(port)
-  ltwrite({"type" => "julia",
-           "name" => "Julia",
-           "commands" => ["editor.eval.julia", "editor.julia.hints", "editor.julia.doc"],
-           "client-id" => id})
+  ltwrite(@d("type" => "julia",
+             "name" => "Julia",
+             "commands" => ["editor.eval.julia", "editor.julia.hints", "editor.julia.doc"],
+             "client-id" => id))
 end
 
 function ltclose()
@@ -50,7 +50,7 @@ function ltread()
   return data
 end
 
-raise(object::Integer, event, data) = ltwrite({object, event, data})
+raise(object::Integer, event, data) = ltwrite([object, event, data])
 
 # ----------------
 # Command Handling
@@ -70,7 +70,7 @@ end
 
 handle(f, cmd) = (cmdhandlers[cmd] = f)
 
-const cmdqueue = {}
+const cmdqueue = c()
 
 function queuecmds()
   while nb_available(conn) > 0

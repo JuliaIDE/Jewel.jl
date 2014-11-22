@@ -11,7 +11,7 @@ function command(cmd, data = Dict())
   raise(global_client, "editor.eval.julia.command", data)
 end
 
-function popup(header, body="", buttons = [{:label => "Ok"}])
+function popup(header, body="", buttons = [@d(:label => "Ok")])
   command("popup",
           [:header => header,
            :body => body,
@@ -25,13 +25,13 @@ function ltprint(message; error = false)
 end
 
 function notify_done(msg = nothing)
-  command("done", {:msg => msg})
+  command("done", @d(:msg => msg))
 end
 
 function notify(message; class = "")
   command("notify",
-          {:msg => message,
-           :class => class})
+          @d(:msg => message,
+             :class => class))
 end
 
 function notify_error(message)
@@ -40,6 +40,6 @@ end
 
 function console(value::String; html = false)
   command("console",
-          {"value" => value,
-           "html"  => html})
+          @d("value" => value,
+             "html"  => html))
 end

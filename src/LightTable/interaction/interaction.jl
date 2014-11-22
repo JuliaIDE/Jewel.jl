@@ -1,5 +1,4 @@
 # Result tracking
-
 import Base.Random: uuid4, UUID
 
 type Result
@@ -14,7 +13,7 @@ displayinline(r::Result) =
   Collapsible(span(strong("Result "), fade(string(r.id))),
               div([applydisplayinline(r.value), applydisplayinline(r.data)]))
 
-const results = (UUID=>Result)[]
+const results = Dict{UUID,Result}()
 
 handle("result.clear") do _, id
   delete!(results, UUID(id))
@@ -26,11 +25,10 @@ function register_result(result, dict...)
 end
 
 # Raise on results
-
 raise(obj::UUID, event, args...) =
-  raise(global_client, :raise, {:id => string(obj),
-                                :event => event,
-                                :args => args})
+  raise(global_client, :raise, @d(:id => string(obj),
+                                  :event => event,
+                                  :args => args))
 
 raise(obj::Result, args...) = raise(obj.id, args...)
 
