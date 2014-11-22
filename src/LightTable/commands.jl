@@ -1,6 +1,7 @@
 # ---------------
 # Global Commands
 # ---------------
+
 handle("julia.set-global-client") do req, data
   global global_client = req[1]
 end
