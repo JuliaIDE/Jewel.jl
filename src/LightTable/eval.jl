@@ -76,10 +76,9 @@ end
 
 handle("editor.block") do editor, data
   block, bounds = Jewel.getblock(data["code"], data["line"])
-  temp = @d("block" => block,
-            "bounds" => bounds,
-            "id" => data["id"])
-  raise(editor, "return-block", temp)
+  raise(editor, "return-block", @d("block" => block,
+                                   "bounds" => bounds,
+                                   "id" => data["id"]))
 end
 
 # Reevaluation
