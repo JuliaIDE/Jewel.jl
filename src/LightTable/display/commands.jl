@@ -1,11 +1,10 @@
 function showresult(value::String, opts; under = false, html = false)
-  temp = @d("value" => value,
+  raise(opts[:editor], "julia.result",
+          @d("value" => value,
             "bounds" => opts[:bounds],
             "under" => under,
             "html"  => html,
-            "info"    => opts[:info])
-  raise(opts[:editor], "julia.result",
-          temp)
+            "info"    => opts[:info]))
 end
 
 function showexception(req, value::String, bounds)
