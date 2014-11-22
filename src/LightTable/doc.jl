@@ -13,8 +13,8 @@ handle("editor.julia.doc") do editor, data
   else
     help = Jewel.doc(code, c, mod)
     help != nothing &&
-  raise(editor, "editor.julia.doc", @compat Dict(:doc => help,
-                                                 :loc => @d(:line => c.line-1)))
+  raise(editor, "editor.julia.doc", @d(:doc => help,
+                                       :loc => @d(:line => c.line-1)))
   end
   notify_done("")
 end
