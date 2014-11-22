@@ -13,7 +13,7 @@ displayinline(r::Result) =
   Collapsible(span(strong("Result "), fade(string(r.id))),
               div([applydisplayinline(r.value), applydisplayinline(r.data)]))
 
-const results = @compat Dict{UUID,Result}()
+const results = @d{UUID,Result}()
 
 handle("result.clear") do _, id
   delete!(results, UUID(id))
@@ -26,9 +26,9 @@ end
 
 # Raise on results
 raise(obj::UUID, event, args...) =
-  raise(global_client, :raise, @compat Dict(:id => string(obj),
-                                            :event => event,
-                                            :args => args))
+  raise(global_client, :raise, @d(:id => string(obj),
+                                  :event => event,
+                                  :args => args))
 
 raise(obj::Result, args...) = raise(obj.id, args...)
 
