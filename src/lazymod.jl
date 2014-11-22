@@ -5,7 +5,7 @@ end
 
 loaded(mod) = getthing(Main, mod) != nothing
 
-const modlisteners = @compat Dict{String,Vector{Function}}()
+const modlisteners = @d{String,Vector{Function}}()
 
 listenmod(f, mod) =
   loaded(mod) ? f() :
