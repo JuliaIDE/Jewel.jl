@@ -49,13 +49,13 @@ handle("eval.block") do editor, data
   bounds = data["bounds"]
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
   # We need some custom data to enable reevaluation
-  data = @d(:editor => editor,
-            :mod => mod,
-            :bounds => bounds,
-            :code => code,
-            :path => data["path"])
-  info = @d(:scales => bounds)
-  evaldisplay(editor, mod, code, data["path"], bounds, data, info)
+  evaldisplay(editor, mod, code, data["path"], bounds, 
+              data = @d(:editor => editor,
+                        :mod => mod,
+                        :bounds => bounds,
+                        :code => code,
+                        :path => data["path"]), 
+              info = @d(:scales => bounds))
 end
 
 handle("eval.all") do editor, data
