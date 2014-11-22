@@ -201,10 +201,10 @@ end
 @require Jewel.ProfileView begin
   function displayinline!(tree::Jewel.ProfileView.ProfileTree, opts)
     raise(opts[:editor], "julia.profile-result",
-    @d("value" => stringmime("text/html", tree),
-       "bounds" => opts[:bounds],
-       "lines" => [@d(:file => toabspath(li.file),
-                      :line => li.line,
-                      :percent => p) for (li, p) in Jewel.ProfileView.fetch() |> Jewel.ProfileView.flatlines]))
+            @d("value" => stringmime("text/html", tree),
+               "bounds" => opts[:bounds],
+               "lines" => [@d(:file => toabspath(li.file),
+                             :line => li.line,
+                             :percent => p) for (li, p) in Jewel.ProfileView.fetch() |> Jewel.ProfileView.flatlines]))
   end
 end
