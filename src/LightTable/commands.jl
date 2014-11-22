@@ -29,8 +29,8 @@ end
 
 function notify(message; class = "")
   command("notify",
-      @d(:msg => message,
-         :class => class))
+          @d(:msg => message,
+             :class => class))
 end
 
 function notify_error(message)
@@ -39,6 +39,6 @@ end
 
 function console(value::String; html = false)
   command("console",
-  @d("value" => value,
-     "html"  => html))
+          @d("value" => value,
+             "html"  => html))
 end
