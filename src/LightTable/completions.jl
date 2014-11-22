@@ -4,9 +4,8 @@ handle("editor.julia.hints") do editor, data
   mod = Jewel.getmodule(code, cur, filemod = data["module"])
   completions = allcompletions(code, cur, mod = mod, file = data["path"])
   if completions == nothing
-    temp = @d(:hints => [])
     raise(editor, "editor.julia.hints.update",
-            temp)
+            temp = @d(:hints => []))
   else
     raise(editor, "editor.julia.hints.update",
           @d(:hints => completions[:hints],
