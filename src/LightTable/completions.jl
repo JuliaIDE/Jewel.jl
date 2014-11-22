@@ -8,9 +8,8 @@ handle("editor.julia.hints") do editor, data
     raise(editor, "editor.julia.hints.update",
             temp)
   else
-    temp = @d(:hints => completions[:hints],
-              :pattern => completions[:pattern].pattern)
     raise(editor, "editor.julia.hints.update",
-          temp)
+          @d(:hints => completions[:hints],
+             :pattern => completions[:pattern].pattern))
   end
 end
