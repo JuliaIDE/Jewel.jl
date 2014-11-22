@@ -1,4 +1,3 @@
-using Compat
 handle("editor.julia.hints") do editor, data
   cur = cursor(data["cursor"]["line"], data["cursor"]["col"])
   code = data["code"]
@@ -10,7 +9,7 @@ handle("editor.julia.hints") do editor, data
             temp)
   else
     temp = @compat Dict(:hints => completions[:hints],
-           :pattern => completions[:pattern].pattern)
+                        :pattern => completions[:pattern].pattern)
     raise(editor, "editor.julia.hints.update",
           temp)
   end
