@@ -1,6 +1,6 @@
 module LightTable
 
-using JSON, Lazy, Jewel, LNR, Compat
+using JSON, Lazy, Jewel, LNR
 
 import Jewel: lines
 
@@ -28,10 +28,10 @@ end
 
 function ltconnect(port, id)
   global conn = connect(port)
-  ltwrite(@compat Dict("type" => "julia",
-                       "name" => "Julia",
-                       "commands" => ["editor.eval.julia", "editor.julia.hints", "editor.julia.doc"],
-                       "client-id" => id))
+  ltwrite(@d("type" => "julia",
+             "name" => "Julia",
+             "commands" => ["editor.eval.julia", "editor.julia.hints", "editor.julia.doc"],
+             "client-id" => id))
 end
 
 function ltclose()
@@ -56,7 +56,7 @@ raise(object::Integer, event, data) = ltwrite([object, event, data])
 # Command Handling
 # ----------------
 
-const cmdhandlers = Dict{String, Function}()
+const cmdhandlers = @d{String, Function}()
 
 function handlecmd(data)
   data == nothing && return
@@ -70,7 +70,7 @@ end
 
 handle(f, cmd) = (cmdhandlers[cmd] = f)
 
-const cmdqueue = Any[]
+const cmdqueue = c()
 
 function queuecmds()
   while nb_available(conn) > 0
