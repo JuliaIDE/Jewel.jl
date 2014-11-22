@@ -1,8 +1,6 @@
 # ---------------
 # Global Commands
 # ---------------
-using Compat
-
 handle("julia.set-global-client") do req, data
   global global_client = req[1]
 end
@@ -12,7 +10,7 @@ function command(cmd, data = Dict())
   raise(global_client, "editor.eval.julia.command", data)
 end
 
-function popup(header, body="", buttons = [@compat Dict(:label => "Ok")])
+function popup(header, body="", buttons = [@d(:label => "Ok")])
   command("popup",
           [:header => header,
            :body => body,
@@ -26,13 +24,13 @@ function ltprint(message; error = false)
 end
 
 function notify_done(msg = nothing)
-  command("done", @compat Dict(:msg => msg))
+  command("done", @d(:msg => msg))
 end
 
 function notify(message; class = "")
   command("notify",
-      @compat Dict(:msg => message,
-                   :class => class))
+      @d(:msg => message,
+         :class => class))
 end
 
 function notify_error(message)
@@ -41,6 +39,6 @@ end
 
 function console(value::String; html = false)
   command("console",
-  @compat Dict("value" => value,
-               "html"  => html))
+  @d("value" => value,
+     "html"  => html))
 end
