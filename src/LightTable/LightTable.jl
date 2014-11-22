@@ -56,7 +56,7 @@ raise(object::Integer, event, data) = ltwrite([object, event, data])
 # Command Handling
 # ----------------
 
-const cmdhandlers = @d{String, Function}()
+const cmdhandlers = Dict{String, Function}()
 
 function handlecmd(data)
   data == nothing && return
