@@ -70,7 +70,7 @@ end
 
 handle(f, cmd) = (cmdhandlers[cmd] = f)
 
-const cmdqueue = []
+const cmdqueue = Any[]
 
 function queuecmds()
   while nb_available(conn) > 0
