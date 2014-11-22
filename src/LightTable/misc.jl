@@ -8,7 +8,7 @@ handle("editor.julia.module.update") do editor, data
     mod = "Main"
   end
   raise(editor, "julia.set-module", mod)
-raise(global_client, "julia.set-modules", @compat Dict(:modules => [string(m) for m in Jewel.allchildren(Main)]))
+raise(global_client, "julia.set-modules", @d(:modules => [string(m) for m in Jewel.allchildren(Main)]))
 end
 
 # Browser
@@ -25,5 +25,5 @@ objs(mod) =
 
 handle("browser.get-objects") do browser, data
   mod = data["module"] == nothing ? Main : Jewel.getthing(data["module"])
-  raise(browser, "update", @compat Dict(:objs => objs(mod)))
+  raise(browser, "update", @d(:objs => objs(mod)))
 end
