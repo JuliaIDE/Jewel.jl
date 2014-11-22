@@ -50,7 +50,7 @@ function ltread()
   return data
 end
 
-raise(object::Integer, event, data) = ltwrite(Any[object, event, data])
+raise(object::Integer, event, data) = ltwrite([object, event, data])
 
 # ----------------
 # Command Handling
