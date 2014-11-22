@@ -13,7 +13,7 @@ displayinline(r::Result) =
   Collapsible(span(strong("Result "), fade(string(r.id))),
               div([applydisplayinline(r.value), applydisplayinline(r.data)]))
 
-const results = @d{UUID,Result}()
+const results = Dict{UUID,Result}()
 
 handle("result.clear") do _, id
   delete!(results, UUID(id))
