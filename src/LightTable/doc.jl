@@ -8,13 +8,13 @@ handle("editor.julia.doc") do editor, data
     meths = Jewel.methodsorwith(code, c, mod)
     meths != nothing &&
   raise(editor, "editor.julia.doc", @compat Dict(:doc => stringmime("text/html", meths),
-                                         :loc => @compat Dict(:line => c.line-1),
-                                         :html => true))
+                                                 :loc => @compat Dict(:line => c.line-1),
+                                                 :html => true))
   else
     help = Jewel.doc(code, c, mod)
     help != nothing &&
   raise(editor, "editor.julia.doc", @compat Dict(:doc => help,
-                                         :loc => @compat Dict(:line => c.line-1)))
+                                                 :loc => @compat Dict(:line => c.line-1)))
   end
   notify_done("")
 end
