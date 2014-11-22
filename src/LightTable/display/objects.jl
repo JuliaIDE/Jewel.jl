@@ -147,7 +147,7 @@ end
 
 @require Color begin
   displayinline(c::Color.ColourValue) =
-  Collapsible(span(strong(@compat Dict(:style => "color: #$(Color.hex(c))"),
+  Collapsible(span(strong(@d(:style => "color: #$(Color.hex(c))"),
                             "#$(Color.hex(c)) "),
                      fade(string(c))),
                 tohtml(MIME"image/svg+xml"(), c))
