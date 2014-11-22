@@ -1,5 +1,3 @@
-using Compat
-
 function Base.require(s::ASCIIString)
   invoke(require, (String,), s)
   loadmod(s)
