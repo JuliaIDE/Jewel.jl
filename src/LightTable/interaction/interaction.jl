@@ -1,5 +1,4 @@
 # Result tracking
-using Compat
 import Base.Random: uuid4, UUID
 
 type Result
@@ -28,8 +27,8 @@ end
 # Raise on results
 raise(obj::UUID, event, args...) =
   raise(global_client, :raise, @compat Dict(:id => string(obj),
-                                :event => event,
-                                :args => args))
+                                            :event => event,
+                                            :args => args))
 
 raise(obj::Result, args...) = raise(obj.id, args...)
 
