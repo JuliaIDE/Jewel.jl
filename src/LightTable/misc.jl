@@ -16,10 +16,10 @@ end
 objs(mod) =
   @>> mod begin
     (m->names(m, true))
-    map(n-> Any[n, Jewel.getthing(mod, [n])])
+    map(n-> c(n, Jewel.getthing(mod, [n])))
     filter(p->!isa(p[2], Module) && p[2] ≠ nothing && !ismatch(r"#", string(p[1])))
-    map(p-> Any[p[1], applydisplayinline(p[2])])
-    map(p-> Any[p[1], stringmime(bestmime(p[2]), p[2])])
+    map(p-> c(p[1], applydisplayinline(p[2])))
+    map(p-> c(p[1], stringmime(bestmime(p[2]), p[2])))
     xs->sort(xs, by = first)
   end
 
