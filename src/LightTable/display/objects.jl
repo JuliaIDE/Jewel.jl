@@ -184,7 +184,7 @@ fixsyms(ex::Expr) = Expr(ex.head, map(fixsyms, ex.args)...)
 function displayinline(x::Expr)
   rep = stringmime(MIME"text/plain"(), x |> fixsyms)
   lines = split(rep, "\n")
-  html = span(".code.text", @compat Dict("data-lang" => "julia2"), rep)
+  html = span(".code.text", @d("data-lang" => "julia2"), rep)
   length(lines) == 1 && length(lines[1]) ≤ 50 ?
     Collapsible(html) :
     Collapsible(strong("Julia Code"), html)
