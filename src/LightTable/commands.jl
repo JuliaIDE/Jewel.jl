@@ -13,15 +13,15 @@ end
 
 function popup(header, body="", buttons = [@d(:label => "Ok")])
   command("popup",
-          [:header => header,
-           :body => body,
-           :buttons => buttons])
+          @d(:header => header,
+             :body => body,
+             :buttons => buttons))
 end
 
 function ltprint(message; error = false)
   command("print",
-          [:value => message,
-           :error => error])
+          @d(:value => message,
+             :error => error))
 end
 
 function notify_done(msg = nothing)
