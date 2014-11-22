@@ -32,7 +32,7 @@ end
 function notify(message; class = "")
   command("notify",
       @compat Dict(:msg => message,
-           :class => class))
+                   :class => class))
 end
 
 function notify_error(message)
@@ -42,5 +42,5 @@ end
 function console(value::String; html = false)
   command("console",
   @compat Dict("value" => value,
-           "html"  => html))
+               "html"  => html))
 end
