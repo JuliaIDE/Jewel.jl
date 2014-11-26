@@ -70,7 +70,8 @@ displayinline(::Nothing) = Text("✓")
 
 function writemime(io::IO, m::MIME"text/html", x::FloatingPoint)
   print(io, """<span class="float" title="$(string(x))">""")
-  Base.Grisu._show(io, x, Base.Grisu.PRECISION, 4, false)
+#   Base.Grisu._show(io, x, Base.Grisu.PRECISION, 4, false)
+  show(io, x)
   print(io, """</span>""")
 end
 
