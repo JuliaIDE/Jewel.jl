@@ -12,10 +12,11 @@ exit_on_sigint(on) = ccall(:jl_exit_on_sigint, Void, (Cint,), on)
 # Basic Communication
 # -------------------
 
-function server(port, id)
+function server(port, id, headless = false)
+  global isheadless = headless
   exit_on_sigint(false)
   ltconnect(port, id)
-  pushdisplay(LTConsole())
+  headless && pushdisplay(LTConsole())
   while isopen(conn)
     try
       handlenext()
