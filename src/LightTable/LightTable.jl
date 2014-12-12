@@ -15,7 +15,6 @@ exit_on_sigint(on) = ccall(:jl_exit_on_sigint, Void, (Cint,), on)
 function server(port, id)
   exit_on_sigint(false)
   ltconnect(port, id)
-  print("connected")
   pushdisplay(LTConsole())
   while isopen(conn)
     try
@@ -50,7 +49,7 @@ function ltread()
   return data
 end
 
-raise(object::Integer, event, data) = ltwrite([object, event, data])
+raise(object::Integer, event, data = nothing) = ltwrite([object, event, data])
 
 # ----------------
 # Command Handling
@@ -79,6 +78,10 @@ function queuecmds()
 end
 
 handlenext() = handlecmd(!isempty(cmdqueue) ? shift!(cmdqueue) : ltread())
+
+handle("notify-connected") do client, data
+  raise(client, "connected")
+end
 
 handle("client.close") do req, data
   close(conn)
