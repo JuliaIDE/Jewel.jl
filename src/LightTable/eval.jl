@@ -4,9 +4,9 @@ const evalerr = :secret_lighttable_eval_err_keyword
 
 # Data gets attached to the result in Julia
 # Info gets attached to the result in LT
-function eval(editor, mod, code, file, bounds)
+function eval(editor, mod, code, file, name, bounds)
   task_local_storage()[:SOURCE_PATH] = file
-  file == nothing && (file = "REPL")
+  file == nothing && (file = name)
   try
     result = include_string(mod, code, file, bounds[1])
     Jewel.isdefinition(code) && (result = nothing)
@@ -17,9 +17,9 @@ function eval(editor, mod, code, file, bounds)
   end
 end
 
-function evaldisplay(editor, mod, code, file, bounds; data = Dict(), info = Dict())
+function evaldisplay(editor, mod, code, file, name, bounds; data = Dict(), info = Dict())
   try
-    result = eval(editor, mod, code, file, bounds)
+    result = eval(editor, mod, code, file, name, bounds)
     result === evalerr && return
     withcurrentresult(register_result(result, data)) do
       displayinline!(result, @d(:editor => editor,
@@ -42,7 +42,7 @@ handle("eval.selection") do editor, data
       Jewel.getblock(data["code"], cursor(data["start"]), cursor(data["end"]))
   code == "" && return notify_done()
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
-  evaldisplay(editor, mod, code, data["path"], bounds)
+  evaldisplay(editor, mod, code, data["path"], data["name"], bounds)
 end
 
 handle("eval.block") do editor, data
@@ -50,7 +50,7 @@ handle("eval.block") do editor, data
   bounds = data["bounds"]
   mod = Jewel.getmodule(data["code"], bounds[1], filemod = data["module"])
   # We need some custom data to enable reevaluation
-  evaldisplay(editor, mod, code, data["path"], bounds,
+  evaldisplay(editor, mod, code, data["path"], data["name"], bounds,
               data = @d(:editor => editor,
                         :mod => mod,
                         :bounds => bounds,
