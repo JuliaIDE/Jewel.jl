@@ -46,7 +46,7 @@ end
 function ltread()
   @assert isopen(conn)
   data = JSON.parse(conn)
-  nb_available(conn) > 0 && read(conn, Char) # newline
+  eof(conn) || read(conn, Char) # newline
   return data
 end
 
