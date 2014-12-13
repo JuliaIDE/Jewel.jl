@@ -11,7 +11,7 @@ exit_on_sigint(on) = ccall(:jl_exit_on_sigint, Void, (Cint,), on)
 # -------------------
 # Basic Communication
 # -------------------
-function server(ip::IpAddr, port::Integer, id, headless = false)
+function server(ip::Base.IpAddr, port::Integer, id, headless = false)
   global isheadless = headless
   exit_on_sigint(false)
   ltconnect(ip, port, id)
@@ -25,7 +25,7 @@ function server(ip::IpAddr, port::Integer, id, headless = false)
   end
 end
 
-function ltconnect(ip::IpAddr, port::Integer, id)
+function ltconnect(ip::Base.IpAddr, port::Integer, id)
   global conn = connect(ip, port)
   ltwrite(@d("type" => "julia",
            "name" => "Julia",
