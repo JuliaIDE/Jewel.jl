@@ -165,7 +165,11 @@ end
 # PyPlot
 
 @require PyPlot begin
-  PyPlot.pygui(true)
+  try
+    PyPlot.pygui(true)
+  catch e
+    warn("PyPlot is set to display in the console")
+  end
 end
 
 # Images
