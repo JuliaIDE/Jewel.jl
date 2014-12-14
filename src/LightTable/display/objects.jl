@@ -9,7 +9,7 @@ fade(x) = span(".fade", x)
 # Text
 
 function displayinline(t::Text)
-  lines = split(t.content, "\n")
+  lines = split(string(t), "\n")
   Collapsible(span(".text", lines[1]),
               span(".text", join(lines[2:end], "\n")))
 end
