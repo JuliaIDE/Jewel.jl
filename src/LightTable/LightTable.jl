@@ -2,7 +2,7 @@ module LightTable
 
 using JSON, Lazy, Jewel, LNR
 
-import Jewel: lines
+import Jewel: lines, Base.IpAddr
 
 export server, ltprint, popup, notify
 
@@ -11,7 +11,8 @@ exit_on_sigint(on) = ccall(:jl_exit_on_sigint, Void, (Cint,), on)
 # -------------------
 # Basic Communication
 # -------------------
-function server(ip::Base.IpAddr, port::Integer, id, headless = false)
+
+function server(ip::IpAddr, port::Integer, id, headless = false)
   global isheadless = headless
   exit_on_sigint(false)
   ltconnect(ip, port, id)
@@ -25,16 +26,16 @@ function server(ip::Base.IpAddr, port::Integer, id, headless = false)
   end
 end
 
-function ltconnect(ip::Base.IpAddr, port::Integer, id)
+function server(port, id, headless = false)
+  server(ip"127.0.0.1", port, id, headless = headless)
+end
+
+function ltconnect(ip::IpAddr, port::Integer, id)
   global conn = connect(ip, port)
   ltwrite(@d("type" => "julia",
            "name" => "Julia",
            "commands" => ["editor.eval.julia", "editor.julia.hints", "editor.julia.doc"],
            "client-id" => id))
-end
-
-function server(port, id, headless = false)
-  server(IPv4(127,0,0,1), port, id, headless = headless)
 end
 
 function ltclose()
