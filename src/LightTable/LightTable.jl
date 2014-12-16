@@ -2,7 +2,7 @@ module LightTable
 
 using JSON, Lazy, Jewel, LNR
 
-import Jewel: lines, Base.IpAddr
+import Jewel: lines
 
 export server, ltprint, popup, notify
 
@@ -33,9 +33,9 @@ end
 function ltconnect(ip::IpAddr, port::Integer, id)
   global conn = connect(ip, port)
   ltwrite(@d("type" => "julia",
-           "name" => "Julia",
-           "commands" => ["editor.eval.julia", "editor.julia.hints", "editor.julia.doc"],
-           "client-id" => id))
+             "name" => "Julia",
+             "commands" => ["editor.eval.julia", "editor.julia.hints", "editor.julia.doc"],
+             "client-id" => id))
 end
 
 function ltclose()
