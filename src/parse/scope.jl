@@ -21,7 +21,7 @@ Lexer.peekchar(r::LineNumberingReader) =
 function lexcomment(ts)
   Lexer.readchar(ts)
   if !eof(ts.io) && Lexer.peekchar(ts) == '='
-    Lexer.skip_multiline_comment(ts, 1)
+    try Lexer.skip_multiline_comment(ts, 1) end
     return token(:multicomment)
   else
     Lexer.skip_to_eol(ts)
