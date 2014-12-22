@@ -73,6 +73,13 @@ const tooltip =
     mousemove(function(event) {
       tooltip.style.left = event.offsetX + 10;
       tooltip.style.top = event.offsetY + 10;
+    });
+
+    var tooltip = "nothing";
+    var tooltipvisible = false;
+    var hovering = false;
+
+    function updatevisible() {
       // TODO: Use JQuery show()/hide().
       if(tooltipvisible != hovering) {
         if(hovering) {
@@ -83,11 +90,7 @@ const tooltip =
           tooltipvisible = false;
         }
       }
-    });
-
-    var tooltip = "nothing";
-    var tooltipvisible = false;
-    var hovering = false;
+    }
 
     function updatetooltip(data) {
       if (tooltip == "nothing") return;
@@ -99,6 +102,7 @@ const tooltip =
       } else {
         hovering = false;
       }
+      updatevisible();
     }
   """)
 
