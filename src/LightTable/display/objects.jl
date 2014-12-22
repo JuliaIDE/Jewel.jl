@@ -71,7 +71,7 @@ displayinline(::Nothing) = Text("✓")
 function round3(n)
   n = string(n)
   n = replace(n, r"\.0$", ".")
-  zero = ismatch(r"^0\.0+", n) # Special case for e.g. 0.0001
+  zero = ismatch(r"^[^\d]*0\.0+", n) # Special case for e.g. 0.0001
   r = zero ? r"0[1-9][0-9]{3,}[^\.]*$" : r"\.[0-9]{4,}"
   n = replace(n, r, s->string(s[1], parseint(s[2:5])/10 |> iround))
 end
