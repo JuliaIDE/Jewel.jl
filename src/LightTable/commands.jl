@@ -6,6 +6,12 @@ handle("julia.set-global-client") do req, data
   global global_client = req[1]
 end
 
+handle("cwd") do _, path
+  path == nothing && return
+  path = isfile(path) ? dirname(path) : path
+  cd(path)
+end
+
 function command(cmd, data = Dict())
   data[:cmd] = cmd
   raise(global_client, "editor.eval.julia.command", data)
