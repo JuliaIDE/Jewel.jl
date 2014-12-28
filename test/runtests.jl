@@ -7,3 +7,4 @@ using Base.Test, Jewel
 
 include("utils.jl")
 include("scope.jl")
+include("display.jl")
