@@ -73,7 +73,18 @@ function round3(n)
   n = replace(n, r"\.0$", ".")
   zero = ismatch(r"^[^\d]*0\.0+", n) # Special case for e.g. 0.0001
   r = zero ? r"0[1-9][0-9]{3,}[^\.]*$" : r"\.[0-9]{4,}"
-  n = replace(n, r, s->string(s[1], parseint(s[2:5])/10 |> iround))
+  n = replace(n, r, round_preserve_zeros)
+end
+
+function round_preserve_zeros(s::String)
+    m = match(r"^\.0+", s)
+    sw = typeof(m) == Nothing ? true : false
+    if !sw && length(m.match) > 4 # special case for y.000...0x
+        s = m.match[1:4]
+    else
+        s = string(sw ? "." : (length(m.match) == 4 ? ".00" : m.match), parseint(s[2:5])/10 |> iround)
+    end
+    return s
 end
 
 function writemime(io::IO, m::MIME"text/html", x::FloatingPoint)

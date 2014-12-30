@@ -85,3 +85,10 @@ include("utils.jl")
   if foo
     :end|
   """) == "if"
+
+
+# rounding in LT:
+@test round3(1.0/0.95) == "1.053"
+@test round3(1.2345e6) == "1.235e6"
+@test round3(-1.0009) == "-1.001"
+@test round3(1.00009e6) == "1.000e6"
