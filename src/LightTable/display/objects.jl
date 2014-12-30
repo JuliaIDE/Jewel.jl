@@ -98,7 +98,7 @@ function round3(n::FloatingPoint)
             res *= tmp[1]*"0"^(k2+4-length(string(tmp[1])))*"e"*tmp[2]
         end
     else
-        res *= tmp[1]
+        res *= tmp[1] * (length(tmp)>1 ? "e"*tmp[2] : "")
     end
     return res
 end
