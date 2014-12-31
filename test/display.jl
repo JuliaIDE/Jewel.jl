@@ -18,3 +18,5 @@ pi/10000
 @test round3(0.09999) == "0.100" # should probably be 0.1000, but that's a minor problem
 @test round3(-1.1299e-6) == "-1.130e-6"
 @test round_disp(1.3579/100_000_000) == "1.358e-8"
+@test round3(-Inf) == "-Inf"
+@test round3(NaN) == "NaN"

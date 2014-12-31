@@ -69,24 +69,26 @@ displayinline(::Nothing) = Text("✓")
 # Floats
 
 # round n to k significant digits
-function round_sig(n::FloatingPoint, k::Integer)
+function round_sig{T<:FloatingPoint}(n::T, k::Integer)
     s = n < 0 ? -1 : 1
     n = abs(n)
-    tmp = string(n)
-    pre, post = split(tmp, '.')
+    n == Inf && return s*inf(T)
+    isnan(n) && return nan(T)
     e = floor(log10(n))
-    if e-k+1 > 0 # for numeric stability...
+    if e - k + 1 > 0 # for numeric stability...
         s *= int(n*10^(k-e-1))*10.0^(e-k+1)
     else
         s *= int(n*10^(k-e-1))/10.0^-(e-k+1)
     end
-    return s
+    return convert(T, s)
 end
 
 # round to three significant digits after the decimal point and return a string
 function round3(n::FloatingPoint)
     res = n < 0 ? "-" : ""
     n = abs(n)
+    n == Inf && return res*string(n)
+    isnan(n) && return string(NaN)
     s = split(string(n), '.')[1]
     k1 = length(match(r"[1-9]*", s).match)
     k2 = length(match(r"[0-9]*", s).match)
