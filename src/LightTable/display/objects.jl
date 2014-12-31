@@ -72,6 +72,7 @@ displayinline(::Nothing) = Text("✓")
 function round_sig{T<:FloatingPoint}(n::T, k::Integer)
     s = n < 0 ? -1 : 1
     n = abs(n)
+    n == 0 && return zero(T)
     n == Inf && return s*inf(T)
     isnan(n) && return nan(T)
     e = floor(log10(n))

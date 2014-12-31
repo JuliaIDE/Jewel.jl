@@ -20,3 +20,4 @@ pi/10000
 @test round3(1.3579/100_000_000) == "1.358e-8"
 @test round3(-Inf) == "-Inf"
 @test round3(NaN) == "NaN"
+@test round3(1e-500) == "0.000"
