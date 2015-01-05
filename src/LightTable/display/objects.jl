@@ -68,42 +68,29 @@ displayinline(::Nothing) = Text("✓")
 
 # Floats
 
-# round n to k significant digits
-function round_sig{T<:FloatingPoint}(n::T, k::Integer)
-    s = n < 0 ? -1 : 1
-    n = abs(n)
-    n == 0 && return zero(T)
-    n == Inf && return s*inf(T)
-    isnan(n) && return nan(T)
+function round_sig(n::FloatingPoint, k::Integer)
     e = floor(log10(n))
     if e - k + 1 > 0 # for numeric stability...
-        s *= int(n*10^(k-e-1))*10.0^(e-k+1)
+        s = int(n*10^(k-e-1))*10.0^(e-k+1)
     else
-        s *= int(n*10^(k-e-1))/10.0^-(e-k+1)
+        s = int(n*10^(k-e-1))/10.0^-(e-k+1)
     end
-    return convert(T, s)
+    return s
 end
 
 # round to three significant digits after the decimal point and return a string
 function round3(n::FloatingPoint)
     res = n < 0 ? "-" : ""
     n = abs(n)
+    n == 0   && return "0.000"
     n == Inf && return res*string(n)
     isnan(n) && return string(NaN)
     s = split(string(n), '.')[1]
-    k1 = length(match(r"[1-9]*", s).match)
-    k2 = length(match(r"[0-9]*", s).match)
-    tmp = split(string(round_sig(n, k1+3)), 'e')
-    if length(tmp[1]) < k2+4
-        if length(tmp) == 1
-            res *= tmp[1]*"0"^(k2+4-length(string(tmp[1])))
-        else
-            res *= tmp[1]*"0"^(k2+4-length(string(tmp[1])))*"e"*tmp[2]
-        end
-    else
-        res *= tmp[1] * (length(tmp)>1 ? "e"*tmp[2] : "")
-    end
-    return res
+    k = ismatch(r"^0", s) ? 0 : length(s)
+    tmp = split(string(round_sig(n, k+3)), 'e')
+    z_fill = k + 4 - length(tmp[1]) + (ismatch(r"^[0]\.|^1.0$", tmp[1]) ? 1 : 0)
+    z_fill = z_fill >= 0 ? z_fill : 0
+    return res * tmp[1]*"0"^(z_fill) * (length(tmp)>1 ? "e"*tmp[2] : "")
 end
 
 function writemime(io::IO, m::MIME"text/html", x::FloatingPoint)
