@@ -83,8 +83,8 @@ moduleusings(mod) = ccall(:jl_module_usings, Any, (Any,), mod)
 filtervalid(names) = @>> names map(string) filter(x->!ismatch(r"#", x))
 
 accessible(mod::Module) =
-  [names(mod, true, true),
-   map(names, moduleusings(mod))...,
+  [names(mod, true, true);
+   map(names, moduleusings(mod))...;
    builtins] |> unique |> filtervalid
 
 function qualifier(s)
