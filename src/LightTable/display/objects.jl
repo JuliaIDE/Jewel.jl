@@ -121,7 +121,7 @@ displayinline(a::Vector, t = "Vector") =
 displayinline(s::Set) = displayinline(collect(s), "Set")
 
 displayinline(d::Dict) =
-  Collapsible(span(strong("Dictionary "), fade("$(eltype(d)[1]) → $(eltype(d)[2]), $(length(d))")),
+  Collapsible(span(strong("Dictionary "), fade("$(eltype(d).parameters[1]) → $(eltype(d).parameters[2]), $(length(d))")),
               HTML() do io
                 println(io, """<table class="array">""")
                 kv = collect(d)
