@@ -131,7 +131,7 @@ function nextscope!(scopes, ts)
   elseif isidentifier(t) || isa(t, Vector{Symbol})
     if peektoken(ts) == '('
       nexttoken(ts)
-      push!(scopes, Scope(:call, join([t], ".")))
+      push!(scopes, Scope(:call, isa(t, Vector{Symbol}) ? join(collect(t), ".") : t ))
     end
   end
   return t
