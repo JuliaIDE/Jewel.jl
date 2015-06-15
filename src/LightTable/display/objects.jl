@@ -149,7 +149,7 @@ import Jewel: @require
     isempty(f) ? Collapsible(span(strong("DataFrame "), fade("Empty"))) :
       Collapsible(span(strong("DataFrame "), fade("($(join(names(f), ", "))), $(size(f,1))")),
                   Table("data-frame", vcat(map(s->HTML(string(s)), names(f))',
-                                           DataFrames.array(f))))
+                                           DataFrames.DataArray(f))))
 end
 
 # Colors
