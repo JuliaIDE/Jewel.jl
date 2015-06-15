@@ -1,6 +1,6 @@
 module Jewel
 
-using LNR, Lazy, Requires
+using LNR, Lazy, Requires, Compat
 
 include("base.jl")
 include("parse/parse.jl")
