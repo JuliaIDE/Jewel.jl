@@ -52,7 +52,7 @@ function showerror_html(io::IO, e::LoadError, bt, top_function = :eval_user_inpu
 end
 
 function showbacktrace_html(io::IO, top_function::Symbol, t, set = 1:typemax(Int))
-  ls = map!(strip, lines(sprint(Base.show_backtrace, top_function, t, set)))
+  ls = map(strip, lines(sprint(Base.show_backtrace, top_function, t, set)))
   print(io, """<ul class="julia trace">""")
 
   for i = 2:length(ls)
