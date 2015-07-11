@@ -19,7 +19,7 @@ files(dir) =
   @>> dir readdir′ map!(f->joinpath(dir, f)) filter!(isfile′)
 
 dirs(dir) =
-  @>> dir readdir′ filter!(f->!beginswith(f, ".")) map!(f->joinpath(dir, f)) filter!(isdir′)
+  @>> dir readdir′ filter!(f->!@compat Base.startswith(f, ".")) map!(f->joinpath(dir, f)) filter!(isdir′)
 
 jl_files(dir::String) = @>> dir files filter!(f->endswith(f, ".jl"))
 
