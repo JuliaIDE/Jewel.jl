@@ -1,4 +1,4 @@
-macro inmodule (mod, expr)
+macro inmodule(mod, expr)
   expr = Expr(:quote, expr)
   esc(:(eval($mod, $expr)))
 end
