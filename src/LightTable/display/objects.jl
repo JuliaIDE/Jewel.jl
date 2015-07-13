@@ -120,8 +120,16 @@ displayinline(a::Vector, t = "Vector") =
 
 displayinline(s::Set) = displayinline(collect(s), "Set")
 
+@cond if VERSION < v"0.4-"
+  keytype(d) = eltype(d)[1]
+  valtype(d) = eltype(d)[2]
+else
+  keytype(d) = eltype(d).parameters[1]
+  valtype(d) = eltype(d).parameters[2]
+end
+
 displayinline(d::Dict) =
-  Collapsible(span(strong("Dictionary "), fade("$(eltype(d).parameters[1]) → $(eltype(d).parameters[2]), $(length(d))")),
+  Collapsible(span(strong("Dictionary "), fade("$(keytype(d)) → $(valtype(d)), $(length(d))")),
               HTML() do io
                 println(io, """<table class="array">""")
                 kv = collect(d)
