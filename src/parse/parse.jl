@@ -1,3 +1,5 @@
+using MacroTools
+
 include("scope.jl")
 include("block.jl")
 
