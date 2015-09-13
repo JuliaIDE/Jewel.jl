@@ -2,6 +2,8 @@ module Jewel
 
 using LNR, Lazy, Requires
 
+import Base: (==)
+
 include("base.jl")
 include("parse/parse.jl")
 include("eval.jl")
