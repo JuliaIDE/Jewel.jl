@@ -7,13 +7,10 @@ const builtins = ["abstract", "baremodule", "begin", "bitstype", "break",
                   "local", "macro", "module", "quote", "return", "try", "type",
                   "typealias", "using", "while"]
 
-identifier_completions(hints; textual = true) =
+@noinline identifier_completions(hints = UTF8String[]; textual = true) =
   @d(:hints => hints,
      :pattern => identifier,
      :textual => textual)
-
-identifier_completions(; textual = true) =
-  identifier_completions(UTF8String[], textual)
 
 function lastcall(scopes)
   for i = length(scopes):-1:1
