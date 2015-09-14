@@ -72,7 +72,7 @@ end
 
 # Methods
 
-Jewel.@inmodule Base begin
+Requires.@init Jewel.@inmodule Base begin
 
 stripparams(t) = replace(t, r"\{([A-Za-z, ]*?)\}", "")
 

@@ -1,6 +1,6 @@
 module LightTable
 
-using JSON, Lazy, Jewel, LNR
+using JSON, Lazy, Jewel, LNR, Requires
 
 import Jewel: lines
 

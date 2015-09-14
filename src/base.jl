@@ -3,7 +3,7 @@ macro inmodule(mod, expr)
   esc(:(eval($mod, $expr)))
 end
 
-@inmodule Base begin
+Requires.@init @inmodule Base begin
 
   if VERSION < v"0.4-"
     # Display primitives
@@ -53,6 +53,6 @@ end
   # Profiler
 
   export profile
-  profile() = Main.Jewel.profileview().fetch()
+  profile() = Main.Jewel.ProfileView.fetch()
 
 end

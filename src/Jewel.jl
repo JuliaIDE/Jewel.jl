@@ -1,3 +1,5 @@
+VERSION > v"0.4-" && __precompile__()
+
 module Jewel
 
 using LNR, Lazy, Requires
@@ -10,8 +12,7 @@ include("eval.jl")
 include("module.jl")
 include("completions.jl")
 include("doc.jl")
-
-@lazymod ProfileView "profile/profile.jl"
+include("profile/profile.jl")
 
 # Shim for now
 server(args...) = Main.LightTable.server(args...)
