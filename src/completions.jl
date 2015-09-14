@@ -7,6 +7,12 @@ const builtins = ["abstract", "baremodule", "begin", "bitstype", "break",
                   "local", "macro", "module", "quote", "return", "try", "type",
                   "typealias", "using", "while"]
 
+if VERSION < v"0.4-"
+  macro noinline(ex)
+    esc(ex)
+  end
+end
+
 @noinline identifier_completions(hints = UTF8String[]; textual = true) =
   @d(:hints => hints,
      :pattern => identifier,
