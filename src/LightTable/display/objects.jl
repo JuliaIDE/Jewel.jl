@@ -175,7 +175,7 @@ end
 # Gadfly
 
 @require Gadfly begin
-  displayinline(p::Gadfly.Plot) = div(p, style = "background: white")
+  displayinline(p::Gadfly.Plot) = DOM.div(p, style = "background: white")
 end
 
 # PyPlot

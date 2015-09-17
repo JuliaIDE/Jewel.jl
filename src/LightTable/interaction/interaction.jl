@@ -12,7 +12,7 @@ Result(id, value) = Result(id, value, Dict())
 
 displayinline(r::Result) =
   Collapsible(span(strong("Result "), fade(string(r.id))),
-              div([applydisplayinline(r.value), applydisplayinline(r.data)]))
+              DOM.div([applydisplayinline(r.value), applydisplayinline(r.data)]))
 
 const results = Dict{UUID,Result}()
 
