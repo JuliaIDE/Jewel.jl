@@ -152,7 +152,7 @@ required_packages() =
 
 unused_packages() = setdiff(all_packages(), required_packages())
 
-pkg_completions(hints) =
+@noinline pkg_completions(hints) =
   @d(:hints => hints,
      :pattern => r"[a-zA-Z0-9]*",
      :textual => false)

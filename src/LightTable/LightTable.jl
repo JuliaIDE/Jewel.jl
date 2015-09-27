@@ -1,5 +1,10 @@
 module LightTable
 
+typealias String AbstractString
+typealias FloatingPoint AbstractFloat
+typealias Nothing Void
+typealias Uint UInt
+
 using JSON, Lazy, Jewel, LNR, Requires
 
 import Jewel: lines

@@ -6,6 +6,11 @@ using LNR, Lazy, Requires
 
 import Base: (==)
 
+typealias String AbstractString
+typealias FloatingPoint AbstractFloat
+typealias Nothing Void
+typealias Uint UInt
+
 include("base.jl")
 include("parse/parse.jl")
 include("eval.jl")

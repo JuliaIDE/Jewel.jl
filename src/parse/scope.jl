@@ -139,7 +139,7 @@ end
 
 # API functions
 
-Optional(T) = Union(T, Nothing)
+Optional(T) = Union{T, Nothing}
 
 function scopes(code::LineNumberingReader, cur::Optional(Cursor) = nothing)
   ts = Lexer.TokenStream(code)
