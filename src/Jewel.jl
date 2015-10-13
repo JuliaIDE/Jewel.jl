@@ -6,10 +6,12 @@ using LNR, Lazy, Requires
 
 import Base: (==)
 
+if VERSION > v"0.4-"
 typealias String AbstractString
 typealias FloatingPoint AbstractFloat
 typealias Nothing Void
 typealias Uint UInt
+end
 
 include("base.jl")
 include("parse/parse.jl")

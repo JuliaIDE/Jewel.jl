@@ -1,9 +1,11 @@
 module LightTable
 
+if VERSION > v"0.4-"
 typealias String AbstractString
 typealias FloatingPoint AbstractFloat
 typealias Nothing Void
 typealias Uint UInt
+end
 
 using JSON, Lazy, Jewel, LNR, Requires
 
