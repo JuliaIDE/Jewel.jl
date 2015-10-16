@@ -36,10 +36,10 @@ function cssparse(s)
   return attrs
 end
 
-Node(tag::Symbol, selector::String, props::Dict, args...; kws...) =
+Node(tag::Symbol, selector::AbstractString, props::Dict, args...; kws...) =
   Node(tag, merge!(cssparse(selector), props), args...; kws...)
 
-Node(tag::Symbol, selector::String, content, args...; kws...) =
+Node(tag::Symbol, selector::AbstractString, content, args...; kws...) =
   Node(tag, cssparse(selector), content, args...; kws...)
 
 # Rendering
@@ -50,10 +50,10 @@ attrstring(xs::Vector) = join(xs, " ")
 attrstring(x) = string(x)
 attrstring(d::Dict) = @as _ d map(t->"$(t[1])=\"$(attrstring(t[2]))\"", _) join(_, " ")
 
-htmlescape(s::String) =
+htmlescape(s::AbstractString) =
     @> s replace(r"&(?!(\w+|\#\d+);)", "&amp;") replace("<", "&lt;") replace(">", "&gt;") replace("\"", "&quot;")
 
-render(io::IO, s::String) = print(io, htmlescape(s))
+render(io::IO, s::AbstractString) = print(io, htmlescape(s))
 
 function render(io::IO, node::Node)
   print(io, "<", tag(node))
