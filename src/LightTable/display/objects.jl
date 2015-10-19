@@ -68,13 +68,29 @@ displayinline(::Nothing) = Text("✓")
 
 # Floats
 
-function round3(n)
-  n = string(n)
-  n = replace(n, r"\.0$", ".")
-  ismatch(r"[0-9]\.0*999", n) && return n
-  zero = ismatch(r"^[^\d]*0\.0+", n) # Special case for e.g. 0.0001
-  r = zero ? r"0[1-9][0-9]{3,}[^\.]*$" : r"\.[0-9]{4,}"
-  n = replace(n, r, s->string(s[1], @sprintf("%03d", parseint(s[2:5])/10 |> iround)), 1)
+function round_sig(n::FloatingPoint, k::Integer)
+    e = floor(log10(n))
+    if e - k + 1 > 0 # for numeric stability...
+        s = int(n*10^(k-e-1))*10.0^(e-k+1)
+    else
+        s = int(n*10^(k-e-1))/10.0^-(e-k+1)
+    end
+    return s
+end
+
+# round to three significant digits after the decimal point and return a string
+function round3(n::FloatingPoint)
+    res = n < 0 ? "-" : ""
+    n = abs(n)
+    n == 0   && return "0.000"
+    n == Inf && return res*string(n)
+    isnan(n) && return string(NaN)
+    s = split(string(n), '.')[1]
+    k = ismatch(r"^0", s) ? 0 : length(s)
+    tmp = split(string(round_sig(n, k+3)), 'e')
+    z_fill = k + 4 - length(tmp[1]) + (ismatch(r"^[0]\.|^1.0$", tmp[1]) ? 1 : 0)
+    z_fill = z_fill >= 0 ? z_fill : 0
+    return res * tmp[1]*"0"^(z_fill) * (length(tmp)>1 ? "e"*tmp[2] : "")
 end
 
 function writemime(io::IO, m::MIME"text/html", x::FloatingPoint)
