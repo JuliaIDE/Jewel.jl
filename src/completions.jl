@@ -51,7 +51,7 @@ function completions(code, cursor; mod = Main, file = nothing)
       identifier_completions((@> thing names(true) filtervalid),
                              textual = false)
     elseif thing != nothing && sc.kind == :toplevel
-      identifier_completions((@> thing names filtervalid),
+      identifier_completions((@> thing fieldnames filtervalid),
                              textual = false)
     end
   elseif isnum(line)
