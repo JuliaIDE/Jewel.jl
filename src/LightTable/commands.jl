@@ -44,7 +44,7 @@ function notify_error(message)
   notify(message, class = "error")
 end
 
-function console(value::String; html = false)
+function console(value::AbstractString; html = false)
   command("console",
           @d("value" => value,
              "html"  => html))

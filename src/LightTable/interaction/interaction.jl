@@ -36,7 +36,7 @@ raise(obj::Result, args...) = raise(obj.id, args...)
 
 jscall(code) = raise(_currentresult_, :eval, code)
 
-jsescapestring(s::String) = @> s replace("\\", "\\\\") replace("\"", "\\\"") replace("\n", "\\n") replace("'", "\\'")
+jsescapestring(s::AbstractString) = @> s replace("\\", "\\\\") replace("\"", "\\\"") replace("\n", "\\n") replace("'", "\\'")
 
 # Current result
 
@@ -51,7 +51,7 @@ function withcurrentresult(f, r::Result)
   end
 end
 
-withcurrentresult(f, r::String) =
+withcurrentresult(f, r::AbstractString) =
   withcurrentresult(f, get(results, UUID(r), nothing))
 
 withcurrentresult(f, r) = nothing

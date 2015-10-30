@@ -98,7 +98,7 @@ immutable Scope
 end
 
 Scope(kind) = Scope(kind, "")
-Scope(kind::Symbol, name::String) = Scope(kind, convert(UTF8String, name))
+Scope(kind::Symbol, name::AbstractString) = Scope(kind, convert(UTF8String, name))
 Scope(kind, name) = Scope(symbol(kind), string(name))
 
 ==(a::Scope, b::Scope) = a.kind == b.kind && a.name == b.name
@@ -139,7 +139,7 @@ end
 
 # API functions
 
-Optional(T) = VERSION > v"0.4-" ? Union{T, Nothing} : Union(T, Nothing)
+Optional(T) = VERSION > v"0.4-" ? Union{T, Void} : Union(T, Void)
 
 function scopes(code::LineNumberingReader, cur::Optional(Cursor) = nothing)
   ts = Lexer.TokenStream(code)
@@ -160,11 +160,11 @@ function scopes(code::LineNumberingReader, cur::Optional(Cursor) = nothing)
   return scs
 end
 
-toLNR(s::String) = LineNumberingReader(s)
+toLNR(s::AbstractString) = LineNumberingReader(s)
 toLNR(r::LineNumberingReader) = r
 toCursor(i::Integer) = cursor(i, 1)
 toCursor(c::Cursor) = c
-toCursor(::Nothing) = nothing
+toCursor(::Void) = nothing
 
 scopes(code, cur=nothing) = scopes(toLNR(code), toCursor(cur))
 

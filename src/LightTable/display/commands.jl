@@ -1,4 +1,4 @@
-function showresult(value::String, opts; under = false, html = false)
+function showresult(value::AbstractString, opts; under = false, html = false)
   raise(opts[:editor], "julia.result",
         @d("value" => value,
           "bounds" => opts[:bounds],
@@ -7,7 +7,7 @@ function showresult(value::String, opts; under = false, html = false)
           "info"   => opts[:info]))
 end
 
-function showexception(req, value::String, bounds)
+function showexception(req, value::AbstractString, bounds)
   raise(req, "julia.error",
         @d("value" => value,
            "start" => bounds[1],

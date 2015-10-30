@@ -111,7 +111,7 @@ const latex_completions =
 const reverse_latex_commands =
   [first(v) => k for (k, v) in Base.REPLCompletions.latex_symbols]
 
-islatexinput(str::String) =
+islatexinput(str::AbstractString) =
   ismatch(r"\\[a-zA-Z0-9_^]*$", str)
 
 # Custom completions

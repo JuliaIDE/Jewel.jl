@@ -1,12 +1,5 @@
 module LightTable
 
-if VERSION > v"0.4-"
-typealias String AbstractString
-typealias FloatingPoint AbstractFloat
-typealias Nothing Void
-typealias Uint UInt
-end
-
 using JSON, Lazy, Jewel, LNR, Requires
 
 import Jewel: lines
@@ -63,7 +56,7 @@ raise(object::Integer, event, data = nothing) = ltwrite([object, event, data])
 # Command Handling
 # ----------------
 
-const cmdhandlers = Dict{String, Function}()
+const cmdhandlers = Dict{AbstractString, Function}()
 
 function handlecmd(data)
   data == nothing && return

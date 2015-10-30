@@ -2,7 +2,7 @@
 
 import Base.Profile: LineInfo
 
-typealias IP Uint
+typealias IP UInt
 typealias RawData Vector{IP}
 typealias Trace Vector{LineInfo}
 
@@ -12,7 +12,7 @@ lookup(ips::RawData) = map(lookup, ips)
 
 pruneC(trace::Trace) = filter(line->!line.fromC, trace)
 
-traces(data::Vector{Uint}) =
+traces(data::Vector{UInt}) =
   @>> split(data, 0, keep=false) map(lookup) map!(pruneC) map!(reverse) filter!(t->!isempty(t))
 
 # Tree Implementation

@@ -9,7 +9,7 @@ function skipwhitespace(io::IO; newlines = true)
   return io
 end
 
-function startswith(stream::IO, s::String; eat = true, padding = false)
+function startswith(stream::IO, s::AbstractString; eat = true, padding = false)
   start = position(stream)
   padding && skipwhitespace(stream)
   result = true
@@ -30,7 +30,7 @@ function startswith(stream::IO, c::Char; eat = true)
   end
 end
 
-function startswith{T<:String}(stream::IO, ss::Vector{T}; eat = true)
+function startswith{T<:AbstractString}(stream::IO, ss::Vector{T}; eat = true)
   for s in ss
     startswith(stream, s, eat = eat) && return true
   end

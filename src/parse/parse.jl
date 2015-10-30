@@ -8,8 +8,8 @@ lines(s) = split(s, "\n")
 codemodule(code, pos) =
   @as _ code scopes(_, pos) filter(s->s.kind==:module, _) map(s->s.name, _) join(_, ".")
 
-precursor(s::String, i) = join(collect(s)[1:min(i-1, end)])
-postcursor(s::String, i) = join(collect(s)[i:end])
+precursor(s::AbstractString, i) = join(collect(s)[1:min(i-1, end)])
+postcursor(s::AbstractString, i) = join(collect(s)[i:end])
 
 function getblockcursor(code, line, c)
   code, bounds = getblock(code, line)
@@ -25,7 +25,7 @@ function matchorempty(args...)
   result == nothing ? "" : result.match
 end
 
-function getqualifiedname(str::String, index::Integer)
+function getqualifiedname(str::AbstractString, index::Integer)
   pre = precursor(str, index)
   post = postcursor(str, index)
 
@@ -42,9 +42,9 @@ function getqualifiedname(str::String, index::Integer)
 end
 
 # could be more efficient
-getqualifiedname(str::String, cursor) = getqualifiedname(lines(str)[cursor.line], cursor.column)
+getqualifiedname(str::AbstractString, cursor) = getqualifiedname(lines(str)[cursor.line], cursor.column)
 
-function isdefinition(code::String)
+function isdefinition(code::AbstractString)
   try
     code = parse(code)
     return isexpr(code, :function) || (isexpr(code, :(=)) && isexpr(code.args[1], :call))

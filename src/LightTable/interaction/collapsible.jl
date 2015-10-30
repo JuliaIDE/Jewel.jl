@@ -3,7 +3,7 @@ type Collapsible
   content
 end
 
-Collapsible(a::String, b::String = "") = Collapsible(HTML(a), HTML(b))
+Collapsible(a::AbstractString, b::AbstractString = "") = Collapsible(HTML(a), HTML(b))
 Collapsible(a) = Collapsible(a, HTML(""))
 
 function register_collapsible(c)

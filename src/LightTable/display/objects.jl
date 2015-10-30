@@ -62,9 +62,9 @@ function Base.writemime(io::IO, m::MIME"text/html", table::Table)
   println(io, """</table>""")
 end
 
-# Nothing
+# Void
 
-displayinline(::Nothing) = Text("✓")
+displayinline(::Void) = Text("✓")
 
 # Floats
 
@@ -77,13 +77,13 @@ function round3(n)
   n = replace(n, r, s->string(s[1], @sprintf("%03d", parseint(s[2:5])/10 |> iround)), 1)
 end
 
-function writemime(io::IO, m::MIME"text/html", x::FloatingPoint)
+function writemime(io::IO, m::MIME"text/html", x::AbstractFloat)
   print(io, """<span class="float" title="$(string(x))">""")
   print(io, round3(x))
   print(io, """</span>""")
 end
 
-displayinline!(x::FloatingPoint, opts) =
+displayinline!(x::AbstractFloat, opts) =
   showresult(stringmime("text/html", x), opts, html=true)
 
 # Functions

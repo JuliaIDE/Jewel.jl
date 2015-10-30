@@ -13,7 +13,7 @@ function walkback(code::Vector, line)
   return line
 end
 
-closed(code::String) = scope(code).kind == :toplevel
+closed(code::AbstractString) = scope(code).kind == :toplevel
 
 # Scan to the start of the next block, find the end of
 # this one.

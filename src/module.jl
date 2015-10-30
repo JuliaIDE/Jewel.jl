@@ -21,7 +21,7 @@ files(dir) =
 dirs(dir) =
   @>> dir readdir′ filter!(f->!beginswith(f, ".")) map!(f->joinpath(dir, f)) filter!(isdir′)
 
-jl_files(dir::String) = @>> dir files filter!(f->endswith(f, ".jl"))
+jl_files(dir::AbstractString) = @>> dir files filter!(f->endswith(f, ".jl"))
 
 function jl_files(set)
   files = Set{UTF8String}()
@@ -57,7 +57,7 @@ end
 Takes a given Julia source file and another (absolute) path, gives the
 line on which the path is included in the file or 0.
 """
-function includeline(file::String, included_file::String)
+function includeline(file::AbstractString, included_file::AbstractString)
   i = 0
   open(file) do io
     for (index, line) in enumerate(eachline(io))
@@ -75,7 +75,7 @@ end
 Takes an absolute path to a file and returns the (file, line) where that
 file is included or nothing.
 """
-function find_include(path::String)
+function find_include(path::AbstractString)
   for file in @> path dirname dirsnearby jl_files
     line = includeline(file, path)
     line > 0 && (return file, line)
@@ -86,7 +86,7 @@ end
 Takes an absolute path to a file and returns a string
 representing the module it belongs to.
 """
-function filemodule(path::String)
+function filemodule(path::AbstractString)
   loc = find_include(path)
   if loc != nothing
     file, line = loc
