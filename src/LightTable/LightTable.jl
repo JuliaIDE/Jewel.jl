@@ -8,6 +8,12 @@ export server, ltprint, popup, notify
 
 exit_on_sigint(on) = ccall(:jl_exit_on_sigint, Void, (Cint,), on)
 
+function flushpipe(io)
+  @schedule while true
+    ltprint(readline(io))
+  end
+end
+
 # -------------------
 # Basic Communication
 # -------------------
@@ -17,7 +23,7 @@ function server(port, id, headless = false)
   exit_on_sigint(false)
   ltconnect(port, id)
   headless && pushdisplay(LTConsole())
-  while isopen(conn)
+  @async while isopen(conn)
     try
       handlenext()
     catch e
