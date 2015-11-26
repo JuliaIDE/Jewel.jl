@@ -6,7 +6,7 @@ typealias IP UInt
 typealias RawData Vector{IP}
 typealias Trace Vector{LineInfo}
 
-const lidict = (IP=>LineInfo)[]
+const lidict = Dict{IP,LineInfo}()
 lookup(ip::IP) = haskey(lidict, ip) ? lidict[ip] : (lidict[ip] = Profile.lookup(ip))
 lookup(ips::RawData) = map(lookup, ips)
 

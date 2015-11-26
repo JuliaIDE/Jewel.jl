@@ -8,9 +8,14 @@ export server, ltprint, popup, notify
 
 exit_on_sigint(on) = ccall(:jl_exit_on_sigint, Void, (Cint,), on)
 
+const connect_notify = Condition()
+
 function flushpipe(io)
-  @schedule while true
-    ltprint(readline(io))
+  @schedule begin
+    wait(connect_notify)
+    while true
+      ltprint(readline(io))
+    end
   end
 end
 
