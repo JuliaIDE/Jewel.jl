@@ -28,7 +28,7 @@ function server(port, id, headless = false)
   exit_on_sigint(false)
   ltconnect(port, id)
   headless && pushdisplay(LTConsole())
-  @async while isopen(conn)
+  while isopen(conn)
     try
       handlenext()
     catch e
